@@ -100,7 +100,7 @@
             <h2 class="text-3xl font-bold mb-6">Votre chocolat sur mesure vous attend</h2>
             <p class="text-xl mb-10 opacity-90">Commandez dès maintenant</p>
             <button class="bg-white text-orange-600 px-16 py-6 rounded-full text-xl font-bold shadow-2xl w-full transform hover:scale-[1.02] transition-all duration-200">
-                Passer commande
+                Passer commandeee
             </button>
         </div>
     </section>
