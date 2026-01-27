@@ -61,11 +61,13 @@
         <!-- COMMANDE -->
         <section class="relative min-h-[62vh] py-[3%] px-[5%] text-center bg-[url('/images/autre/fond_accueil.svg')] bg-cover bg-center bg-no-repeat">
             <img src="/images/logos/usine_choco_26_couleur.svg" class="absolute top-[15%] left-1/2 -translate-x-1/2 h-auto w-[45%] max-w-[180px] z-10" alt="Logo" />
-
-            <button class="absolute top-[55%] left-1/2 -translate-x-1/2 bg-[#8E5442] text-white font-normal leading-tight px-[5%] py-[3%] rounded-3xl shadow-[5px_5px_0_0_#554840] z-20 text-lg" style="font-family: 'Kavoon', cursive;">
-                <span class="block">Cliquez pour</span>
-                <span class="block">commander</span>
+            <button onclick="window.location.href='/formulaire'"
+                    class="absolute top-[52%] left-1/2 -translate-x-1/2 bg-[#8E5442] hover:bg-[#7a4636] text-white font-normal leading-tight px-[8%] py-[4%] rounded-3xl shadow-[6px_6px_0_0_#554840] z-20 text-xl min-w-[200px] transition-all duration-200 hover:shadow-[4px_4px_0_0_#554840] active:scale-95 active:shadow-[2px_2px_0_0_#554840]"
+                    style="font-family: 'Kavoon', cursive;">
+                <span class="block text-xl leading-tight">Cliquez pour</span>
+                <span class="block text-xl leading-tight">commander</span>
             </button>
+
 
             <div class="absolute top-[75%] right-[12%] z-10">
                 <button class="w-12 h-12 bg-[#ABDDCC] rounded-full flex items-center justify-center shadow-md hover:bg-[#96c9c2] transition">
@@ -79,7 +81,7 @@
         <!-- NAV BAR -->
         <div class="fixed bottom-8 left-1/2 -translate-x-1/2 w-[300px] h-16 bg-[#8E5442] rounded-full shadow-2xl flex items-center justify-around px-8 py-9 z-50 border-4 border-[#554840]/100">
 
-            <a href="/" class="w-16 h-14 bg-[#524539] rounded-t-[2.25rem] rounded-b-2xl flex items-center justify-center transition-all duration-200 group shadow-[0px_10px_30px_rgba(0,0,0,0.3)] active:scale-95">
+            <a href="/accueil" class="w-16 h-14 bg-[#524539] rounded-t-[2.25rem] rounded-b-2xl flex items-center justify-center transition-all duration-200 group shadow-[0px_10px_30px_rgba(0,0,0,0.3)] active:scale-95">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-9 h-9 text-[#FFF9EF] group-hover:text-[#ABDDCC] drop-shadow-sm">
                     <path fill-rule="evenodd" d="M9.293 2.293a1 1 0 0 1 1.414 0l7 7A1 1 0 0 1 17 11h-1v6a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1v-3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-6H3a1 1 0 0 1-.707-1.707l7-7Z" clip-rule="evenodd" />
                 </svg>
@@ -191,9 +193,9 @@
                     </a>
                 </div>
 
-                <p class="text-md leading-relaxed mb-2 px-2">Copyright 2026<br/>DRINNHAUSEN Lou - SCHMITT Lola</p>
+                <p class="text-lg leading-relaxed mb-2 px-2">Copyright 2026<br/>DRINNHAUSEN Lou - SCHMITT Lola</p>
 
-                <div class="flex justify-center gap-4 text-md underline mb-24">
+                <div class="flex justify-center gap-4 text-lg underline mb-24">
                     <a href="#" class="hover:text-white/80 transition-colors duration-200">Mentions légales</a>
                     <a href="#" class="hover:text-white/80 transition-colors duration-200">Crédits</a>
                 </div>
