@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Commander - L'usine à chocolat</title>
 
+    <!-- GOOGLE FONT KAVOON -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kavoon&display=swap" rel="stylesheet">
+
     <!-- TAILWIND CSS VIA CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -34,57 +39,57 @@
 </head>
 <body class="flex justify-center bg-[#FFF9EF]">
     <!-- CONTAINER MOBILE -->
-    <main class="w-full max-w-[390px] bg-[#FFF9EF] text-[#3B2A21] overflow-hidden min-h-screen">
+    <main class="w-full max-w-[414px] sm:max-w-[480px] bg-[#FFF9EF] text-[#3B2A21] overflow-hidden min-h-screen">
         <!-- HEADER -->
         <header class="bg-[#554840] py-6 flex justify-center">
             <img src="images/logos/usine_choco_26_blanc2.svg" alt="Usine à Chocolat" class="h-14" />
         </header>
 
         <!-- CONTENU PRINCIPAL -->
-        <div class="pt-6 pb-48 px-4">
-            <div class="w-full bg-[#554840] rounded-[32px] p-6 relative mb-4">
+        <div class="pt-6 pb-48 px-4 sm:px-6">
+            <div class="w-full bg-[#554840] rounded-[32px] p-6 sm:p-8 relative mb-4">
 
-                <h1 class="text-2xl font-black text-[#A8C9C3] mb-6 text-center" style="font-family: 'Comic Sans MS', cursive, sans-serif;">Passez commande</h1>
+                <h1 class="text-2xl sm:text-3xl font-black text-[#A8C9C3] mb-6 text-center" style="font-family: 'Kavoon', cursive;">Passez commande</h1>
 
                 <!-- Formulaire -->
-                <form action="/commandes" method="POST" class="space-y-4">
+                <form action="/commandes" method="POST" class="space-y-4 sm:space-y-5">
 
                     <!-- Nom -->
                     <div>
-                        <label class="block text-base font-black text-[#FFF9EF] mb-1" style="font-family: 'Comic Sans MS', cursive, sans-serif;">Nom</label>
+                        <label class="block text-base sm:text-lg font-black text-[#FFF9EF] mb-1 sm:mb-2" style="font-family: 'Kavoon', cursive;">Nom</label>
                         <input type="text"
                                name="nom"
                                required
-                               class="w-full h-12 px-4 border-0 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#A8C9C3] bg-[#FFF9EF] text-[#554840] text-base placeholder-[#8B7355]"
+                               class="w-full h-12 sm:h-14 px-4 border-0 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#A8C9C3] bg-[#FFF9EF] text-[#554840] text-base placeholder-[#8B7355]"
                                placeholder="Exemple : SCHMITT">
                     </div>
 
                     <!-- Prénom -->
                     <div>
-                        <label class="block text-base font-black text-[#FFF9EF] mb-1" style="font-family: 'Comic Sans MS', cursive, sans-serif;">Prénom</label>
+                        <label class="block text-base sm:text-lg font-black text-[#FFF9EF] mb-1 sm:mb-2" style="font-family: 'Kavoon', cursive;">Prénom</label>
                         <input type="text"
                                name="prenom"
                                required
-                               class="w-full h-12 px-4 border-0 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#A8C9C3] bg-[#FFF9EF] text-[#554840] text-base placeholder-[#8B7355]"
+                               class="w-full h-12 sm:h-14 px-4 border-0 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#A8C9C3] bg-[#FFF9EF] text-[#554840] text-base placeholder-[#8B7355]"
                                placeholder="Exemple : Lola">
                     </div>
 
                     <!-- Email -->
                     <div>
-                        <label class="block text-base font-black text-[#FFF9EF] mb-1" style="font-family: 'Comic Sans MS', cursive, sans-serif;">Adresse mail</label>
+                        <label class="block text-base sm:text-lg font-black text-[#FFF9EF] mb-1 sm:mb-2" style="font-family: 'Kavoon', cursive;">Adresse mail</label>
                         <input type="email"
                                name="email"
                                required
-                               class="w-full h-12 px-4 border-0 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#A8C9C3] bg-[#FFF9EF] text-[#554840] text-base placeholder-[#8B7355]"
+                               class="w-full h-12 sm:h-14 px-4 border-0 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#A8C9C3] bg-[#FFF9EF] text-[#554840] text-base placeholder-[#8B7355]"
                                placeholder="Exemple : lola.schmitt@gmail.com">
                     </div>
 
                     <!-- Type de chocolat -->
                     <div>
-                        <label class="block text-base font-black text-[#FFF9EF] mb-1" style="font-family: 'Comic Sans MS', cursive, sans-serif;">Type de chocolat</label>
+                        <label class="block text-base sm:text-lg font-black text-[#FFF9EF] mb-1 sm:mb-2" style="font-family: 'Kavoon', cursive;">Type de chocolat</label>
                         <select name="type_chocolat"
                                 required
-                                class="w-full h-12 px-4 border-0 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#A8C9C3] bg-[#FFF9EF] text-[#8B7355] text-base appearance-none cursor-pointer">
+                                class="w-full h-12 sm:h-14 px-4 border-0 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#A8C9C3] bg-[#FFF9EF] text-[#8B7355] text-base appearance-none cursor-pointer">
                             <option value="">-- Choix du chocolat --</option>
                             <option value="chocolat_noir" class="text-[#554840]">Chocolat noir</option>
                             <option value="chocolat_noir_amandes" class="text-[#554840]">Chocolat noir aux amandes</option>
@@ -97,18 +102,18 @@
 
                     <!-- Allergies -->
                     <div>
-                        <label class="block text-base font-black text-[#FFF9EF] mb-1" style="font-family: 'Comic Sans MS', cursive, sans-serif;">Allergies</label>
+                        <label class="block text-base sm:text-lg font-black text-[#FFF9EF] mb-1 sm:mb-2" style="font-family: 'Kavoon', cursive;">Allergies</label>
                         <textarea name="allergies"
                                   rows="2"
-                                  class="w-full px-4 py-2 border-0 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#A8C9C3] bg-[#FFF9EF] text-[#554840] resize-none text-base placeholder-[#8B7355]"
+                                  class="w-full px-4 py-2 sm:py-3 border-0 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#A8C9C3] bg-[#FFF9EF] text-[#554840] resize-none text-base placeholder-[#8B7355]"
                                   placeholder="Exemple : Amandes, Huile de colza ..."></textarea>
                     </div>
 
                     <!-- Bouton Valider -->
                     <div class="pt-2">
                         <button type="submit"
-                                class="w-full h-12 bg-[#A8C9C3] hover:bg-[#90B5AF] text-[#554840] font-black text-lg rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
-                                style="font-family: 'Comic Sans MS', cursive, sans-serif;">
+                                class="w-full h-12 sm:h-14 bg-[#A8C9C3] hover:bg-[#90B5AF] text-[#554840] font-black text-lg sm:text-xl rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                                style="font-family: 'Kavoon', cursive;">
                             Valider
                         </button>
                     </div>
