@@ -1,13 +1,17 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\CommandeController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('accueil');
-});
+})->name('home');
 
-Route::get('/formulaire', fn() => view('formulaire'))->name('formulaire');
+// Routes pour les commandes de chocolat
+Route::get('/formulaire', [CommandeController::class, 'formulaire'])->name('commande.formulaire');
+Route::post('/commandes', [CommandeController::class, 'store'])->name('commande.store');
+Route::get('/commande/{numero}/validation', [CommandeController::class, 'validation'])->name('commande.validation');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -20,4 +24,3 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
-

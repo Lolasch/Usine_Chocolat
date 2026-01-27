@@ -1,45 +1,28 @@
 <?php
 
-/**
- * Created by Reliese Model.
- */
-
 namespace App\Models;
 
-use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-/**
- * Class Chocolat
- * 
- * @property int $id
- * @property string $nom
- * @property string|null $description
- * @property bool $disponible
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * 
- * @property Collection|Commande[] $commandes
- *
- * @package App\Models
- */
 class Chocolat extends Model
 {
-	protected $table = 'chocolats';
+    use HasFactory;
 
-	protected $casts = [
-		'disponible' => 'bool'
-	];
+    protected $table = 'chocolats';
 
-	protected $fillable = [
-		'nom',
-		'description',
-		'disponible'
-	];
+    protected $fillable = [
+        'nom',
+        'description',
+        'disponible',
+    ];
 
-	public function commandes()
-	{
-		return $this->hasMany(Commande::class);
-	}
+    protected $casts = [
+        'disponible' => 'boolean',
+    ];
+
+    public function commandes()
+    {
+        return $this->hasMany(Commande::class, 'chocolat_id');
+    }
 }
