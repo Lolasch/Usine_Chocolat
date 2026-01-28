@@ -139,7 +139,6 @@
                     muted
                     playsinline
                     class="w-full h-full max-h-[200px] rounded-2xl object-cover shadow-2xl hover:shadow-3xl transition-all duration-300"
-                    poster="/images/autre/bulle_video.svg"
                 >
                     Votre navigateur ne supporte pas la vidéo.
                 </video>

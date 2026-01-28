@@ -5,8 +5,13 @@ use App\Http\Controllers\CommandeController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('connexion');
+    return redirect('/login');
 })->name('home');
+
+// Liste commandes
+Route::get('/liste', function () {
+    return view('liste');
+})->middleware(['auth', 'verified'])->name('liste');
 
 // AUTHENTIFICATION
 Route::get('/dashboard', function () {
