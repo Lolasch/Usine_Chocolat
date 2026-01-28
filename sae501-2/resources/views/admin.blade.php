@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Administration - L'usine à chocolat</title>
 
     <!-- Fonts -->
@@ -100,12 +101,12 @@
                     <!-- Recherche et Bouton Ajouter -->
                     <div class="flex gap-3 mb-6">
                         <div class="flex-1 relative">
-                            <input type="text" placeholder="Rechercher un étudiant" class="w-full px-4 py-2 rounded-full bg-[#D4E4E0] text-[#554840] placeholder-[#554840]/50 focus:outline-none focus:ring-2 focus:ring-[#A8C9C3]">
+                            <input type="text" id="searchInput" placeholder="Rechercher un étudiant" class="w-full px-4 py-2 rounded-full bg-[#D4E4E0] text-[#554840] placeholder-[#554840]/50 focus:outline-none focus:ring-2 focus:ring-[#A8C9C3]" onkeyup="filterOperators()">
                             <svg class="w-5 h-5 absolute right-4 top-1/2 -translate-y-1/2 text-[#554840]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
                         </div>
-                        <button class="bg-[#554840] text-white px-6 py-2 rounded-full font-bold hover:bg-[#3B2A21] transition flex items-center gap-2">
+                        <button onclick="document.getElementById('addOperatorModal').style.display='block'; loadAvailableOperators();" class="bg-[#554840] text-white px-6 py-2 rounded-full font-bold hover:bg-[#3B2A21] transition flex items-center gap-2">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                             </svg>
@@ -114,28 +115,28 @@
                     </div>
 
                     <!-- Liste -->
-                    <div class="space-y-3 max-h-96 overflow-y-auto">
+                    <div class="space-y-3 max-h-96 overflow-y-auto" id="operatorsList">
                         @forelse($etudiants ?? [] as $etudiant)
-                            <div class="flex items-center justify-between p-4 bg-[#F5F5F5] rounded-2xl hover:bg-[#EFEFEF] transition">
+                            <a href="{{ route('admin.show', $etudiant) }}" class="flex items-center justify-between p-4 bg-[#F5F5F5] rounded-2xl hover:bg-[#EFEFEF] transition cursor-pointer">
                                 <div class="flex items-center gap-3 flex-1">
                                     <div class="w-12 h-12 bg-gradient-to-br from-[#D4A574] to-[#B8860B] rounded-full flex items-center justify-center text-white font-bold">
                                         {{ substr($etudiant->prenom ?? 'E', 0, 1) }}
                                     </div>
                                     <div>
                                         <p class="font-bold text-[#554840]">{{ $etudiant->prenom ?? 'Étudiant' }} {{ $etudiant->nom ?? '' }}</p>
-                                        <p class="text-sm text-[#8B7355]">Rôle : {{ $etudiant->role ?? 'Utilisateur' }}</p>
+                                        <p class="text-sm text-[#8B7355]">Rôle : {{ $etudiant->role->nom ?? 'Utilisateur' }}</p>
                                     </div>
                                 </div>
-                                <button class="text-[#554840] hover:text-[#8E5442] transition">
+                                <div class="text-[#554840] hover:text-[#8E5442] transition">
                                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                                     </svg>
-                                </button>
-                            </div>
+                                </div>
+                            </a>
                         @empty
                             <div class="text-center py-8 text-[#8B7355]">
                                 <p>Aucun étudiant pour le moment</p>
-                                <button class="mt-4 bg-[#A8C9C3] text-[#554840] px-4 py-2 rounded-full text-sm font-bold hover:bg-[#90B5AF] transition">
+                                <button onclick="document.getElementById('addUserModal').style.display='block'" class="mt-4 bg-[#A8C9C3] text-[#554840] px-4 py-2 rounded-full text-sm font-bold hover:bg-[#90B5AF] transition">
                                     Ajouter un étudiant
                                 </button>
                             </div>
@@ -157,9 +158,9 @@
                                     <h4 class="text-lg font-bold text-[#554840]">{{ $selectedUser->prenom ?? '' }} {{ $selectedUser->nom ?? '' }}</h4>
                                     <p class="text-sm text-[#8B7355]">{{ $selectedUser->email ?? '' }}</p>
                                 </div>
-                                <button class="bg-[#8E5442] text-white px-6 py-2 rounded-full font-bold hover:bg-[#6B4535] transition">
+                                <a href="{{ route('admin.edit', $selectedUser) }}" class="bg-[#8E5442] text-white px-6 py-2 rounded-full font-bold hover:bg-[#6B4535] transition">
                                     Modifier
-                                </button>
+                                </a>
                             </div>
                         </div>
 
@@ -173,18 +174,8 @@
                                 <label class="text-sm font-bold text-[#554840] block mb-2">Rôle :</label>
                                 <div class="flex gap-2 flex-wrap">
                                     <span class="bg-[#8E5442] text-white px-4 py-2 rounded-full font-bold">
-                                        {{ $selectedUser->role ?? 'Utilisateur' }}
+                                        {{ $selectedUser->role->nom ?? 'Utilisateur' }}
                                     </span>
-                                </div>
-                            </div>
-
-                            <div>
-                                <label class="text-sm font-bold text-[#554840] block mb-2">Poste :</label>
-                                <div class="flex items-center gap-2">
-                                    <span class="text-[#554840]">{{ $selectedUser->poste ?? 'Aucun' }}</span>
-                                    <svg class="w-5 h-5 text-[#554840]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                                    </svg>
                                 </div>
                             </div>
                         </div>
@@ -192,7 +183,7 @@
                         <div class="h-full flex items-center justify-center">
                             <div class="text-center">
                                 <p class="text-[#8B7355] text-lg mb-4">Sélectionnez un étudiant pour voir ses détails</p>
-                                <button class="bg-[#A8C9C3] text-[#554840] px-6 py-2 rounded-full font-bold hover:bg-[#90B5AF] transition">
+                                <button onclick="document.getElementById('addUserModal').style.display='block'" class="bg-[#A8C9C3] text-[#554840] px-6 py-2 rounded-full font-bold hover:bg-[#90B5AF] transition">
                                     Ajouter un nouvel étudiant
                                 </button>
                             </div>
@@ -202,5 +193,188 @@
             </div>
         </div>
     </main>
+
+    <!-- Modal Ajouter Opérateur -->
+    <div id="addOperatorModal" style="display:none" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+        <div class="bg-white rounded-3xl p-8 max-w-3xl w-full mx-4 shadow-2xl">
+            <h3 class="text-2xl font-bold text-[#554840] mb-6 font-kavoon">Ajouter un opérateur</h3>
+
+            <!-- Recherche dans le modal -->
+            <div class="flex-1 relative mb-6">
+                <input type="text" id="operatorSearch" placeholder="Rechercher par nom..." class="w-full px-4 py-2 rounded-full bg-[#D4E4E0] text-[#554840] placeholder-[#554840]/50 focus:outline-none focus:ring-2 focus:ring-[#A8C9C3]" onkeyup="filterAvailableOperators()">
+                <svg class="w-5 h-5 absolute right-4 top-1/2 -translate-y-1/2 text-[#554840]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+            </div>
+
+            <!-- Liste des opérateurs disponibles -->
+            <div id="availableOperatorsList" class="space-y-3 max-h-96 overflow-y-auto mb-6">
+                <div class="text-center py-8 text-[#8B7355]">
+                    <p>Chargement des opérateurs disponibles...</p>
+                </div>
+            </div>
+
+            <div class="flex gap-3 pt-4">
+                <button type="button" onclick="document.getElementById('addOperatorModal').style.display='none'" class="flex-1 bg-[#D4E4E0] text-[#554840] px-6 py-2 rounded-full font-bold hover:bg-[#C0D8D3] transition">
+                    Fermer
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Données des opérateurs stockées globalement
+        let allOperators = {!! json_encode($etudiants) !!};
+
+        // Initialiser la liste au chargement
+        document.addEventListener('DOMContentLoaded', function() {
+            renderOperators(allOperators);
+        });
+
+        // Filtrer les opérateurs en temps réel
+        function filterOperators() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+
+            const filtered = allOperators.filter(op => {
+                const nom = (op.nom || '').toLowerCase();
+                const prenom = (op.prenom || '').toLowerCase();
+                const email = (op.email || '').toLowerCase();
+
+                return nom.includes(searchTerm) || prenom.includes(searchTerm) || email.includes(searchTerm);
+            });
+
+            renderOperators(filtered);
+        }
+
+        // Afficher les opérateurs dans la liste
+        function renderOperators(operators) {
+            const listDiv = document.getElementById('operatorsList');
+
+            if (operators.length === 0) {
+                listDiv.innerHTML = '<div class="text-center py-8 text-[#8B7355]"><p>Aucun opérateur trouvé</p></div>';
+                return;
+            }
+
+            listDiv.innerHTML = operators.map(op => `
+                <a href="/admin/users/${op.id}" class="flex items-center justify-between p-4 bg-[#F5F5F5] rounded-2xl hover:bg-[#EFEFEF] transition cursor-pointer">
+                    <div class="flex items-center gap-3 flex-1">
+                        <div class="w-12 h-12 bg-gradient-to-br from-[#D4A574] to-[#B8860B] rounded-full flex items-center justify-center text-white font-bold">
+                            ${op.prenom.charAt(0)}
+                        </div>
+                        <div>
+                            <p class="font-bold text-[#554840]">${op.prenom} ${op.nom}</p>
+                            <p class="text-sm text-[#8B7355]">Rôle : ${op.role?.nom || 'Utilisateur'}</p>
+                        </div>
+                    </div>
+                    <div class="text-[#554840] hover:text-[#8E5442] transition">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </div>
+                </a>
+            `).join('');
+        }
+
+        // Fermer le modal en cliquant en dehors
+        document.getElementById('addOperatorModal').addEventListener('click', function(event) {
+            if (event.target === this) {
+                this.style.display = 'none';
+            }
+        });
+
+        // Données des opérateurs disponibles
+        let availableOperatorsData = [];
+
+        // Charger les opérateurs disponibles au départ
+        async function loadAvailableOperators() {
+            try {
+                const response = await fetch(`{{ route('admin.availableOperators') }}`);
+                availableOperatorsData = await response.json();
+                filterAvailableOperators();
+            } catch (error) {
+                console.error('Erreur:', error);
+                document.getElementById('availableOperatorsList').innerHTML = '<div class="text-center py-8 text-red-500"><p>Erreur lors du chargement</p></div>';
+            }
+        }
+
+        // Filtrer les opérateurs en temps réel
+        function filterAvailableOperators() {
+            const searchTerm = document.getElementById('operatorSearch')?.value.toLowerCase() || '';
+
+            // Récupérer les IDs des opérateurs déjà assignés
+            const assignedIds = allOperators.map(op => op.id);
+
+            const filtered = availableOperatorsData.filter(op => {
+                // Exclure les opérateurs déjà assignés
+                if (assignedIds.includes(op.id)) {
+                    return false;
+                }
+
+                const nom = (op.nom || '').toLowerCase();
+                const prenom = (op.prenom || '').toLowerCase();
+                const email = (op.email || '').toLowerCase();
+
+                return nom.includes(searchTerm) || prenom.includes(searchTerm) || email.includes(searchTerm);
+            });
+
+            renderAvailableOperators(filtered);
+        }
+
+        // Afficher les opérateurs disponibles
+        function renderAvailableOperators(operators) {
+            const listDiv = document.getElementById('availableOperatorsList');
+
+            if (operators.length === 0) {
+                listDiv.innerHTML = '<div class="text-center py-8 text-[#8B7355]"><p>Aucun opérateur disponible</p></div>';
+                return;
+            }
+
+            listDiv.innerHTML = operators.map(op => `
+                <div class="flex items-center justify-between p-4 bg-[#F5F5F5] rounded-2xl hover:bg-[#EFEFEF] transition cursor-pointer">
+                    <div class="flex items-center gap-3 flex-1">
+                        <div class="w-12 h-12 bg-gradient-to-br from-[#D4A574] to-[#B8860B] rounded-full flex items-center justify-center text-white font-bold">
+                            ${op.prenom.charAt(0)}
+                        </div>
+                        <div>
+                            <p class="font-bold text-[#554840]">${op.prenom} ${op.nom}</p>
+                            <p class="text-sm text-[#8B7355]">${op.email}</p>
+                        </div>
+                    </div>
+                    <button type="button" class="bg-[#554840] text-white px-4 py-2 rounded-full font-bold hover:bg-[#3B2A21] transition" onclick="addOperatorToTeam(${op.id})">
+                        Ajouter
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        // Ajouter un opérateur à l'équipe
+        async function addOperatorToTeam(userId) {
+            try {
+                const response = await fetch(`{{ route('admin.addOperator', 'USER_ID') }}`.replace('USER_ID', userId), {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert(data.message);
+                    loadAvailableOperators();
+                    // Reload page to update the list
+                    setTimeout(() => {
+                        location.reload();
+                    }, 500);
+                } else {
+                    alert(data.error || 'Erreur lors de l\'ajout');
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('Erreur lors de l\'ajout de l\'opérateur');
+            }
+        }
+    </script>
 </body>
 </html>

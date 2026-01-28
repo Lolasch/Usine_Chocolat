@@ -75,6 +75,20 @@
                     <x-input-error :messages="$errors->get('email')" class="mt-2" />
                 </div>
 
+                <!-- Rôle -->
+                <div>
+                    <x-input-label for="role_id" :value="__('Rôle')" class="text-[#f6e3a1]" />
+                    <select id="role_id"
+                        name="role_id"
+                        class="block mt-1 w-full rounded-full bg-[#5a463a] text-white border border-gray-300 px-4 py-2"
+                        required>
+                        <option value="">-- Choisir un rôle --</option>
+                        <option value="2">Opérateur</option>
+                        <option value="1">Superviseur</option>
+                    </select>
+                    <x-input-error :messages="$errors->get('role_id')" class="mt-2" />
+                </div>
+
                 <!-- Password -->
                 <div>
                     <x-input-label for="password" :value="__('Password')" class="text-[#f6e3a1]" />

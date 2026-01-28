@@ -15,10 +15,6 @@ Route::get('/liste', function () {
 })->middleware(['auth', 'verified'])->name('liste');
 
 // AUTHENTIFICATION
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -43,4 +39,14 @@ Route::get('/commande/{numero}/validation', [CommandeController::class, 'validat
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
     Route::get('/admin/users/{user}', [AdminController::class, 'show'])->name('admin.show');
+    Route::post('/admin/users', [AdminController::class, 'store'])->name('admin.store');
+    Route::get('/admin/users/{user}/edit', [AdminController::class, 'edit'])->name('admin.edit');
+    Route::patch('/admin/users/{user}', [AdminController::class, 'update'])->name('admin.update');
+    Route::delete('/admin/users/{user}', [AdminController::class, 'destroy'])->name('admin.destroy');
+    Route::get('/admin/search', [AdminController::class, 'search'])->name('admin.search');
+
+    // Routes pour gérer les opérateurs de l'équipe
+    Route::get('/admin/available-operators', [AdminController::class, 'getAvailableOperators'])->name('admin.availableOperators');
+    Route::post('/admin/operators/{user}/add', [AdminController::class, 'addOperator'])->name('admin.addOperator');
+    Route::post('/admin/operators/{user}/remove', [AdminController::class, 'removeOperator'])->name('admin.removeOperator');
 });
