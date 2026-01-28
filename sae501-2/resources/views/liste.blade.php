@@ -54,15 +54,23 @@
                 <aside class="bg-[var(--choco-brown)] text-white rounded-3xl p-4 flex-1">
                     <h2 class="text-lg mb-4">Étapes</h2>
 
-                    <ul class="space-y-2">
-                        <li class="bg-[var(--caramel-dark)] px-4 py-2 rounded-2xl flex justify-between items-center">
-                            Non traitées <span>✕</span>
+                <ul class="space-y-2">
+                    @foreach ($etapes as $etape)
+                        <li
+                            class="
+                                px-4 py-2 rounded-2xl flex justify-between items-center
+                                {{ $loop->first ? 'bg-[var(--caramel-dark)] text-white' : 'opacity-80' }}
+                            "
+                        >
+                            {{ $etape->nom }}
+
+                            @if ($loop->first)
+                                <span>✕</span>
+                            @endif
                         </li>
-                        <li class="px-4 py-2 rounded-2xl opacity-80">Fonte</li>
-                        <li class="px-4 py-2 rounded-2xl opacity-80">Moulage</li>
-                        <li class="px-4 py-2 rounded-2xl opacity-80">Démoulage</li>
-                        <li class="px-4 py-2 rounded-2xl opacity-80">Livraison</li>
-                    </ul>
+                    @endforeach
+                </ul>
+
                 </aside>
 
             </div>

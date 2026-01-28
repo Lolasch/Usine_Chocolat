@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CommandeController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\PosteController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -13,12 +14,9 @@ Route::get('/', function () {
 })->name('home');
 
 // Liste commandes
-Route::get('/liste', function () {
-    return view('liste');
-})->middleware(['auth', 'verified'])->name('liste');
+Route::get('/liste', [PosteController::class, 'index'])
+    ->middleware(['auth', 'verified'])->name('liste');
 
-Route::get('/commandes', [CommandeController::class, 'index'])
-    ->name('commandes.liste');
 
 // AUTHENTIFICATION
 Route::middleware('auth')->group(function () {

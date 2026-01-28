@@ -9,7 +9,6 @@ use App\Models\Chocolat;
 use App\Models\Email;
 use Illuminate\Support\Str;
 
-
 class CommandeController extends Controller
 {
     public function formulaire()
