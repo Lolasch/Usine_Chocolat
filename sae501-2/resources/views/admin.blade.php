@@ -350,7 +350,7 @@
         // Ajouter un opérateur à l'équipe
         async function addOperatorToTeam(userId) {
             try {
-                const response = await fetch(`{{ route('admin.addOperator', 'USER_ID') }}`.replace('USER_ID', userId), {
+                const response = await fetch(`/admin/operators/${userId}/add`, {
                     method: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,

@@ -40,7 +40,7 @@ Route::post('/commandes', [CommandeController::class, 'store'])->name('commande.
 Route::get('/commande/{numero}/validation', [CommandeController::class, 'validation'])->name('commande.validation');
 
 // ADMIN
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
     Route::get('/admin/users/{user}', [AdminController::class, 'show'])->name('admin.show');
     Route::post('/admin/users', [AdminController::class, 'store'])->name('admin.store');
