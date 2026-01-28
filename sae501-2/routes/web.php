@@ -6,6 +6,9 @@ use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
+    if (auth()->check()) {
+        return redirect('/liste');
+    }
     return redirect('/login');
 })->name('home');
 

@@ -47,8 +47,9 @@ class RegisteredUserController extends Controller
             'actif' => true,
         ]);
 
-        // Si c'est un superviseur (role_id = 1), créer une équipe pour lui
-        if ($request->role_id == 1) {
+        // Si c'est un superviseur, créer une équipe pour lui
+        $role = $user->role;
+        if ($role && stripos($role->nom, 'superviseur') !== false) {
             $equipe = Equipe::create([
                 'nom' => $user->prenom . ' ' . $user->nom,
             ]);
@@ -61,6 +62,6 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return redirect(route('liste', absolute: false));
+        return redirect('/accueil');
     }
 }
