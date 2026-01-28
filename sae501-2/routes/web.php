@@ -14,6 +14,9 @@ Route::get('/liste', function () {
     return view('liste');
 })->middleware(['auth', 'verified'])->name('liste');
 
+Route::get('/commandes', [CommandeController::class, 'index'])
+    ->name('commandes.liste');
+
 // AUTHENTIFICATION
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
