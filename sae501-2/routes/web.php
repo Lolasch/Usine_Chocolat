@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CommandeController;
+use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -37,3 +38,9 @@ Route::get('/accueil', function () {
 Route::get('/formulaire', [CommandeController::class, 'formulaire'])->name('commande.formulaire');
 Route::post('/commandes', [CommandeController::class, 'store'])->name('commande.store');
 Route::get('/commande/{numero}/validation', [CommandeController::class, 'validation'])->name('commande.validation');
+
+// ADMIN
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
+    Route::get('/admin/users/{user}', [AdminController::class, 'show'])->name('admin.show');
+});
