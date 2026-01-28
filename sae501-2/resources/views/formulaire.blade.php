@@ -39,8 +39,8 @@
 <body class="flex justify-center bg-[#FFF9EF] overflow-x-hidden min-h-screen">
     <main class="w-full bg-[#FFF9EF] text-[#3B2A21]">
         <!-- HEADER -->
-        <header class="bg-[#554840] py-6 flex justify-center">
-            <img src="{{ asset('images/logos/usine_choco_26_blanc2.svg') }}" alt="Usine à Chocolat" class="h-14" />
+        <header class="bg-[#554840] py-[4%] flex justify-center">
+            <img src="/images/logos/usine_choco_26_blanc2.svg" alt="Usine à Chocolat" class="header-logo h-16 mt-4" />
         </header>
 
         <!-- CONTENU PRINCIPAL -->
@@ -134,7 +134,8 @@
             </div>
 
             <!-- NAV BAR -->
-            <div class="fixed bottom-8 left-1/2 -translate-x-1/2 w-[300px] h-16 bg-[#8E5442] rounded-full shadow-2xl flex items-center justify-around px-8 py-9 z-50">
+            <div class="fixed bottom-8 left-1/2 -translate-x-1/2 w-[300px] h-16 bg-[#8E5442] rounded-full shadow-2xl flex items-center justify-around px-8 py-9 z-50 border-4 border-[#554840]/100">
+
                 <a href="/accueil" class="w-16 h-14 bg-[#524539] rounded-t-[2.25rem] rounded-b-2xl flex items-center justify-center transition-all duration-200 group shadow-[0px_10px_30px_rgba(0,0,0,0.3)] active:scale-95">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-9 h-9 text-[#FFF9EF] group-hover:text-[#ABDDCC] drop-shadow-sm">
                         <path fill-rule="evenodd" d="M9.293 2.293a1 1 0 0 1 1.414 0l7 7A1 1 0 0 1 17 11h-1v6a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1v-3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-6H3a1 1 0 0 1-.707-1.707l7-7Z" clip-rule="evenodd" />

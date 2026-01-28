@@ -92,7 +92,7 @@
     <main class="flex-1">
         @include('layouts.navigation')
         {{ $header ?? '' }}
-        {{ $slot }}
+        @yield('content')
     </main>
 
     <!-- Footer -->
