@@ -14,9 +14,8 @@ Route::get('/', function () {
 })->name('home');
 
 // Liste commandes
-Route::get('/liste', [PosteController::class, 'index'])
-    ->middleware(['auth', 'verified'])->name('liste');
-
+Route::get('/liste', [CommandeController::class, 'liste'])
+    ->middleware('auth')->name('commande.liste');
 
 // AUTHENTIFICATION
 Route::middleware('auth')->group(function () {

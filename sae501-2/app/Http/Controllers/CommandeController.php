@@ -7,7 +7,9 @@ use App\Models\Visiteur;
 use App\Models\Commande;
 use App\Models\Chocolat;
 use App\Models\Email;
+use App\Models\Poste;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 class CommandeController extends Controller
 {
@@ -54,6 +56,16 @@ class CommandeController extends Controller
                 'statut' => 'en_production',
             ]);
 
+            // Assigner la commande au premier poste
+            \DB::table('commandes_postes')->insert([
+                'commande_id' => $commande->id,
+                'poste_id' => 1,
+                'date_entree' => now(),
+                'conforme' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
             Email::create([
                 'commande_id' => $commande->id,
                 'type' => 'confirmation',
@@ -76,5 +88,15 @@ class CommandeController extends Controller
             ->firstOrFail();
 
         return view('validation', compact('commande'));
+    }
+
+    public function liste()
+    {
+        $etapes = \App\Models\Poste::all();
+        $commandesParPoste = \App\Models\Poste::with(['commandes' => function($query) {
+            $query->with(['visiteur', 'chocolat']);
+        }])->get();
+
+        return view('liste', compact('etapes', 'commandesParPoste'));
     }
 }

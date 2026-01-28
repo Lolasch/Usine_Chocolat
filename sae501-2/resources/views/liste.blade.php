@@ -54,22 +54,75 @@
                 <aside class="bg-[var(--choco-brown)] text-white rounded-3xl p-4 flex-1">
                     <h2 class="text-lg mb-4">Étapes</h2>
 
-                <ul class="space-y-2">
+                                <ul class="space-y-2" id="etapesList">
                     @foreach ($etapes as $etape)
                         <li
                             class="
-                                px-4 py-2 rounded-2xl flex justify-between items-center
-                                {{ $loop->first ? 'bg-[var(--caramel-dark)] text-white' : 'opacity-80' }}
+                                px-4 py-2 rounded-2xl flex justify-between items-center cursor-pointer
+                                transition etape-item
+                                {{ $loop->first ? 'bg-[var(--caramel-dark)] text-white active' : 'opacity-80 bg-[var(--choco-brown)] text-white' }}
                             "
+                            data-poste-id="{{ $etape->id }}"
                         >
                             {{ $etape->nom }}
-
-                            @if ($loop->first)
-                                <span>✕</span>
-                            @endif
                         </li>
                     @endforeach
                 </ul>
+
+                <script>
+                    const commandesData = @json($commandesParPoste);
+
+                    function afficherCommandes(posteId) {
+                        const poste = commandesData.find(p => p.id == posteId);
+                        const container = document.querySelector('.space-y-4');
+
+                        if (!poste || !poste.commandes.length) {
+                            container.innerHTML = '<p class="text-gray-500">Aucune commande pour ce poste</p>';
+                            return;
+                        }
+
+                        container.innerHTML = poste.commandes.map(cmd => `
+                            <div class="bg-white rounded-3xl p-4 flex items-center justify-between shadow">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-10 h-10 bg-[var(--choco)] rounded-full flex items-center justify-center text-white">
+                                        🍫
+                                    </div>
+                                    <div>
+                                        <div class="flex gap-2 mb-1">
+                                            <span class="bg-[var(--caramel)] text-xs px-3 py-1 rounded-full">${cmd.numero_commande}</span>
+                                        </div>
+                                        <p class="font-bold">${cmd.chocolat.nom}</p>
+                                        <p class="text-sm text-gray-500">Nom de commande : ${cmd.visiteur.nom} ${cmd.visiteur.prenom}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+
+                    document.addEventListener('DOMContentLoaded', function() {
+                        document.querySelectorAll('.etape-item').forEach(item => {
+                            item.addEventListener('click', function() {
+                                const posteId = this.dataset.posteId;
+
+                                document.querySelectorAll('.etape-item').forEach(el => {
+                                    el.classList.remove('bg-[var(--caramel-dark)]', 'active');
+                                    el.classList.add('opacity-80', 'bg-[var(--choco-brown)]');
+                                });
+
+                                this.classList.add('bg-[var(--caramel-dark)]', 'active');
+                                this.classList.remove('opacity-80', 'bg-[var(--choco-brown)]');
+
+                                afficherCommandes(posteId);
+                            });
+                        });
+
+                        // Charger la première étape au chargement de la page
+                        const firstEtape = document.querySelector('.etape-item');
+                        if (firstEtape) {
+                            afficherCommandes(firstEtape.dataset.posteId);
+                        }
+                    });
+                </script>
 
                 </aside>
 
