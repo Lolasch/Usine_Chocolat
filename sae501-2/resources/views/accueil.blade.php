@@ -134,9 +134,9 @@
             <div class="mx-[5%]">
                 <video
                     src="/videos/motion.mp4"
-                    autoplay
                     loop
                     muted
+                    controls
                     playsinline
                     class="w-full h-full max-h-[200px] rounded-2xl object-cover shadow-2xl hover:shadow-3xl transition-all duration-300"
                 >
