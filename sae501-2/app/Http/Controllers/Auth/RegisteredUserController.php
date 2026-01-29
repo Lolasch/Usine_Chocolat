@@ -5,11 +5,13 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Equipe;
+use App\Models\Role;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
 
@@ -20,7 +22,8 @@ class RegisteredUserController extends Controller
      */
     public function create(): View
     {
-        return view('auth.register');
+        $roles = Role::all();
+        return view('auth.register', compact('roles'));
     }
 
     /**
@@ -38,28 +41,38 @@ class RegisteredUserController extends Controller
             'role_id' => ['required', 'exists:roles,id'],
         ]);
 
-        $user = User::create([
-            'nom' => $request->nom,
-            'prenom' => $request->prenom,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role_id' => $request->role_id,
-            'actif' => true,
-        ]);
+        // ✅ Déclarer $user en dehors de la transaction
+        $user = null;
 
-        // Si c'est un superviseur, créer une équipe pour lui
-        $role = $user->role;
-        if ($role && stripos($role->nom, 'superviseur') !== false) {
-            $equipe = Equipe::create([
-                'nom' => $user->prenom . ' ' . $user->nom,
+        DB::transaction(function () use ($request, &$user) {
+            $user = User::create([
+                'nom' => $request->nom,
+                'prenom' => $request->prenom,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'role_id' => $request->role_id,
+                'actif' => true,
             ]);
 
-            // Assigner l'équipe au superviseur
-            $user->equipes()->attach($equipe->id);
-        }
+            // 🆕 AUTO ÉQUIPE SUPERVISEUR (nom unique basé sur email)
+            $role = $user->role;
+            if ($role && stripos($role->nom, 'superviseur') !== false) {
+                $nomBase = strtolower(str_replace('@', '', explode('@', $user->email)[0]));
+                $nomEquipe = $nomBase;
+                $compteur = 1;
+
+                // Trouver nom unique
+                while (Equipe::where('nom', $nomEquipe)->exists()) {
+                    $nomEquipe = $nomBase . $compteur;
+                    $compteur++;
+                }
+
+                $equipe = Equipe::create(['nom' => $nomEquipe]);
+                $user->equipes()->attach($equipe->id);
+            }
+        });
 
         event(new Registered($user));
-
         Auth::login($user);
 
         return redirect('/accueil');

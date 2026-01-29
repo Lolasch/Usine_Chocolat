@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connexion – Chocolat</title>
+    <title>Inscription – Chocolat</title>
     <script src="https://cdn.tailwindcss.com"></script>
 
     <!-- GOOGLE FONT KAVOON -->
@@ -17,15 +17,15 @@
     <!-- Header -->
     <header class="bg-[#5a463a] py-6 flex justify-center">
         <img src="/images/logos/usine_choco_26_blanc2.svg"
-            alt="L'Usine Chocolat"
-            class="h-20 w-auto">
+             alt="L'Usine Chocolat"
+             class="h-20 w-auto">
     </header>
 
     <!-- Main -->
     <main class="flex-1 flex items-center justify-center relative overflow-hidden px-4
                  bg-[url('/images/autre/fond_auth.svg')] bg-cover bg-center bg-no-repeat">
 
-        <!-- Card Connexion -->
+        <!-- Card Inscription -->
         <div class="relative z-10 w-full max-w-md bg-[#8E5442] rounded-[4rem] p-10 shadow-xl border-4 border-[#ABDDCC]">
             <h1 class="text-center text-3xl font-medium text-[#FCE097] mb-8"
                 style="font-family: 'Kavoon', cursive;">
@@ -45,7 +45,7 @@
                         :value="old('nom')"
                         required
                         autofocus
-                        autocomplete="name" />
+                        autocomplete="family-name" />
                     <x-input-error :messages="$errors->get('nom')" class="mt-2" />
                 </div>
 
@@ -75,16 +75,19 @@
                     <x-input-error :messages="$errors->get('email')" class="mt-2" />
                 </div>
 
-                <!-- Rôle -->
+                <!-- 🆕 RÔLE : Dynamique avec $roles du contrôleur -->
                 <div>
                     <x-input-label for="role_id" :value="__('Rôle')" class="text-[#f6e3a1]" />
                     <select id="role_id"
                         name="role_id"
-                        class="block mt-1 w-full rounded-full bg-[#5a463a] text-white border border-gray-300 px-4 py-2"
+                        class="block mt-1 w-full rounded-full bg-[#5a463a] text-white border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-[#FCE097] focus:border-transparent"
                         required>
                         <option value="">-- Choisir un rôle --</option>
-                        <option value="2">Opérateur</option>
-                        <option value="1">Superviseur</option>
+                        @foreach($roles ?? [] as $role)
+                            <option value="{{ $role->id }}" {{ old('role_id') == $role->id ? 'selected' : '' }}>
+                                {{ $role->nom }}
+                            </option>
+                        @endforeach
                     </select>
                     <x-input-error :messages="$errors->get('role_id')" class="mt-2" />
                 </div>
@@ -115,12 +118,12 @@
 
                 <div class="flex items-center justify-between mt-6">
                     <a class="underline text-sm text-[#f6e3a1] hover:opacity-80"
-                        href="{{ route('login') }}">
+                       href="{{ route('login') }}">
                         {{ __('Déjà inscrit?') }}
                     </a>
 
                     <x-primary-button class="ms-4">
-                        {{ __('Register') }}
+                        {{ __('S\'inscrire') }}
                     </x-primary-button>
                 </div>
             </form>
@@ -132,8 +135,8 @@
         <div class="max-w-6xl mx-auto px-4">
             <div class="flex items-center justify-center space-x-16">
                 <img src="/images/logos/usine_choco_26_blanc2.svg"
-                    alt="logo usine"
-                    class="h-12 w-auto opacity-80 hover:opacity-100 transition-opacity">
+                     alt="logo usine"
+                     class="h-12 w-auto opacity-80 hover:opacity-100 transition-opacity">
 
                 <div class="text-center space-y-2 min-w-[320px]">
                     <p class="font-semibold text-md">
@@ -146,8 +149,8 @@
                 </div>
 
                 <img src="/images/logos/haguenau.png"
-                    alt="logo haguenau"
-                    class="h-12 w-auto opacity-80 hover:opacity-100 transition-opacity">
+                     alt="logo haguenau"
+                     class="h-12 w-auto opacity-80 hover:opacity-100 transition-opacity">
             </div>
         </div>
     </footer>

@@ -27,8 +27,6 @@ Route::middleware('auth')->group(function () {
 
 require __DIR__.'/auth.php';
 
-
-
 // VISITEURS
 Route::get('/accueil', function () {
     return view('accueil');
@@ -40,7 +38,6 @@ Route::post('/commandes', [CommandeController::class, 'store'])->name('commande.
 Route::get('/commande/{numero}/validation', [CommandeController::class, 'validation'])->name('commande.validation');
 Route::post('/commande/{commandeId}/supprimer', [CommandeController::class, 'supprimerCommande'])->name('commande.supprimer');
 Route::post('/commande/{commandeId}/prochainPoste', [CommandeController::class, 'prochainPoste'])->name('commande.prochainPoste');
-
 
 // ADMIN
 Route::middleware(['auth'])->group(function () {
@@ -56,6 +53,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/available-operators', [AdminController::class, 'getAvailableOperators'])->name('admin.availableOperators');
     Route::post('/admin/operators/{user}/add', [AdminController::class, 'addOperator'])->name('admin.addOperator');
     Route::post('/admin/operators/{user}/remove', [AdminController::class, 'removeOperator'])->name('admin.removeOperator');
+
+    // 🆕 Routes pour les équipes (admin uniquement)
+    Route::get('/admin/equipes', [AdminController::class, 'equipes'])->name('admin.equipes');
 });
 
 // API pour récupérer les commandes par poste (refresh automatique)
