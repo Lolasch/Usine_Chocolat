@@ -38,6 +38,7 @@ Route::post('/commandes', [CommandeController::class, 'store'])->name('commande.
 Route::get('/commande/{numero}/validation', [CommandeController::class, 'validation'])->name('commande.validation');
 Route::post('/commande/{commandeId}/supprimer', [CommandeController::class, 'supprimerCommande'])->name('commande.supprimer');
 Route::post('/commande/{commandeId}/prochainPoste', [CommandeController::class, 'prochainPoste'])->name('commande.prochainPoste');
+Route::post('/commande/{commandeId}/finaliser', [CommandeController::class, 'finaliserCommande'])->name('commande.finaliser');
 
 // ADMIN
 Route::middleware(['auth'])->group(function () {

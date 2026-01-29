@@ -56,15 +56,24 @@ class CommandeController extends Controller
                 'statut' => 'en_production',
             ]);
 
-            // Assigner la commande au premier poste
+            // Récupérer le premier poste actif (ordre le plus petit)
+            $premierPoste = Poste::where('actif', true)
+                ->orderBy('ordre')
+                ->first();
+
+            if (!$premierPoste) {
+                throw new \Exception('Aucun poste actif trouvé');
+            }
+
             \DB::table('commandes_postes')->insert([
                 'commande_id' => $commande->id,
-                'poste_id' => 1,
+                'poste_id' => $premierPoste->id, // ✅ ID réel du poste
                 'date_entree' => now(),
                 'conforme' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
+
 
             Email::create([
                 'commande_id' => $commande->id,
@@ -109,7 +118,7 @@ class CommandeController extends Controller
         return response()->json(['success' => true, 'message' => 'Commande supprimée']);
     }
 
-public function prochainPoste($commandeId)
+    public function prochainPoste($commandeId)
     {
         $commande = Commande::findOrFail($commandeId);
 
@@ -151,4 +160,34 @@ public function prochainPoste($commandeId)
 
         return response()->json(['success' => true, 'message' => 'Commande passée au poste suivant']);
     }
+    public function finaliserCommande($commandeId)
+    {
+        $commande = Commande::findOrFail($commandeId);
+
+        $postActuel = DB::table('commandes_postes')
+            ->where('commande_id', $commandeId)
+            ->whereNull('date_sortie')
+            ->first();
+
+        if (!$postActuel) {
+            return response()->json(['success' => false, 'message' => 'Poste actuel introuvable']);
+        }
+
+        // Fermer le dernier poste
+        DB::table('commandes_postes')
+            ->where('id', $postActuel->id)
+            ->update(['date_sortie' => now()]);
+
+        // Marquer la commande comme terminée et livrée
+        $commande->update([
+            'statut' => 'finie_livree',
+            'date_commande_fin' => now()
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Commande finalisée et livrée au client !'
+        ]);
+    }
+
 }
