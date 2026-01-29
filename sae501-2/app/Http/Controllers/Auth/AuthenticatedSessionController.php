@@ -28,7 +28,7 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('liste', absolute: false));
+        return redirect()->intended(route('commande.liste', absolute: false));
     }
 
     /**

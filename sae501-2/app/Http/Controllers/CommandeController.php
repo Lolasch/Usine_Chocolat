@@ -92,11 +92,63 @@ class CommandeController extends Controller
 
     public function liste()
     {
-        $etapes = \App\Models\Poste::all();
-        $commandesParPoste = \App\Models\Poste::with(['commandes' => function($query) {
+        $etapes = Poste::with(['commandes' => function($query) {
             $query->with(['visiteur', 'chocolat']);
-        }])->get();
+        }])->orderBy('ordre')->get();
+
+        $commandesParPoste = $etapes;
 
         return view('liste', compact('etapes', 'commandesParPoste'));
+    }
+
+    public function supprimerCommande($commandeId)
+    {
+        $commande = Commande::findOrFail($commandeId);
+        $commande->delete();
+
+        return response()->json(['success' => true, 'message' => 'Commande supprimée']);
+    }
+
+public function prochainPoste($commandeId)
+    {
+        $commande = Commande::findOrFail($commandeId);
+
+        $postActuel = DB::table('commandes_postes')
+            ->where('commande_id', $commandeId)
+            ->whereNull('date_sortie')
+            ->first();
+
+        if (!$postActuel) {
+            return response()->json(['success' => false, 'message' => 'Poste actuel introuvable']);
+        }
+
+        // Récupérer le poste actuel pour avoir son ordre
+        $posteActuelModel = Poste::find($postActuel->poste_id);
+
+        // Chercher le prochain poste par ordre
+        $prochainPoste = Poste::where('ordre', '>', $posteActuelModel->ordre)
+                                ->orderBy('ordre')
+                                ->first();
+
+        if (!$prochainPoste) {
+            return response()->json(['success' => false, 'message' => 'Pas de poste suivant']);
+        }
+
+        // Fermer le poste actuel
+        DB::table('commandes_postes')
+            ->where('id', $postActuel->id)
+            ->update(['date_sortie' => now()]);
+
+        // Créer l'entrée au prochain poste
+        DB::table('commandes_postes')->insert([
+            'commande_id' => $commandeId,
+            'poste_id' => $prochainPoste->id,
+            'date_entree' => now(),
+            'conforme' => 1,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return response()->json(['success' => true, 'message' => 'Commande passée au poste suivant']);
     }
 }

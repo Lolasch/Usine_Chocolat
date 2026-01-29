@@ -5,10 +5,11 @@ use App\Http\Controllers\CommandeController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PosteController;
 use Illuminate\Support\Facades\Route;
+use App\Models\Poste;
 
 Route::get('/', function () {
     if (auth()->check()) {
-        return redirect('/liste');
+        return redirect()->route('commande.liste');
     }
     return redirect('/login');
 })->name('home');
@@ -37,6 +38,9 @@ Route::get('/accueil', function () {
 Route::get('/formulaire', [CommandeController::class, 'formulaire'])->name('commande.formulaire');
 Route::post('/commandes', [CommandeController::class, 'store'])->name('commande.store');
 Route::get('/commande/{numero}/validation', [CommandeController::class, 'validation'])->name('commande.validation');
+Route::post('/commande/{commandeId}/supprimer', [CommandeController::class, 'supprimerCommande'])->name('commande.supprimer');
+Route::post('/commande/{commandeId}/prochainPoste', [CommandeController::class, 'prochainPoste'])->name('commande.prochainPoste');
+
 
 // ADMIN
 Route::middleware(['auth'])->group(function () {
@@ -53,3 +57,12 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/admin/operators/{user}/add', [AdminController::class, 'addOperator'])->name('admin.addOperator');
     Route::post('/admin/operators/{user}/remove', [AdminController::class, 'removeOperator'])->name('admin.removeOperator');
 });
+
+// API pour récupérer les commandes par poste (refresh automatique)
+Route::get('/api/commandes', function() {
+    $etapes = Poste::with(['commandes' => function($query) {
+        $query->with(['visiteur', 'chocolat']);
+    }])->orderBy('ordre')->get();
+
+    return response()->json($etapes);
+})->middleware('auth');

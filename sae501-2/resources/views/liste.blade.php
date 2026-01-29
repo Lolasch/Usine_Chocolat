@@ -71,6 +71,7 @@
 
                 <script>
                     const commandesData = @json($commandesParPoste);
+                    let refreshInterval;
 
                     function afficherCommandes(posteId) {
                         const poste = commandesData.find(p => p.id == posteId);
@@ -83,11 +84,10 @@
 
                         container.innerHTML = poste.commandes.map(cmd => `
                             <div class="bg-white rounded-3xl p-4 flex items-center justify-between shadow">
-                                <div class="flex items-center gap-4">
+                                <div class="flex items-center gap-4 flex-1">
                                     <div class="w-10 h-10 bg-[var(--choco)] rounded-full flex items-center justify-center text-white">
-                                        🍫
                                     </div>
-                                    <div>
+                                    <div class="flex-1">
                                         <div class="flex gap-2 mb-1">
                                             <span class="bg-[var(--caramel)] text-xs px-3 py-1 rounded-full">${cmd.numero_commande}</span>
                                         </div>
@@ -95,32 +95,114 @@
                                         <p class="text-sm text-gray-500">Nom de commande : ${cmd.visiteur.nom} ${cmd.visiteur.prenom}</p>
                                     </div>
                                 </div>
+                                <div class="flex gap-3">
+                                    <!-- Bouton Suivant -->
+                                    <button onclick="prochainPoste(${cmd.id})" class="w-12 h-12 flex items-center justify-center bg-[#BFE8D8] rounded-tl-[2.25rem] rounded-tr-[2.25rem] rounded-bl-3xl rounded-br-3xl hover:brightness-95 transition" aria-label="Suivant">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-[#2F3A36]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                    </button>
+
+                                    <!-- Bouton Supprimer -->
+                                    <button onclick="supprimerCommande(${cmd.id})" class="w-12 h-12 flex items-center justify-center bg-[#BFE8D8] rounded-tl-[2.25rem] rounded-tr-[2.25rem] rounded-bl-3xl rounded-br-3xl hover:brightness-95 transition" aria-label="Supprimer">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-[#8B4A3A]" fill="none" viewBox="0 0 20 20" stroke="currentColor" stroke-width="2">
+                                            <path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 0 0 6 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 1 0 .23 1.482l.149-.022.841 10.518A2.75 2.75 0 0 0 7.596 19h4.807a2.75 2.75 0 0 0 2.742-2.53l.841-10.52.149.023a.75.75 0 0 0 .23-1.482A41.03 41.03 0 0 0 14 4.193V3.75A2.75 2.75 0 0 0 11.25 1h-2.5ZM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4ZM8.58 7.72a.75.75 0 0 0-1.5.06l.3 7.5a.75.75 0 1 0 1.5-.06l-.3-7.5Zm4.34.06a.75.75 0 1 0-1.5-.06l-.3 7.5a.75.75 0 1 0 1.5.06l.3-7.5Z" clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
+                                </div>
                             </div>
                         `).join('');
                     }
 
+                    function supprimerCommande(commandeId) {
+                        if (!confirm('Êtes-vous sûr de vouloir supprimer cette commande ?')) return;
+
+                        fetch(`/commande/${commandeId}/supprimer`, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                                'Content-Type': 'application/json'
+                            }
+                        }).then(r => r.json()).then(data => {
+                            if (data.success) {
+                                rafraichirDonnees();
+                            }
+                        });
+                    }
+
+                    function prochainPoste(commandeId) {
+                        fetch(`/commande/${commandeId}/prochainPoste`, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                                'Content-Type': 'application/json'
+                            }
+                        }).then(r => r.json()).then(data => {
+                            if (data.success) {
+                                rafraichirDonnees();
+                            } else {
+                                alert(data.message);
+                            }
+                        });
+                    }
+
+                    function rafraichirDonnees() {
+                        fetch('/api/commandes')
+                            .then(r => r.json())
+                            .then(data => {
+                                // Mettre à jour commandesData globalement
+                                Object.assign(commandesData, data);
+
+                                // Rafraîchir l'affichage du poste actif
+                                const activeEtape = document.querySelector('.etape-item.active');
+                                if (activeEtape) {
+                                    afficherCommandes(activeEtape.dataset.posteId);
+                                    mettreAJourStats(activeEtape.dataset.posteId);
+                                }
+                            })
+                            .catch(err => console.error('Erreur rafraîchissement:', err));
+                    }
+                    function mettreAJourStats(posteId) {
+                        const poste = commandesData.find(p => p.id == posteId);
+
+                        if (poste) {
+                            const nbCmd = poste.commandes.length;
+                            const tempsMoyen = poste.commandes.length > 0
+                                ? (poste.commandes.reduce((acc, cmd) => acc + (cmd.temps_moyen || 0), 0) / nbCmd).toFixed(2)
+                                : '0.00';
+
+                            document.getElementById('etapeNameStats').textContent = poste.nom;
+                            document.getElementById('etapeNameStats2').textContent = poste.nom;
+                            document.getElementById('nbCommandes').textContent = nbCmd;
+                            document.getElementById('tempsMoyen').textContent = tempsMoyen;
+                        }
+                    }
                     document.addEventListener('DOMContentLoaded', function() {
                         document.querySelectorAll('.etape-item').forEach(item => {
                             item.addEventListener('click', function() {
-                                const posteId = this.dataset.posteId;
+                                document.querySelectorAll('.etape-item').forEach(el => el.classList.remove('active', 'bg-[var(--caramel-dark)]', 'text-white'));
+                                document.querySelectorAll('.etape-item').forEach(el => el.classList.add('opacity-80', 'bg-[var(--choco-brown)]', 'text-white'));
 
-                                document.querySelectorAll('.etape-item').forEach(el => {
-                                    el.classList.remove('bg-[var(--caramel-dark)]', 'active');
-                                    el.classList.add('opacity-80', 'bg-[var(--choco-brown)]');
-                                });
-
-                                this.classList.add('bg-[var(--caramel-dark)]', 'active');
+                                this.classList.add('active', 'bg-[var(--caramel-dark)]', 'text-white');
                                 this.classList.remove('opacity-80', 'bg-[var(--choco-brown)]');
 
-                                afficherCommandes(posteId);
+                                afficherCommandes(this.dataset.posteId);
+                                mettreAJourStats(this.dataset.posteId);
                             });
                         });
 
-                        // Charger la première étape au chargement de la page
                         const firstEtape = document.querySelector('.etape-item');
                         if (firstEtape) {
-                            afficherCommandes(firstEtape.dataset.posteId);
+                            firstEtape.click();
                         }
+
+                        // Rafraîchir les données toutes les 2 secondes
+                        refreshInterval = setInterval(rafraichirDonnees, 2000);
+                    });
+
+                    // Arrêter le refresh si l'utilisateur quitte la page
+                    window.addEventListener('beforeunload', () => {
+                        clearInterval(refreshInterval);
                     });
                 </script>
 
@@ -153,50 +235,12 @@
 
                     {{-- STATS --}}
                     <div class="text-sm text-gray-600 mb-4">
-                        <p>Temps moyen de l’étape “Non traitées” : 13.51</p>
-                        <p>Nombre de commandes pour l’étape “Non traitées” : 17</p>
+                        <p>Temps moyen de l'étape "<span id="etapeNameStats">Non traitées</span>" : <span id="tempsMoyen">--</span></p>
+                        <p>Nombre de commandes pour l'étape "<span id="etapeNameStats2">Non traitées</span>" : <span id="nbCommandes">--</span></p>
                     </div>
 
                     {{-- COMMANDES --}}
                     <div class="space-y-4 overflow-y-auto max-h-[420px] pr-2">
-
-                        <div class="bg-white rounded-3xl p-4 flex items-center justify-between shadow">
-                            <div class="flex items-center gap-4">
-                                <div class="w-10 h-10 bg-[var(--choco)] rounded-full flex items-center justify-center text-white">
-                                    🍫
-                                </div>
-                                <div>
-                                    <div class="flex gap-2 mb-1">
-                                        <span class="bg-[var(--caramel)] text-xs px-3 py-1 rounded-full">HZ0H6AZ</span>
-                                        <span class="bg-[var(--caramel-dark)] text-xs px-3 py-1 rounded-full text-white">
-                                            Temps dans l’étape : 15.02 minutes
-                                        </span>
-                                    </div>
-                                    <p class="font-bold">Chocolat au lait aux amandes</p>
-                                    <p class="text-sm text-gray-500">Nom de commande : Lola SCHMITT</p>
-                                </div>
-                            </div>
-                            <span class="text-[var(--caramel-dark)] text-xl">⚠️</span>
-                        </div>
-
-                        <div class="bg-white rounded-3xl p-4 flex items-center justify-between shadow">
-                            <div class="flex items-center gap-4">
-                                <div class="w-10 h-10 bg-[var(--choco)] rounded-full flex items-center justify-center text-white">
-                                    🍫
-                                </div>
-                                <div>
-                                    <div class="flex gap-2 mb-1">
-                                        <span class="bg-[var(--caramel)] text-xs px-3 py-1 rounded-full">HZP83FU</span>
-                                        <span class="bg-[var(--caramel-dark)] text-xs px-3 py-1 rounded-full text-white">
-                                            Temps dans l’étape : 8.49 minutes
-                                        </span>
-                                    </div>
-                                    <p class="font-bold">Chocolat au lait aux amandes</p>
-                                    <p class="text-sm text-gray-500">Nom de commande : Lola SCHMITT</p>
-                                </div>
-                            </div>
-                        </div>
-
                     </div>
 
                 </div>

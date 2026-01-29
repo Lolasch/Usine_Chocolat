@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class Poste
- * 
+ *
  * @property int $id
  * @property string $nom
  * @property int $ordre
@@ -20,7 +20,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property bool $actif
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * 
+ *
  * @property Collection|Commande[] $commandes
  * @property Collection|NonConformite[] $non_conformites
  *
@@ -44,11 +44,13 @@ class Poste extends Model
 	];
 
 	public function commandes()
-	{
-		return $this->belongsToMany(Commande::class, 'commandes_postes')
-					->withPivot('id', 'date_entree', 'date_sortie', 'conforme')
-					->withTimestamps();
-	}
+    {
+        return $this->belongsToMany(Commande::class, 'commandes_postes')
+                    ->withPivot('id', 'date_entree', 'date_sortie', 'conforme')
+                    ->whereNull('commandes_postes.date_sortie')
+                    ->with(['visiteur', 'chocolat'])
+                    ->withTimestamps();
+    }
 
 	public function non_conformites()
 	{
