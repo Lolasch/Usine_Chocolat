@@ -6,7 +6,7 @@
     <div class="max-w-[1400px] mx-auto p-6">
 
         {{-- HEADER --}}
-        <div class="bg-[var(--choco)] rounded-full px-6 py-4 text-white mb-6 font-kavoon">
+        <div class="bg-[var(--choco)] rounded-full px-6 py-4 text-[var(--choco-beige)] mb-6 font-kavoon">
             <div class="grid grid-cols-1 gap-4 items-center sm:grid-cols-3 sm:gap-0 sm:text-center">
 
                 <div class="flex items-center gap-4 sm:justify-start">
@@ -51,7 +51,7 @@
             {{-- COLONNE GAUCHE --}}
             <div class="w-56 flex flex-col gap-3 font-kavoon">
 
-                <aside class="bg-[var(--choco-brown)] text-white rounded-3xl p-4 flex-1">
+                <aside class="bg-[var(--choco-brown)] text-[var(--choco-beige)] rounded-3xl p-4 flex-1">
                     <h2 class="text-lg mb-4">Étapes</h2>
 
                                 <ul class="space-y-2" id="etapesList">
@@ -60,7 +60,7 @@
                             class="
                                 px-4 py-2 rounded-2xl flex justify-between items-center cursor-pointer
                                 transition etape-item
-                                {{ $loop->first ? 'bg-[var(--caramel-dark)] text-white active' : 'opacity-80 bg-[var(--choco-brown)] text-white' }}
+                                {{ $loop->first ? 'bg-[var(--caramel-dark)] text-[var(--choco-beige)] active' : 'opacity-80 bg-[var(--choco-brown)] text-[var(--choco-beige)]' }}
                             "
                             data-poste-id="{{ $etape->id }}"
                         >
@@ -70,6 +70,7 @@
                 </ul>
 
                 <script>
+                    let searchCommande = '';
                     const commandesData = @json($commandesParPoste);
                     let refreshInterval;
 
@@ -88,21 +89,48 @@
                             return;
                         }
 
-                        container.innerHTML = poste.commandes.map(cmd => {
+                        const commandesFiltrees = poste.commandes.filter(cmd => {
+                            if (!searchCommande) return true;
+
+                            const numero = (cmd.numero_commande || '').toLowerCase();
+                            const nom = (cmd.visiteur?.nom || '').toLowerCase();
+                            const prenom = (cmd.visiteur?.prenom || '').toLowerCase();
+
+                            return (
+                                numero.includes(searchCommande) ||
+                                nom.includes(searchCommande) ||
+                                prenom.includes(searchCommande)
+                            );
+                        });
+
+                        if (!commandesFiltrees.length) {
+                            container.innerHTML = `
+                                <div class="w-full flex justify-center py-8">
+                                    <div class="bg-white rounded-3xl p-4 border border-[var(--choco)] shadow-[4px_4px_0_var(--choco)] w-fit mx-auto">
+                                        <p class="text-[var(--choco-brown)] font-kavoon text-base font-medium m-0 px-4 text-center">
+                                            Aucune commande trouvée
+                                        </p>
+                                    </div>
+                                </div>
+                            `;
+                            return;
+                        }
+
+                        container.innerHTML = commandesFiltrees.map(cmd => {
                             // Vérifier si c'est le dernier poste
                             const estDernierPoste = !commandesData.find(p => p.ordre > poste.ordre);
 
                             return `
                                 <div class="bg-white rounded-3xl p-4 flex items-center justify-between border border-[var(--choco)]">
                                     <div class="flex items-center gap-4 flex-1">
-                                        <div class="w-10 h-10 bg-[var(--choco)] rounded-full flex items-center justify-center text-white">
+                                        <div class="w-10 h-10 bg-[var(--choco)] rounded-full flex items-center justify-center text-[var(--choco-beige)]">
                                         </div>
                                         <div class="flex-1">
                                             <div class="flex gap-2 mb-1">
                                                 <span class="bg-[var(--caramel)] text-xs font-medium px-3 py-1 rounded-full text-[var(--choco-brown)]">${cmd.numero_commande}</span>
                                             </div>
                                             <p class="font-medium text-lg font-kavoon text-[var(--choco-brown)]">${cmd.chocolat.nom}</p>
-                                            <p class="text-md text-[var(--choco-brown)]">
+                                            <p class="text-md font-medium text-[var(--choco-brown)]">
                                                 Nom de commande :
                                                 <span class="font-kavoon text-[var(--choco-brown)]">${cmd.visiteur.nom} ${cmd.visiteur.prenom}</span>
                                             </p>
@@ -111,15 +139,15 @@
                                     <div class="flex gap-3">
                                         <!-- Bouton Finaliser ou Suivant -->
                                         <button onclick="${estDernierPoste ? 'finaliserCommande(' + cmd.id + ')' : 'prochainPoste(' + cmd.id + ')'}"
-                                                class="flex items-center justify-center ${estDernierPoste ? 'w-24 px-2' : 'w-12'} bg-[#BFE8D8] hover:brightness-95 rounded-tl-[2.25rem] rounded-tr-[2.25rem] rounded-bl-3xl rounded-br-3xl transition text-xs font-kavoon text-[#2F3A36]"
+                                                class="flex items-center justify-center ${estDernierPoste ? 'w-24 px-2' : 'w-12'} bg-[var(--green)] hover:brightness-95 rounded-tl-[2.25rem] rounded-tr-[2.25rem] rounded-bl-3xl rounded-br-3xl transition text-xs font-kavoon text-[var(--choco)]"
                                                 aria-label="${estDernierPoste ? 'Finaliser' : 'Suivant'}">
                                             ${estDernierPoste ? 'Finaliser' :
-                                                '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-[#2F3A36]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>'
+                                                '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-[var(--choco-brown)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>'
                                             }
                                         </button>
                                         <!-- Bouton Supprimer -->
-                                        <button onclick="supprimerCommande(${cmd.id})" class="w-12 h-12 flex items-center justify-center bg-[#BFE8D8] rounded-tl-[2.25rem] rounded-tr-[2.25rem] rounded-bl-3xl rounded-br-3xl hover:brightness-95 transition" aria-label="Supprimer">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-[#8B4A3A]" fill="none" viewBox="0 0 20 20" stroke="currentColor" stroke-width="2">
+                                        <button onclick="supprimerCommande(${cmd.id})" class="w-12 h-12 flex items-center justify-center bg-[var(--green)] rounded-tl-[2.25rem] rounded-tr-[2.25rem] rounded-bl-3xl rounded-br-3xl hover:brightness-95 transition" aria-label="Supprimer">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-[var(--choco-brown)] fill="none" viewBox="0 0 20 20" stroke="currentColor" stroke-width="2">
                                                 <path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 0 0 6 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 1 0 .23 1.482l.149-.022.841 10.518A2.75 2.75 0 0 0 7.596 19h4.807a2.75 2.75 0 0 0 2.742-2.53l.841-10.52.149.023a.75.75 0 0 0 .23-1.482A41.03 41.03 0 0 0 14 4.193V3.75A2.75 2.75 0 0 0 11.25 1h-2.5ZM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4ZM8.58 7.72a.75.75 0 0 0-1.5.06l.3 7.5a.75.75 0 1 0 1.5-.06l-.3-7.5Zm4.34.06a.75.75 0 1 0-1.5-.06l-.3 7.5a.75.75 0 1 0 1.5.06l.3-7.5Z" clip-rule="evenodd" />
                                             </svg>
                                         </button>
@@ -127,6 +155,19 @@
                                 </div>
                             `;
                         }).join('');
+                    }
+
+                    function mettreAJourAffichage() {
+                        searchCommande = document
+                            .getElementById('searchCommandeInput')
+                            .value
+                            .toLowerCase();
+
+                        const activeEtape = document.querySelector('.etape-item.active');
+                        if (activeEtape) {
+                            afficherCommandes(activeEtape.dataset.posteId);
+                            mettreAJourStats(activeEtape.dataset.posteId);
+                        }
                     }
 
                     // Nouvelle fonction pour finaliser
@@ -160,10 +201,10 @@
                                 <h3 class="text-2xl font-kavoon text-center text-[var(--choco-brown)] mb-4 font-bold">${titre}</h3>
                                 <p class="text-center text-[var(--choco-brown)] mb-8 font-medium">${message}</p>
                                 <div class="flex gap-4">
-                                    <button id="cancelBtn" class="flex-1 bg-[var(--choco-brown)] hover:bg-[var(--choco)] text-white py-3 px-6 rounded-2xl font-kavoon transition-all duration-200">
+                                    <button id="cancelBtn" class="flex-1 bg-[var(--choco-brown)] hover:bg-[var(--choco)] text-[var(--choco-beige)] py-3 px-6 rounded-2xl font-kavoon transition-all duration-200">
                                         Annuler
                                     </button>
-                                    <button id="confirmBtn" class="flex-1 bg-[var(--green)] hover:bg-green-600 text-white py-3 px-6 rounded-2xl font-kavoon transition-all duration-200">
+                                    <button id="confirmBtn" class="flex-1 bg-[var(--green)] hover:bg-green-600 text-[var(--choco-beige)] py-3 px-6 rounded-2xl font-kavoon transition-all duration-200">
                                         Confirmer
                                     </button>
                                 </div>
@@ -188,14 +229,14 @@
                         popup.innerHTML = `
 <div class="bg-white rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl animate-pulse [animation-duration:3s]">
                                 <div class="w-20 h-20  bg-[var(--green)]  rounded-2xl flex items-center justify-center mx-auto mb-6">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 text-[var(--choco-beige)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                     </svg>
                                 </div>
                                 <h3 class="text-2xl font-kavoon text-center text-[var(--choco-brown)] mb-4 font-bold">Commande Finalisée !</h3>
                                 <p class="text-center text-[var(--choco-brown)] mb-8 font-medium">${message}</p>
                                 <button onclick="this.parentElement.parentElement.remove()"
-                                        class="w-full  bg-[var(--green)]  text-white py-3 px-6 rounded-2xl font-kavoon text-lg transition-all duration-200 transform hover:scale-[1.02]">
+                                        class="w-full  bg-[var(--green)]  text-[var(--choco-beige)] py-3 px-6 rounded-2xl font-kavoon text-lg transition-all duration-200 transform hover:scale-[1.02]">
                                     Fermer
                                 </button>
                             </div>
@@ -280,10 +321,10 @@
                     document.addEventListener('DOMContentLoaded', function() {
                         document.querySelectorAll('.etape-item').forEach(item => {
                             item.addEventListener('click', function() {
-                                document.querySelectorAll('.etape-item').forEach(el => el.classList.remove('active', 'bg-[var(--caramel-dark)]', 'text-white'));
-                                document.querySelectorAll('.etape-item').forEach(el => el.classList.add('opacity-80', 'bg-[var(--choco-brown)]', 'text-white'));
+                                document.querySelectorAll('.etape-item').forEach(el => el.classList.remove('active', 'bg-[var(--caramel-dark)]', 'text-[var(--choco-beige)]'));
+                                document.querySelectorAll('.etape-item').forEach(el => el.classList.add('opacity-80', 'bg-[var(--choco-brown)]', 'text-[var(--choco-beige)]'));
 
-                                this.classList.add('active', 'bg-[var(--caramel-dark)]', 'text-white');
+                                this.classList.add('active', 'bg-[var(--caramel-dark)]', 'text-[var(--choco-beige)]');
                                 this.classList.remove('opacity-80', 'bg-[var(--choco-brown)]');
 
                                 afficherCommandes(this.dataset.posteId);
@@ -317,18 +358,37 @@
 
                     {{-- SEARCH / ACTIONS --}}
                     <div class="flex gap-4 mb-4">
-                        <div class="flex items-center gap-2 bg-[var(--green)] px-4 py-2 rounded-full flex-1">
-                            🔍
-                            <input type="text"
-                                   placeholder="Rechercher une commande"
-                                   class="bg-transparent outline-none w-full text-sm">
+                        <div class="flex items-center gap-4 bg-[var(--green)] px-6 py-3 rounded-full flex-1
+                                    border-2 border-[var(--choco-brown)]">
+
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                class="w-6 h-6 text-[var(--choco-brown)] flex-shrink-0"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                                stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M21 21l-4.35-4.35m1.85-5.4a7.25 7.25 0 11-14.5 0 7.25 7.25 0 0114.5 0z" />
+                            </svg>
+
+                            <input
+                                type="text"
+                                id="searchCommandeInput"
+                                placeholder="Rechercher par nom, prénom ou numéro de commande"
+                                class="bg-transparent w-full text-[15px] font-medium
+                                    text-[var(--choco-brown)]
+                                    placeholder:text-[var(--choco-brown)] placeholder:opacity-80
+                                    border-0 outline-none focus:ring-0 focus:outline-none"
+                                onkeyup="mettreAJourAffichage()"
+                            />
                         </div>
+
 
                         <button class="bg-white px-4 py-2 rounded-full flex items-center gap-2">
                             ⚙️ Filtrer
                         </button>
 
-                        <button class="bg-[var(--caramel)] px-4 py-2 rounded-full flex items-center gap-2 text-white">
+                        <button class="bg-[var(--caramel)] px-4 py-2 rounded-full flex items-center gap-2 text-[var(--choco-beige)]">
                             ⚠️ Signaler une panne
                         </button>
                     </div>

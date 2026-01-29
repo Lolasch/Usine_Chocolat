@@ -47,6 +47,12 @@
 
             <!-- Navigation -->
             <nav class="hidden md:flex items-center gap-3 font-kavoon font-medium">
+                <a href="{{ url('/liste') }}"
+                class="bg-[var(--choco-gold)] text-[var(--choco-brown)]
+                        px-6 py-2 rounded-full
+                        text-lg hover-caramel transition-colors duration-300">
+                    Commandes
+                </a>
                 <a href="#"
                 class="bg-[var(--choco-gold)] text-[var(--choco-brown)]
                         px-6 py-2 rounded-full
@@ -85,6 +91,23 @@
                     </svg>
                 </button>
             </div>
+            <!-- MENU MOBILE -->
+            <div id="mobile-menu"
+                class="md:hidden hidden bg-[var(--choco-brown)] text-[var(--choco-beige)] px-6 py-4 space-y-3 font-kavoon font-medium">
+
+                <a href="{{ url('/liste') }}" class="block text-lg">Commandes</a>
+                <a href="#" class="block text-lg">Frigo</a>
+                <a href="#" class="block text-lg">Statistiques</a>
+                <a href="{{ url('/admin') }}" class="block text-lg">Admin</a>
+
+                <button class="flex items-center gap-2 text-lg">
+                    <svg class="w-7 h-7 mx-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                </button>
+            </div>
+
         </div>
     </header>
 

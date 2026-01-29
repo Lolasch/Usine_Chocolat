@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class CommandesPoste
- * 
+ *
  * @property int $id
  * @property int $commande_id
  * @property int $poste_id
@@ -20,7 +20,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property bool|null $conforme
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * 
+ *
  * @property Commande $commande
  * @property Poste $poste
  *
