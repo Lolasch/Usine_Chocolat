@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CommandeController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PosteController;
+use App\Http\Controllers\StockController;
 use Illuminate\Support\Facades\Route;
 use App\Models\Poste;
 
@@ -69,3 +70,15 @@ Route::get('/api/commandes', function() {
 })->middleware('auth');
 
 Route::post('/objectifs', [CommandeController::class, 'storeObjectif'])->name('objectifs.store');
+
+
+Route::middleware('auth')->group(function () {
+    Route::get('/stocks', [StockController::class, 'index'])
+        ->name('stocks.index');
+
+    Route::post('/stocks/add', [StockController::class, 'add'])
+        ->name('stocks.add');
+
+    Route::post('/stocks/add-qr', [StockController::class, 'addViaQr'])
+    ->name('stocks.add.qr');
+});

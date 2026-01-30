@@ -103,13 +103,25 @@
                                 required
                                 class="w-full h-12 sm:h-14 px-4 border-0 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#A8C9C3] bg-[#FFF9EF] text-[#8B7355] text-base appearance-none cursor-pointer font-medium">
                             <option value="">-- Choix du chocolat --</option>
-                            @foreach($chocolats as $chocolat)
-                                <option value="{{ $chocolat->id }}"
-                                        class="text-[#554840]"
-                                        {{ old('type_chocolat') == $chocolat->id ? 'selected' : '' }}>
-                                    {{ $chocolat->nom }}
-                                </option>
-                            @endforeach
+                                @foreach($chocolats as $chocolat)
+
+                                    @php
+                                        $rupture = !$chocolat->disponible
+                                            || !$chocolat->stock
+                                            || $chocolat->stock->quantite <= 0
+                                            || !$chocolat->stock->actif;
+                                    @endphp
+
+                                    <option value="{{ $chocolat->id }}"
+                                        class="{{ $rupture ? 'text-gray-400' : 'text-[#554840]' }}"
+                                        {{ $rupture ? 'disabled' : '' }}
+                                        {{ old('type_chocolat') == $chocolat->id ? 'selected' : '' }}
+                                    >
+                                        {{ $chocolat->nom }}
+                                        {{ $rupture ? ' — Indisponible' : '' }}
+                                    </option>
+
+                                @endforeach
                         </select>
                     </div>
 

@@ -9,6 +9,7 @@ use App\Models\Chocolat;
 use App\Models\Email;
 use App\Models\Poste;
 use App\Models\Objectif;
+use App\Models\ConsommationsStock;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 
@@ -16,7 +17,8 @@ class CommandeController extends Controller
 {
     public function formulaire()
     {
-        $chocolats = Chocolat::where('disponible', true)->get();
+        $chocolats = Chocolat::with('stock')->get();
+
         return view('formulaire', compact('chocolats'));
     }
 
@@ -35,7 +37,19 @@ class CommandeController extends Controller
             'type_chocolat.required' => 'Veuillez choisir un type de chocolat.',
         ]);
 
+
+        $chocolat = Chocolat::with('stock')->findOrFail($validated['type_chocolat']);
+
+        if (!$chocolat->stock || $chocolat->stock->quantite <= 0) {
+            return back()
+                ->withInput()
+                ->withErrors([
+                    'type_chocolat' => 'Ce chocolat est en rupture de stock.'
+                ]);
+        }
+
         try {
+
             $visiteur = Visiteur::firstOrCreate(
                 ['email' => $validated['email']],
                 [
@@ -44,51 +58,72 @@ class CommandeController extends Controller
                 ]
             );
 
-            do {
-                $numeroCommande = strtoupper(Str::random(7));
-            } while (Commande::where('numero_commande', $numeroCommande)->exists());
+            DB::transaction(function () use ($validated, $visiteur, &$commande) {
 
-            $commande = Commande::create([
-                'numero_commande' => $numeroCommande,
-                'visiteur_id' => $visiteur->id,
-                'chocolat_id' => $validated['type_chocolat'],
-                'allergie' => $validated['allergies'],
-                'date_commande_debut' => now(),
-                'statut' => 'en_production',
-            ]);
+                $chocolat = Chocolat::with('stock')
+                    ->lockForUpdate()
+                    ->findOrFail($validated['type_chocolat']);
 
-            // Récupérer le premier poste actif (ordre le plus petit)
-            $premierPoste = Poste::where('actif', true)
-                ->orderBy('ordre')
-                ->first();
+                $stock = $chocolat->stock;
 
-            if (!$premierPoste) {
-                throw new \Exception('Aucun poste actif trouvé');
-            }
+                if (!$stock || $stock->quantite <= 0) {
+                    throw new \Exception('Stock insuffisant');
+                }
 
-            \DB::table('commandes_postes')->insert([
-                'commande_id' => $commande->id,
-                'poste_id' => $premierPoste->id, // ✅ ID réel du poste
-                'date_entree' => now(),
-                'conforme' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+                do {
+                    $numeroCommande = strtoupper(Str::random(7));
+                } while (Commande::where('numero_commande', $numeroCommande)->exists());
+
+                $commande = Commande::create([
+                    'numero_commande' => $numeroCommande,
+                    'visiteur_id' => $visiteur->id,
+                    'chocolat_id' => $chocolat->id,
+                    'allergie' => $validated['allergies'],
+                    'date_commande_debut' => now(),
+                    'statut' => 'en_production',
+                ]);
+
+                $stock->decrement('quantite', 1);
+
+                ConsommationsStock::create([
+                    'stock_id' => $stock->id,
+                    'commande_id' => $commande->id,
+                    'quantite_utilisee' => 1,
+                    'date_consommation' => now(),
+                ]);
+
+                $premierPoste = Poste::where('actif', true)
+                    ->orderBy('ordre')
+                    ->first();
 
 
-            Email::create([
-                'commande_id' => $commande->id,
-                'type' => 'confirmation',
-                'date_envoi' => now(),
-            ]);
+                DB::table('commandes_postes')->insert([
+                    'commande_id' => $commande->id,
+                    'poste_id' => $premierPoste->id,
+                    'date_entree' => now(),
+                    'conforme' => 1,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
 
-            return redirect()->route('commande.validation', ['numero' => $numeroCommande]);
+                Email::create([
+                    'commande_id' => $commande->id,
+                    'type' => 'confirmation',
+                    'date_envoi' => now(),
+                ]);
+            });
+
+            return redirect()->route('commande.validation', ['numero' => $commande->numero_commande]);
 
         } catch (\Exception $e) {
+
             return back()
                 ->withInput()
-                ->withErrors(['error' => 'Erreur: ' . $e->getMessage()]);
+                ->withErrors([
+                    'error' => 'Erreur : ' . $e->getMessage()
+                ]);
         }
+
     }
 
     public function validation($numero)
@@ -99,7 +134,7 @@ class CommandeController extends Controller
 
         return view('validation', compact('commande'));
     }
-    
+
     public function liste()
     {
         $etapes = Poste::with(['commandes' => function($query) {

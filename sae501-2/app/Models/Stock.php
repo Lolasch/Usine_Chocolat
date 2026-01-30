@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class Stock
- * 
+ *
  * @property int $id
  * @property string $nom
  * @property string|null $type
@@ -21,7 +21,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property bool $actif
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * 
+ *
  * @property Collection|ConsommationsStock[] $consommations_stocks
  *
  * @package App\Models
@@ -41,11 +41,17 @@ class Stock extends Model
 		'type',
 		'quantite',
 		'seuil_min',
-		'actif'
+		'actif',
+        'chocolat_id'
 	];
 
 	public function consommations_stocks()
 	{
 		return $this->hasMany(ConsommationsStock::class);
 	}
+
+    public function chocolat()
+    {
+        return $this->belongsTo(Chocolat::class);
+    }
 }

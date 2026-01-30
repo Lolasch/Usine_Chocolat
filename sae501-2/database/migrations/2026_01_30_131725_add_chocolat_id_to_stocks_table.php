@@ -11,11 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users_equipes', function (Blueprint $table) {
-            //$table->foreignId('user_id')->constrained('users')
-            //->after('id');
+        Schema::table('stocks', function (Blueprint $table) {
+            $table->foreignId('chocolat_id')
+                  ->nullable()
+                  ->constrained()
+                  ->onDelete('cascade');
         });
-
     }
 
     /**
@@ -23,7 +24,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('users_equipes', function (Blueprint $table) {
+        Schema::table('stocks', function (Blueprint $table) {
             //
         });
     }
