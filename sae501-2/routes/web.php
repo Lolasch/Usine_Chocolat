@@ -67,3 +67,5 @@ Route::get('/api/commandes', function() {
 
     return response()->json($etapes);
 })->middleware('auth');
+
+Route::post('/objectifs', [CommandeController::class, 'storeObjectif'])->name('objectifs.store');

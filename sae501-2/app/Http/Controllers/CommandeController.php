@@ -8,6 +8,7 @@ use App\Models\Commande;
 use App\Models\Chocolat;
 use App\Models\Email;
 use App\Models\Poste;
+use App\Models\Objectif;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 
@@ -98,7 +99,7 @@ class CommandeController extends Controller
 
         return view('validation', compact('commande'));
     }
-
+    
     public function liste()
     {
         $etapes = Poste::with(['commandes' => function($query) {
@@ -107,8 +108,14 @@ class CommandeController extends Controller
 
         $commandesParPoste = $etapes;
 
-        return view('liste', compact('etapes', 'commandesParPoste'));
+        $commandesAujourdhui = Commande::whereDate('date_commande_debut', today())->count();
+        $objectif = Objectif::where('type', 'commandes')->latest()->first();
+        $objectifValeur = $objectif?->valeur ?? 100;
+        $pourcentage = $objectifValeur ? min(100, ($commandesAujourdhui / $objectifValeur) * 100) : 0;
+
+        return view('liste', compact('etapes', 'commandesParPoste', 'commandesAujourdhui', 'objectifValeur', 'pourcentage'));
     }
+
 
     public function supprimerCommande($commandeId)
     {
@@ -189,5 +196,23 @@ class CommandeController extends Controller
             'message' => 'Commande finalisée et livrée au client !'
         ]);
     }
+    public function storeObjectif(Request $request)
+    {
+        $validated = $request->validate([
+            'objectif_commandes' => 'required|integer|min:1|max:999'
+        ]);
+
+        // Remplace l'ancien objectif du type 'commandes'
+        Objectif::where('type', 'commandes')->delete();
+        Objectif::create([
+            'type' => 'commandes',
+            'valeur' => $validated['objectif_commandes'],
+            'description' => 'Objectif journalier commandes'
+        ]);
+
+        return redirect()->route('commande.liste')
+            ->with('success', '🎯 Objectif mis à jour !');
+    }
+
 
 }
