@@ -46,22 +46,19 @@ class AdminController extends Controller
         $search = $request->input('search', '');
         $isAdmin = stripos($user->role->nom, 'admin') !== false;
 
+        // 🟢 FILTRE : role_id = 2 (opérateur)
         if ($isAdmin) {
-            $etudiants = User::whereHas('role', function ($query) {
-                $query->where('nom', 'like', '%Opérateur%');
-            })->with('role');
+            $etudiants = User::where('role_id', 2)->with('role');
         } else {
             $equipe = $user->equipes()->first();
             if ($equipe) {
                 $etudiants = $equipe->users()
-                    ->whereHas('role', function ($query) {
-                        $query->where('nom', 'like', '%Opérateur%');
-                    })
+                    ->where('role_id', 2)
                     ->with('role');
             } else {
-                $etudiants = User::whereHas('role', function ($query) {
-                    $query->where('nom', 'like', '%Opérateur%');
-                })->where('id', '=', null)->with('role');
+                $etudiants = User::where('role_id', 2)
+                    ->where('id', '=', null)
+                    ->with('role');
             }
         }
 
@@ -97,17 +94,35 @@ class AdminController extends Controller
 
     public function show(User $user, Request $request)
     {
+        $authUser = auth()->user();
         $search = $request->input('search', '');
+        $isAdmin = stripos($authUser->role->nom, 'admin') !== false;
+
+        // 🟢 FILTRE : role_id = 2 (opérateur)
+        if ($isAdmin) {
+            $users = User::where('role_id', 2)->with('role');
+        } else {
+            $equipe = $authUser->equipes()->first();
+            if ($equipe) {
+                $users = $equipe->users()
+                    ->where('role_id', 2)
+                    ->with('role');
+            } else {
+                $users = User::where('role_id', 2)
+                    ->where('id', '=', null)
+                    ->with('role');
+            }
+        }
 
         if ($search) {
-            $users = User::where('nom', 'like', "%$search%")
-                         ->orWhere('prenom', 'like', "%$search%")
-                         ->orWhere('email', 'like', "%$search%")
-                         ->with('role')
-                         ->get();
-        } else {
-            $users = User::with('role')->get();
+            $users = $users->where(function ($query) use ($search) {
+                $query->where('nom', 'like', "%$search%")
+                      ->orWhere('prenom', 'like', "%$search%")
+                      ->orWhere('email', 'like', "%$search%");
+            });
         }
+
+        $users = $users->get();
 
         $roles = Role::all();
         $postes = Poste::all();
@@ -126,7 +141,8 @@ class AdminController extends Controller
             'postes' => $postes,
             'stats' => $stats,
             'selectedUser' => $user,
-            'search' => $search
+            'search' => $search,
+            'isAdmin' => $isAdmin
         ]);
     }
 
@@ -234,14 +250,20 @@ class AdminController extends Controller
         $user = auth()->user();
         $search = $request->input('search', '');
 
-        $equipe = $user->equipes()->first();
+        // 🟢 RÉCUPÉRER UNIQUEMENT role_id = 2 (opérateurs)
+        $query = User::where('role_id', 2)->where('actif', true)->with('role');
 
-        $query = User::whereHas('role', function ($q) {
-            $q->where('nom', 'like', '%Opérateur%');
-        });
-
-        if ($equipe) {
-            $query->whereNotIn('id', $equipe->users()->pluck('users.id'));
+        // Si superviseur, exclure ceux déjà dans son équipe
+        if (!$user->role || stripos($user->role->nom, 'admin') === false) {
+            $equipe = $user->equipes()->first();
+            if ($equipe) {
+                $query->whereNotExists(function ($q) use ($equipe) {
+                    $q->select(DB::raw(1))
+                      ->from('users_equipes')
+                      ->whereColumn('users_equipes.user_id', 'users.id')
+                      ->where('users_equipes.equipe_id', $equipe->id);
+                });
+            }
         }
 
         if ($search) {
@@ -251,7 +273,7 @@ class AdminController extends Controller
             });
         }
 
-        $operators = $query->with('role')->get();
+        $operators = $query->get();
 
         return response()->json($operators);
     }
@@ -271,27 +293,41 @@ class AdminController extends Controller
         return response()->json($equipes);
     }
 
-    public function addOperator(Request $request, User $operator)
+    public function addOperator(Request $request, User $user)
     {
         try {
-            // 🆕 CHARGER LA RELATION ROLE
-            $operator->load('role');
+            $user->load('role');
 
-            $user = auth()->user();
-            $roleName = strtolower($user->role->nom);
+            $authUser = auth()->user();
+            $roleName = strtolower($authUser->role->nom ?? '');
 
             $isSuperviseur = str_contains($roleName, 'superviseur');
             $isAdmin = str_contains($roleName, 'admin');
 
             if (!$isSuperviseur && !$isAdmin) {
-                return response()->json(['error' => 'Seul un superviseur ou admin peut ajouter des opérateurs'], 403);
+                return response()->json([
+                    'error' => 'Seul un superviseur ou admin peut ajouter des membres'
+                ], 403);
             }
 
+            // 🟢 VÉRIFICATION : role_id = 2 (opérateur)
+            if ($user->role_id != 2) {
+                return response()->json([
+                    'error' => 'Cet utilisateur n\'est pas un opérateur (role_id doit être 2)',
+                    'debug' => [
+                        'user_id' => $user->id,
+                        'role_id' => $user->role_id,
+                        'role_nom' => $user->role->nom ?? 'NULL'
+                    ]
+                ], 400);
+            }
+
+            // Déterminer l'équipe
             if ($isSuperviseur) {
-                $equipe = $user->equipes()->first();
+                $equipe = $authUser->equipes()->first();
 
                 if (!$equipe) {
-                    $nomBase = strtolower(str_replace('@', '', explode('@', $user->email)[0]));
+                    $nomBase = strtolower(str_replace('@', '', explode('@', $authUser->email)[0]));
                     $nomEquipe = $nomBase;
                     $compteur = 1;
 
@@ -301,7 +337,7 @@ class AdminController extends Controller
                     }
 
                     $equipe = Equipe::create(['nom' => $nomEquipe]);
-                    $user->equipes()->attach($equipe->id);
+                    $authUser->equipes()->attach($equipe->id);
                 }
             } else {
                 $equipeId = $request->input('equipe_id');
@@ -312,22 +348,44 @@ class AdminController extends Controller
                 }
             }
 
-            // 🆕 VÉRIFICATION NULL-SAFE
-            if (!$operator->role || stripos($operator->role->nom, 'Opérateur') === false) {
-                return response()->json(['error' => 'Cet utilisateur n\'est pas un opérateur'], 400);
+            // Vérifier si déjà dans l'équipe
+            $exists = DB::table('users_equipes')
+                ->where('user_id', $user->id)
+                ->where('equipe_id', $equipe->id)
+                ->exists();
+
+            if ($exists) {
+                return response()->json([
+                    'error' => $user->prenom . ' ' . $user->nom . ' est déjà dans l\'équipe "' . $equipe->nom . '"'
+                ], 400);
             }
 
-            if (!$equipe->users()->where('user_id', $operator->id)->exists()) {
-                $equipe->users()->attach($operator->id);
-            }
+            // Ajouter dans la table pivot
+            DB::table('users_equipes')->insert([
+                'user_id' => $user->id,
+                'equipe_id' => $equipe->id,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+
+            Log::info('Opérateur ajouté à l\'équipe', [
+                'user_id' => $user->id,
+                'user_nom' => $user->nom . ' ' . $user->prenom,
+                'equipe_id' => $equipe->id,
+                'equipe_nom' => $equipe->nom,
+                'by_user_id' => $authUser->id
+            ]);
 
             return response()->json([
                 'success' => true,
-                'message' => 'Opérateur ajouté à l\'équipe "' . $equipe->nom . '"'
+                'message' => $user->prenom . ' ' . $user->nom . ' ajouté(e) à l\'équipe "' . $equipe->nom . '"'
             ]);
 
         } catch (\Exception $e) {
-            Log::error('Erreur addOperator: ' . $e->getMessage());
+            Log::error('Erreur addOperator: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
+
             return response()->json([
                 'error' => 'Erreur serveur: ' . $e->getMessage()
             ], 500);
@@ -336,21 +394,52 @@ class AdminController extends Controller
 
     public function removeOperator(Request $request, User $operator)
     {
-        $user = auth()->user();
-        $isSuperviseur = stripos($user->role->nom, 'superviseur') !== false;
+        try {
+            $user = auth()->user();
+            $isSuperviseur = stripos($user->role->nom, 'superviseur') !== false;
 
-        if (!$isSuperviseur) {
-            return response()->json(['error' => 'Seul un superviseur peut retirer des opérateurs'], 403);
+            if (!$isSuperviseur) {
+                return response()->json([
+                    'error' => 'Seul un superviseur peut retirer des membres'
+                ], 403);
+            }
+
+            $equipe = $user->equipes()->first();
+
+            if (!$equipe) {
+                return response()->json([
+                    'error' => 'Vous n\'avez pas d\'équipe assignée'
+                ], 404);
+            }
+
+            $deleted = DB::table('users_equipes')
+                ->where('user_id', $operator->id)
+                ->where('equipe_id', $equipe->id)
+                ->delete();
+
+            if ($deleted) {
+                Log::info('Opérateur retiré de l\'équipe', [
+                    'user_id' => $operator->id,
+                    'equipe_id' => $equipe->id,
+                    'by_user_id' => $user->id
+                ]);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Membre retiré avec succès'
+                ]);
+            } else {
+                return response()->json([
+                    'error' => 'Ce membre n\'est pas dans votre équipe'
+                ], 404);
+            }
+
+        } catch (\Exception $e) {
+            Log::error('Erreur removeOperator: ' . $e->getMessage());
+
+            return response()->json([
+                'error' => 'Erreur serveur: ' . $e->getMessage()
+            ], 500);
         }
-
-        $equipe = $user->equipes()->first();
-
-        if (!$equipe) {
-            return response()->json(['error' => 'Vous n\'avez pas d\'équipe assignée'], 404);
-        }
-
-        $equipe->users()->detach($operator->id);
-
-        return response()->json(['success' => true, 'message' => 'Opérateur retiré avec succès']);
     }
 }

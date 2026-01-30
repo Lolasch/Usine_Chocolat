@@ -50,12 +50,12 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/admin/users/{user}', [AdminController::class, 'destroy'])->name('admin.destroy');
     Route::get('/admin/search', [AdminController::class, 'search'])->name('admin.search');
 
-    // Routes pour gérer les opérateurs de l'équipe
+    // Routes opérateurs
     Route::get('/admin/available-operators', [AdminController::class, 'getAvailableOperators'])->name('admin.availableOperators');
     Route::post('/admin/operators/{user}/add', [AdminController::class, 'addOperator'])->name('admin.addOperator');
     Route::post('/admin/operators/{user}/remove', [AdminController::class, 'removeOperator'])->name('admin.removeOperator');
 
-    // 🆕 Routes pour les équipes (admin uniquement)
+    // Routes équipes
     Route::get('/admin/equipes', [AdminController::class, 'equipes'])->name('admin.equipes');
 });
 
