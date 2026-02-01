@@ -124,7 +124,7 @@
         <div class="max-w-6xl mx-auto px-4">
             <div class="flex items-center justify-center space-x-16">
                 <img src="/images/logos/usine_choco_26_blanc2.svg" alt="icône logo"
-                    class="w-auto h-10 object-contain opacity-80 hover:opacity-100 transition-opacity">
+                    class="w-auto h-10 object-contain">
 
                 <div class="text-center space-y-2 min-w-[320px]">
                     <p class="font-semibold text-md text-[#e6d5b8]">
@@ -141,7 +141,7 @@
                 </div>
 
                 <img src="/images/logos/haguenau.png" alt="icône haguenau"
-                    class="w-auto h-10 object-contain opacity-80 hover:opacity-100 transition-opacity">
+                    class="w-auto h-10 object-contain">
             </div>
         </div>
     </footer>

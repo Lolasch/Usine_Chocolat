@@ -59,7 +59,7 @@ class StockController extends Controller
 
         return back()->with('success', '📦 Stock ajouté via QR');
     }
-    
+
     public function updateSeuil(Request $request)
     {
         $request->validate([

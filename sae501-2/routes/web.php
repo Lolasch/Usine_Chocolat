@@ -89,6 +89,9 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/stocks/add-qr', [StockController::class, 'addViaQr'])
     ->name('stocks.add.qr');
+    
     Route::post('/stocks/update-seuil', [StockController::class, 'updateSeuil'])
     ->name('stocks.update.seuil');
+
 });
+
