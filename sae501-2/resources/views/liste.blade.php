@@ -144,9 +144,17 @@
 
                                 <!-- TEXTE -->
                                 <div class="flex flex-col gap-1">
-                                    <span class="bg-[var(--caramel)] text-xs font-bold px-3 py-1 rounded-full w-fit text-[var(--choco-brown)]">
-                                        ${cmd.numero_commande}
-                                    </span>
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <span class="bg-[var(--caramel)] text-xs font-bold px-3 py-1 rounded-full w-fit text-[var(--choco-brown)]">
+                                            ${cmd.numero_commande}
+                                        </span>
+
+                                        ${cmd.allergie ? `
+                                            <span class="bg-red-100 text-red-700 text-xs font-bold px-3 py-1 rounded-full">
+                                                Allergie : ${cmd.allergie}
+                                            </span>
+                                        ` : ''}
+                                    </div>
 
                                     <p class="text-lg font-kavoon text-[var(--choco-brown)] leading-tight">
                                         ${cmd.chocolat.nom}
