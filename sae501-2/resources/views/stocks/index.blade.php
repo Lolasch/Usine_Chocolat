@@ -10,7 +10,7 @@
             Frigo
         </h1>
         <p class="text-lg text-[var(--choco)]">
-            Gestion visuelle des stocks
+            Gestion des stocks
         </p>
     </div>
 
@@ -69,6 +69,32 @@
                         <span class="text-green-700 font-bold">✅ OK</span>
                     @endif
                 </div>
+
+                <!-- Seuil minimum -->
+                <form method="POST" action="{{ route('stocks.update.seuil') }}"
+                    class="flex items-center justify-center gap-2 mb-4">
+                    @csrf
+                    <input type="hidden" name="stock_id" value="{{ $stock->id }}">
+
+                    <label class="text-sm font-semibold text-[var(--choco-brown)]">
+                        Seuil
+                    </label>
+
+                    <input
+                        type="number"
+                        name="seuil_min"
+                        min="0"
+                        value="{{ $stock->seuil_min }}"
+                        class="w-16 text-center rounded-lg border border-[var(--choco)] bg-white"
+                    >
+
+                    <button
+                        type="submit"
+                        class="px-3 py-1 rounded-lg text-sm font-bold text-white bg-[var(--choco)] hover:bg-[var(--caramel-dark)] transition"
+                    >
+                        ✔
+                    </button>
+                </form>
 
                 <!-- Form QR -->
                 <form method="POST" action="{{ route('stocks.add.qr') }}" class="flex items-center justify-center gap-3">
