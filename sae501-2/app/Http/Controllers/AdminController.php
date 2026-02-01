@@ -46,31 +46,42 @@ class AdminController extends Controller
         $search = $request->input('search', '');
         $isAdmin = stripos($user->role->nom, 'admin') !== false;
 
-        // 🟢 FILTRE : role_id = 2 (opérateur)
-        if ($isAdmin) {
-            $etudiants = User::where('role_id', 2)->with('role');
+        // Récupérer les utilisateurs de l'équipe du superviseur
+        $equipe = $user->equipes()->first();
+
+        if (!$equipe) {
+            $etudiants = collect([]);
         } else {
-            $equipe = $user->equipes()->first();
-            if ($equipe) {
-                $etudiants = $equipe->users()
-                    ->where('role_id', 2)
-                    ->with('role');
-            } else {
-                $etudiants = User::where('role_id', 2)
-                    ->where('id', '=', null)
-                    ->with('role');
+            // Récupérer les utilisateurs de cette équipe avec leurs rôles d'équipe
+            $etudiants = $equipe->users()->with('role')->get();
+
+            // Ajouter le rôle d'équipe à chaque utilisateur
+            $etudiants->each(function($etudiant) use ($equipe) {
+                $userEquipe = DB::table('users_equipes')
+                    ->where('user_id', $etudiant->id)
+                    ->where('equipe_id', $equipe->id)
+                    ->first();
+
+                if ($userEquipe && $userEquipe->role_id) {
+                    $etudiant->role_equipe = Role::find($userEquipe->role_id);
+                } else {
+                    $etudiant->role_equipe = $etudiant->role; // Fallback sur le rôle global
+                }
+            });
+
+            if ($search) {
+                $etudiants = $etudiants->filter(function($etudiant) use ($search) {
+                    $nom = strtolower($etudiant->nom ?? '');
+                    $prenom = strtolower($etudiant->prenom ?? '');
+                    $email = strtolower($etudiant->email ?? '');
+                    $searchLower = strtolower($search);
+
+                    return str_contains($nom, $searchLower) ||
+                           str_contains($prenom, $searchLower) ||
+                           str_contains($email, $searchLower);
+                });
             }
         }
-
-        if ($search) {
-            $etudiants = $etudiants->where(function ($query) use ($search) {
-                $query->where('nom', 'like', "%$search%")
-                      ->orWhere('prenom', 'like', "%$search%")
-                      ->orWhere('email', 'like', "%$search%");
-            });
-        }
-
-        $etudiants = $etudiants->get();
 
         $roles = Role::all();
         $postes = Poste::all();
@@ -250,7 +261,172 @@ class AdminController extends Controller
         // Charger les relations nécessaires
         $user->load(['role', 'equipes']);
 
-        return response()->json($user);
+        // Récupérer tous les postes disponibles
+        $postes = Poste::orderBy('ordre')->get();
+
+        // Récupérer l'équipe du superviseur connecté
+        $authUser = auth()->user();
+        $equipe = $authUser->equipes()->first();
+
+        if (!$equipe) {
+            return response()->json([
+                'error' => 'Vous n\'êtes pas associé à une équipe',
+                'user' => $user,
+                'postes' => $postes,
+                'poste_actuel' => null,
+                'role_actuel' => null
+            ], 200);
+        }
+
+        // Récupérer le rôle et poste de l'utilisateur dans cette équipe spécifique
+        $userEquipe = DB::table('users_equipes')
+            ->where('user_id', $user->id)
+            ->where('equipe_id', $equipe->id)
+            ->first();
+
+        $posteActuel = null;
+        $roleActuel = null;
+
+        if ($userEquipe) {
+            if (isset($userEquipe->poste_id)) {
+                $posteActuel = Poste::find($userEquipe->poste_id);
+            }
+            if (isset($userEquipe->role_id)) {
+                $roleActuel = Role::find($userEquipe->role_id);
+            }
+        }
+
+        Log::info('getUserDetails', [
+            'user_id' => $user->id,
+            'equipe_id' => $equipe->id,
+            'userEquipe' => $userEquipe,
+            'role_actuel' => $roleActuel
+        ]);
+
+        return response()->json([
+            'user' => $user,
+            'postes' => $postes,
+            'poste_actuel' => $posteActuel,
+            'role_actuel' => $roleActuel,
+            'equipe_id' => $equipe->id
+        ]);
+    }
+
+    public function changeRole(Request $request, User $user)
+    {
+        $validated = $request->validate([
+            'role_id' => 'required|exists:roles,id'
+        ]);
+
+        // Récupérer l'équipe du superviseur connecté
+        $authUser = auth()->user();
+        $equipe = $authUser->equipes()->first();
+
+        if (!$equipe) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Vous n\'êtes pas associé à une équipe'
+            ], 403);
+        }
+
+        // Modifier le rôle uniquement dans users_equipes pour cette équipe
+        $userEquipeExists = DB::table('users_equipes')
+            ->where('user_id', $user->id)
+            ->where('equipe_id', $equipe->id)
+            ->exists();
+
+        if (!$userEquipeExists) {
+            return response()->json([
+                'success' => false,
+                'message' => 'L\'utilisateur n\'est pas dans votre équipe'
+            ], 403);
+        }
+
+        DB::table('users_equipes')
+            ->where('user_id', $user->id)
+            ->where('equipe_id', $equipe->id)
+            ->update(['role_id' => $validated['role_id']]);
+
+        $role = Role::find($validated['role_id']);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Rôle modifié avec succès pour cette équipe',
+            'role' => $role
+        ]);
+    }
+
+    public function changePoste(Request $request, User $user)
+    {
+        $validated = $request->validate([
+            'poste_id' => 'required|exists:postes,id'
+        ]);
+
+        // Récupérer l'équipe du superviseur connecté
+        $authUser = auth()->user();
+        $equipe = $authUser->equipes()->first();
+
+        if (!$equipe) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Vous n\'êtes pas associé à une équipe'
+            ], 403);
+        }
+
+        // Mettre à jour le poste uniquement pour cette équipe
+        $updated = DB::table('users_equipes')
+            ->where('user_id', $user->id)
+            ->where('equipe_id', $equipe->id)
+            ->update(['poste_id' => $validated['poste_id']]);
+
+        if (!$updated) {
+            return response()->json([
+                'success' => false,
+                'message' => 'L\'utilisateur n\'est pas dans votre équipe'
+            ], 403);
+        }
+
+        $poste = Poste::find($validated['poste_id']);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Poste modifié avec succès',
+            'poste' => $poste
+        ]);
+    }
+
+    public function deleteAjax(User $user)
+    {
+        $userName = $user->prenom . ' ' . $user->nom;
+
+        // Récupérer l'équipe du superviseur connecté
+        $authUser = auth()->user();
+        $equipe = $authUser->equipes()->first();
+
+        if (!$equipe) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Vous n\'êtes pas associé à une équipe'
+            ], 403);
+        }
+
+        // Supprimer l'utilisateur de l'équipe (pas de la base de données)
+        $deleted = DB::table('users_equipes')
+            ->where('user_id', $user->id)
+            ->where('equipe_id', $equipe->id)
+            ->delete();
+
+        if (!$deleted) {
+            return response()->json([
+                'success' => false,
+                'message' => 'L\'utilisateur n\'est pas dans votre équipe'
+            ], 403);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => "$userName a été retiré de l'équipe avec succès"
+        ]);
     }
 
     public function getAvailableOperators(Request $request)

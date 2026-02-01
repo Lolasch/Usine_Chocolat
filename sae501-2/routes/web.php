@@ -54,6 +54,11 @@ Route::middleware(['auth'])->group(function () {
     // Route pour récupérer les détails d'un utilisateur en AJAX
     Route::get('/admin/users/{user}/details', [AdminController::class, 'getUserDetails'])->name('admin.userDetails');
 
+    // Routes pour modifier le rôle et le poste via AJAX
+    Route::post('/admin/users/{user}/change-role', [AdminController::class, 'changeRole'])->name('admin.changeRole');
+    Route::post('/admin/users/{user}/change-poste', [AdminController::class, 'changePoste'])->name('admin.changePoste');
+    Route::delete('/admin/users/{user}/delete-ajax', [AdminController::class, 'deleteAjax'])->name('admin.deleteAjax');
+
     // Routes opérateurs
     Route::get('/admin/available-operators', [AdminController::class, 'getAvailableOperators'])->name('admin.availableOperators');
     Route::post('/admin/operators/{user}/add', [AdminController::class, 'addOperator'])->name('admin.addOperator');
