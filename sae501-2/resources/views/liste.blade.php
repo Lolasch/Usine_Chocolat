@@ -533,27 +533,103 @@ let panneActive = false;
 let popupPanne = null;
 
 function ouvrirPopupPanne() {
-    const message = prompt('Décris la panne :');
-    if (!message) return;
+    const popup = document.createElement('div');
+    popup.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]';
 
-    fetch('/alerte/panne', {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ message })
-    })
-    .then(r => r.json())
-    .then(data => {
-        if (!data.success) {
-            alert(data.message || 'Impossible de signaler la panne');
-        } else {
-            // Forcer la synchro immédiate
-            verifierPanne();
+    popup.innerHTML = `
+        <div class="bg-white rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl">
+
+            <!-- ICONE -->
+            <div class="w-20 h-20 bg-red-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="w-12 h-12 text-white"
+                     fill="none"
+                     viewBox="0 0 24 24"
+                     stroke="currentColor"
+                     stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M12 9v4m0 4h.01M5.07 19h13.86c1.54 0 2.5-1.67 1.73-3L13.73 4c-.77-1.33-2.69-1.33-3.46 0L3.34 16c-.77 1.33.19 3 1.73 3z"/>
+                </svg>
+            </div>
+
+            <!-- TITRE -->
+            <h3 class="text-2xl font-kavoon text-center text-[var(--choco-brown)] mb-4">
+                Signaler une panne
+            </h3>
+
+            <!-- TEXTE -->
+            <p class="text-center text-[var(--choco-brown)] font-medium mb-4">
+                Décris clairement le problème rencontré.
+            </p>
+
+            <!-- INPUT -->
+            <textarea id="messagePanne"
+                      rows="4"
+                      placeholder="Ex : Machine HS, arrêt production poste 3…"
+                      class="w-full p-4 rounded-2xl border border-[var(--choco)]
+                             text-[var(--choco-brown)]
+                             focus:outline-none focus:ring-2 focus:ring-[var(--caramel)]
+                             mb-6 resize-none"></textarea>
+
+            <!-- ACTIONS -->
+            <div class="flex gap-4">
+                <button id="annulerPanne"
+                        class="flex-1 bg-[var(--choco-brown)]
+                               text-[var(--choco-beige)]
+                               py-3 rounded-2xl font-kavoon">
+                    Annuler
+                </button>
+
+                <button id="confirmerPanne"
+                        class="flex-1 bg-[var(--caramel-dark)]
+                               text-[var(--choco-beige)]
+                               py-3 rounded-2xl font-kavoon hover:brightness-95 transition">
+                    Signaler
+                </button>
+            </div>
+
+        </div>
+    `;
+
+    document.body.appendChild(popup);
+    document.body.classList.add('overflow-hidden');
+
+    // Annuler
+    popup.querySelector('#annulerPanne').onclick = () => {
+        popup.remove();
+        document.body.classList.remove('overflow-hidden');
+    };
+
+    // Confirmer
+    popup.querySelector('#confirmerPanne').onclick = () => {
+        const message = popup.querySelector('#messagePanne').value.trim();
+
+        if (!message) {
+            popup.querySelector('#messagePanne').focus();
+            return;
         }
-    });
+
+        fetch('/alerte/panne', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ message })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (!data.success) {
+                alert(data.message || 'Impossible de signaler la panne');
+            } else {
+                popup.remove();
+                document.body.classList.remove('overflow-hidden');
+                verifierPanne(); // synchro immédiate
+            }
+        });
+    };
 }
+
 
 // Vérifie l'état serveur
 function verifierPanne() {
