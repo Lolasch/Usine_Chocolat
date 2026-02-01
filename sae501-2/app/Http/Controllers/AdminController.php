@@ -343,6 +343,15 @@ class AdminController extends Controller
 
         // Récupérer l'équipe du superviseur connecté
         $authUser = auth()->user();
+
+        // Empêcher le superviseur de modifier son propre rôle
+        if ($user->id === $authUser->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Vous ne pouvez pas modifier votre propre rôle'
+            ], 403);
+        }
+
         $equipe = $authUser->equipes()->first();
 
         if (!$equipe) {
@@ -387,6 +396,15 @@ class AdminController extends Controller
 
         // Récupérer l'équipe du superviseur connecté
         $authUser = auth()->user();
+
+        // Empêcher le superviseur de modifier son propre poste
+        if ($user->id === $authUser->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Vous ne pouvez pas modifier votre propre poste'
+            ], 403);
+        }
+
         $equipe = $authUser->equipes()->first();
 
         if (!$equipe) {
@@ -439,6 +457,15 @@ class AdminController extends Controller
 
         // Récupérer l'équipe du superviseur connecté
         $authUser = auth()->user();
+
+        // Empêcher le superviseur de se supprimer lui-même
+        if ($user->id === $authUser->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Vous ne pouvez pas vous retirer de votre propre équipe'
+            ], 403);
+        }
+
         $equipe = $authUser->equipes()->first();
 
         if (!$equipe) {

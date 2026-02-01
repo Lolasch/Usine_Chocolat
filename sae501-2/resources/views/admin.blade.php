@@ -227,6 +227,7 @@
     let allOperators = @json($etudiants ?? []);
     const roles = @json($roles ?? []);
     const postes = @json($postes ?? []);
+    const currentUserId = {{ auth()->id() }};
 
     // Fonction pour afficher une confirmation personnalisée
     function showConfirm(message, title = 'Confirmation') {
@@ -361,6 +362,11 @@
 
         const posteNom = posteActuel?.nom || 'Aucun poste';
 
+        // Vérifier si c'est l'utilisateur connecté (le superviseur)
+        const isCurrentUser = user.id === currentUserId;
+        const disabledClass = isCurrentUser ? 'opacity-50 cursor-not-allowed' : '';
+        const disabledAttr = isCurrentUser ? 'disabled' : '';
+
         container.innerHTML = `
             <h3 class="text-2xl font-bold text-[var(--choco-brown)] mb-6 font-kavoon">Détail de l'étudiant</h3>
 
@@ -372,10 +378,11 @@
                     <div class="flex-1">
                         <h4 class="text-lg font-bold text-[var(--choco-brown)]">${user.prenom || ''} ${user.nom || ''}</h4>
                         <p class="text-sm text-[var(--choco-brown)]/70">QLIO 2</p>
+                        ${isCurrentUser ? '<p class="text-xs text-[var(--choco)] font-bold mt-1">Vous (Superviseur)</p>' : ''}
                     </div>
-                    <button onclick="deleteUser(${user.id})" class="bg-[var(--choco)] text-white px-6 py-2 rounded-full font-bold hover:bg-[var(--choco-brown)] transition">
+                    ${isCurrentUser ? '' : `<button onclick="deleteUser(${user.id})" class="bg-[var(--choco)] text-white px-6 py-2 rounded-full font-bold hover:bg-[var(--choco-brown)] transition">
                         Supprimer
-                    </button>
+                    </button>`}
                 </div>
             </div>
 
@@ -387,22 +394,22 @@
 
                 <div>
                     <label class="text-sm font-bold text-[var(--choco-brown)] block mb-2">Rôle (dans cette équipe) :</label>
-                    <div class="flex gap-2 flex-wrap">
+                    ${isCurrentUser ? `<p class="text-[var(--choco-brown)]">Superviseur (non modifiable)</p>` : `<div class="flex gap-2 flex-wrap">
                         <button onclick="changeUserRole(${user.id}, 2)" class="px-4 py-2 rounded-full font-bold transition hover:opacity-80 ${isOperateur ? 'bg-[var(--choco)] text-white' : 'bg-[var(--choco-gold)] text-[var(--choco-brown)]'}">
                             Opérateur
                         </button>
                         <button onclick="changeUserRole(${user.id}, 1)" class="px-4 py-2 rounded-full font-bold transition hover:opacity-80 ${isSuperviseur ? 'bg-[var(--choco)] text-white' : 'bg-[var(--choco-gold)] text-[var(--choco-brown)]'}">
                             Superviseur
                         </button>
-                    </div>
+                    </div>`}
                 </div>
 
-                <div>
+                ${isCurrentUser ? '' : `<div>
                     <label class="text-sm font-bold text-[var(--choco-brown)] block mb-2">Poste :</label>
                     <select onchange="changeUserPoste(${user.id}, this.value)" class="w-full px-4 py-2 rounded-full bg-[var(--green)] text-[var(--choco-brown)] focus:outline-none focus:ring-2 focus:ring-[var(--green)] cursor-pointer">
                         ${postesOptions}
                     </select>
-                </div>
+                </div>`}
             </div>
         `;
     }
@@ -667,11 +674,16 @@
             if (response.ok && data.success) {
                 await showAlert(data.message, 'Succès');
 
-                // Mettre à jour le compteur de postes si c'est un nouveau poste
-                if (data.nb_postes) {
+                // Mettre à jour le compteur de postes
+                if (data.nb_postes !== undefined) {
+                    console.log('🔄 Mise à jour du compteur de postes:', data.nb_postes);
                     const postesCountElement = document.getElementById('postesCount');
                     if (postesCountElement) {
                         postesCountElement.textContent = data.nb_postes;
+                        postesCountElement.setAttribute('aria-label', `${data.nb_postes} postes de travail`);
+                        console.log('✅ Compteur mis à jour');
+                    } else {
+                        console.error('❌ Élément postesCount non trouvé');
                     }
                 }
             } else {
