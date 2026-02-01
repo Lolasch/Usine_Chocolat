@@ -15,7 +15,7 @@
     </div>
 
     <!-- FRIGO + GRAPHIQUE -->
-    <div class="flex flex-col lg:flex-row gap-6">
+    <div class="flex flex-col lg:flex-row gap-6 items-stretch">
 
         <!-- FRIGO -->
         <div class="lg:w-[65%] bg-[var(--choco-brown)] rounded-2xl p-5 shadow-xl">
@@ -198,6 +198,9 @@
 
     </div>
 </div>
+
+<!-- CHART.JS -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
     const labels = @json($stocks->pluck('nom'));

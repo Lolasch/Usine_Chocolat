@@ -144,7 +144,7 @@
 
                                 <!-- TEXTE -->
                                 <div class="flex flex-col gap-1">
-                                    <span class="bg-[var(--caramel)] text-xs font-kavoon px-3 py-1 rounded-full w-fit text-[var(--choco-brown)]">
+                                    <span class="bg-[var(--caramel)] text-xs font-bold px-3 py-1 rounded-full w-fit text-[var(--choco-brown)]">
                                         ${cmd.numero_commande}
                                     </span>
 
@@ -169,7 +169,7 @@
                                                 '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-[var(--choco-brown)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>'
                                             }
                                         </button>
-                                        
+
                                         <!-- Bouton Supprimer -->
                                         <button onclick="supprimerCommande(${cmd.id})" class="w-12 h-12 flex items-center justify-center bg-[var(--green)] rounded-tl-[2.25rem] rounded-tr-[2.25rem] rounded-bl-3xl rounded-br-3xl hover:brightness-95 transition" aria-label="Supprimer">
                                             <svg xmlns="http://www.w3.org/2000/svg"
@@ -178,16 +178,10 @@
                                                 viewBox="0 0 20 20"
                                                 stroke="currentColor"
                                                 stroke-width="2">
-                                                <path fill-rule="evenodd"
-                                                    d="M8.75 1A2.75 2.75 0 0 0 6 3.75v.443
-                                                        c-.795.077-1.584.176-2.365.298a.75.75 0 1 0 .23 1.482
-                                                        l.841 10.518A2.75 2.75 0 0 0 7.596 19h4.807
-                                                        a2.75 2.75 0 0 0 2.742-2.53l.841-10.52.149.023
-                                                        a.75.75 0 0 0 .23-1.482A41.03 41.03 0 0 0 14 4.193V3.75
-                                                        A2.75 2.75 0 0 0 11.25 1h-2.5Z"
-                                                    clip-rule="evenodd"/>
+                                                <path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 0 0 6 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 1 0 .23 1.482l.149-.022.841 10.518A2.75 2.75 0 0 0 7.596 19h4.807a2.75 2.75 0 0 0 2.742-2.53l.841-10.52.149.023a.75.75 0 0 0 .23-1.482A41.03 41.03 0 0 0 14 4.193V3.75A2.75 2.75 0 0 0 11.25 1h-2.5ZM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4ZM8.58 7.72a.75.75 0 0 0-1.5.06l.3 7.5a.75.75 0 1 0 1.5-.06l-.3-7.5Zm4.34.06a.75.75 0 1 0-1.5-.06l-.3 7.5a.75.75 0 1 0 1.5.06l.3-7.5Z" clip-rule="evenodd" />
                                             </svg>
                                         </button>
+
                             </div>
                         </div>
                         `;

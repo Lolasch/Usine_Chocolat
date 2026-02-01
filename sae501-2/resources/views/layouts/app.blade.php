@@ -63,7 +63,7 @@
                         text-lg hover-caramel transition-colors duration-300">
                     Frigo
                 </a>
-                <a href="#"
+                <a href="{{ route('statistiques.index') }}"
                 class="bg-[var(--choco-gold)] text-[var(--choco-brown)]
                         px-6 py-2 rounded-full
                         text-lg hover-caramel transition-colors duration-300">
@@ -108,7 +108,7 @@
 
                 <a href="{{ url('/liste') }}" class="block text-lg">Commandes</a>
                 <a href="{{ route('stocks.index') }}" class="block text-lg">Frigo</a>
-                <a href="#" class="block text-lg">Statistiques</a>
+                <a href="{{ route('statistiques.index') }}" class="block text-lg">Statistiques</a>
                 <a href="{{ url('/admin') }}" class="block text-lg">Admin</a>
 
                 <form method="POST" action="{{ route('logout') }}">
