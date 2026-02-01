@@ -245,6 +245,14 @@ class AdminController extends Controller
         return response()->json($users);
     }
 
+    public function getUserDetails(User $user)
+    {
+        // Charger les relations nécessaires
+        $user->load(['role', 'equipes']);
+
+        return response()->json($user);
+    }
+
     public function getAvailableOperators(Request $request)
     {
         $user = auth()->user();

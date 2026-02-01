@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::disableForeignKeyConstraints();
 
-        DB::table('roles')->insert([
+        DB::table('roles')->insertOrIgnore([
             [
                 'nom' => 'operateur',
                 'created_at' => now(),

@@ -63,14 +63,14 @@
 
             <div class="space-y-3 max-h-96 overflow-y-auto" id="operatorsList">
                 @forelse($etudiants ?? [] as $etudiant)
-                    <a href="{{ route('admin.show', $etudiant) }}" class="flex items-center justify-between p-4 bg-[#F5F5F5] rounded-2xl hover:bg-[#EFEFEF] transition cursor-pointer">
+                    <div onclick="loadUserDetails({{ $etudiant->id }})" class="flex items-center justify-between p-4 bg-[#F5F5F5] rounded-2xl hover:bg-[#EFEFEF] transition cursor-pointer operator-item" data-user-id="{{ $etudiant->id }}">
                         <div class="flex items-center gap-3 flex-1">
                             <div class="w-12 h-12 bg-gradient-to-br from-[#D4A574] to-[#B8860B] rounded-full flex items-center justify-center text-white font-bold">
-                                {{ substr($etudiant->prenom ?? 'E', 0, 1) }}
+                                {{ strtolower(substr($etudiant->prenom ?? 'e', 0, 1)) }}
                             </div>
                             <div>
                                 <p class="font-bold text-[#554840]">{{ $etudiant->prenom ?? 'Étudiant' }} {{ $etudiant->nom ?? '' }}</p>
-                                <p class="text-sm text-[#8B7355]">Rôle : {{ $etudiant->role->nom ?? 'Utilisateur' }}</p>
+                                <p class="text-sm text-[#8B7355]">Rôle : {{ $etudiant->role->nom ?? 'operateur' }}</p>
                             </div>
                         </div>
                         <div class="text-[#554840] hover:text-[#8E5442] transition">
@@ -78,7 +78,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                             </svg>
                         </div>
-                    </a>
+                    </div>
                 @empty
                     <div class="text-center py-8 text-[#8B7355]">
                         <p>Aucun étudiant pour le moment</p>
@@ -88,47 +88,68 @@
         </div>
 
         <!-- Détail de l'étudiant -->
-        <div class="bg-white rounded-3xl p-6 shadow-lg">
-            @if($selectedUser ?? false)
-                <h3 class="text-2xl font-bold text-[#554840] mb-6 font-kavoon">Détail de l'étudiant</h3>
+        <div class="bg-white rounded-3xl p-6 shadow-lg" id="userDetailsContainer">
+            <div id="userDetailsContent">
+                @if($selectedUser ?? false)
+                    <h3 class="text-2xl font-bold text-[#554840] mb-6 font-kavoon">Détail de l'étudiant</h3>
 
-                <div class="bg-[#F4E4A6] rounded-2xl p-4 mb-6">
-                    <div class="flex items-center gap-4 mb-4">
-                        <div class="w-16 h-16 bg-gradient-to-br from-[#D4A574] to-[#B8860B] rounded-full flex items-center justify-center text-white font-bold text-2xl">
-                            {{ substr($selectedUser->prenom ?? 'E', 0, 1) }}
-                        </div>
-                        <div class="flex-1">
-                            <h4 class="text-lg font-bold text-[#554840]">{{ $selectedUser->prenom ?? '' }} {{ $selectedUser->nom ?? '' }}</h4>
-                            <p class="text-sm text-[#8B7355]">{{ $selectedUser->email ?? '' }}</p>
-                        </div>
-                        <a href="{{ route('admin.edit', $selectedUser) }}" class="bg-[#8E5442] text-white px-6 py-2 rounded-full font-bold hover:bg-[#6B4535] transition">
-                            Modifier
-                        </a>
-                    </div>
-                </div>
-
-                <div class="space-y-4">
-                    <div>
-                        <label class="text-sm font-bold text-[#554840] block mb-2">Mail :</label>
-                        <p class="text-[#554840] underline">{{ $selectedUser->email ?? '' }}</p>
-                    </div>
-
-                    <div>
-                        <label class="text-sm font-bold text-[#554840] block mb-2">Rôle :</label>
-                        <div class="flex gap-2 flex-wrap">
-                            <span class="bg-[#8E5442] text-white px-4 py-2 rounded-full font-bold">
-                                {{ $selectedUser->role->nom ?? 'Utilisateur' }}
-                            </span>
+                    <div class="bg-[#F4E4A6] rounded-2xl p-4 mb-6">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-16 h-16 bg-gradient-to-br from-[#D4A574] to-[#B8860B] rounded-full flex items-center justify-center text-white font-bold text-2xl">
+                                {{ strtolower(substr($selectedUser->prenom ?? 'e', 0, 1)) }}
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="text-lg font-bold text-[#554840]">{{ $selectedUser->prenom ?? '' }} {{ $selectedUser->nom ?? '' }}</h4>
+                                <p class="text-sm text-[#8B7355]">{{ $selectedUser->email ?? '' }}</p>
+                            </div>
+                            <a href="{{ route('admin.edit', $selectedUser) }}" class="bg-[#8E5442] text-white px-6 py-2 rounded-full font-bold hover:bg-[#6B4535] transition">
+                                Modifier
+                            </a>
                         </div>
                     </div>
-                </div>
-            @else
-                <div class="h-full flex items-center justify-center">
-                    <div class="text-center">
-                        <p class="text-[#8B7355] text-lg mb-4">Sélectionnez un étudiant pour voir ses détails</p>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="text-sm font-bold text-[#554840] block mb-2">Mail :</label>
+                            <a href="mailto:{{ $selectedUser->email ?? '' }}" class="text-[#554840] underline">{{ $selectedUser->email ?? '' }}</a>
+                        </div>
+
+                        <div>
+                            <label class="text-sm font-bold text-[#554840] block mb-2">Rôle :</label>
+                            <div class="flex gap-2 flex-wrap">
+                                @php
+                                    $isOperateur = strtolower($selectedUser->role->nom ?? '') === 'operateur';
+                                    $isSuperviseur = strtolower($selectedUser->role->nom ?? '') === 'superviseur';
+                                @endphp
+                                <span class="px-4 py-2 rounded-full font-bold {{ $isOperateur ? 'bg-[#8E5442] text-white' : 'bg-[#F4E4A6] text-[#554840]' }}">
+                                    Opérateur
+                                </span>
+                                <span class="px-4 py-2 rounded-full font-bold {{ $isSuperviseur ? 'bg-[#8E5442] text-white' : 'bg-[#F4E4A6] text-[#554840]' }}">
+                                    Superviseur
+                                </span>
+                            </div>
+                        </div>
+
+                        @if($selectedUser->usersEquipe)
+                            <div>
+                                <label class="text-sm font-bold text-[#554840] block mb-2">Poste :</label>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[#554840]">{{ $selectedUser->usersEquipe->poste->nom ?? 'Aucun poste' }}</span>
+                                    <svg class="w-4 h-4 text-[#554840]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </div>
+                            </div>
+                        @endif
                     </div>
-                </div>
-            @endif
+                @else
+                    <div class="h-full flex items-center justify-center">
+                        <div class="text-center">
+                            <p class="text-[#8B7355] text-lg mb-4">Sélectionnez un étudiant pour voir ses détails</p>
+                        </div>
+                    </div>
+                @endif
+            </div>
         </div>
     </div>
 </div>
@@ -166,10 +187,118 @@
     let allOperators = {!! json_encode($etudiants ?? []) !!};
     let availableOperatorsData = [];
 
+    // Fonction pour charger les détails d'un utilisateur sans recharger la page
+    async function loadUserDetails(userId) {
+        console.log('🔵 Chargement des détails pour l\'utilisateur:', userId);
+
+        try {
+            const response = await fetch(`/admin/users/${userId}/details`, {
+                method: 'GET',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Erreur HTTP: ' + response.status);
+            }
+
+            const user = await response.json();
+            console.log('✅ Détails utilisateur reçus:', user);
+
+            // Mettre à jour l'affichage
+            updateUserDetailsDisplay(user);
+
+            // Mettre en surbrillance l'opérateur sélectionné
+            document.querySelectorAll('.operator-item').forEach(item => {
+                item.classList.remove('bg-[#E8D4B4]');
+                item.classList.add('bg-[#F5F5F5]');
+            });
+            document.querySelector(`[data-user-id="${userId}"]`)?.classList.add('bg-[#E8D4B4]');
+            document.querySelector(`[data-user-id="${userId}"]`)?.classList.remove('bg-[#F5F5F5]');
+
+        } catch (error) {
+            console.error('❌ Erreur loadUserDetails:', error);
+            alert('Erreur lors du chargement des détails');
+        }
+    }
+
+    function updateUserDetailsDisplay(user) {
+        const container = document.getElementById('userDetailsContent');
+        if (!container) return;
+
+        const initial = (user.prenom?.[0] || 'e').toLowerCase();
+        const isOperateur = (user.role?.nom || '').toLowerCase() === 'operateur';
+        const isSuperviseur = (user.role?.nom || '').toLowerCase() === 'superviseur';
+
+        // Récupérer le nom du poste - gérer différents cas
+        let posteNom = 'Aucun poste';
+        if (user.users_equipe?.poste?.nom) {
+            posteNom = user.users_equipe.poste.nom;
+        } else if (user.equipes && user.equipes.length > 0) {
+            posteNom = user.equipes[0].nom || 'Équipe ' + user.equipes[0].id;
+        }
+
+        container.innerHTML = `
+            <h3 class="text-2xl font-bold text-[#554840] mb-6 font-kavoon">Détail de l'étudiant</h3>
+
+            <div class="bg-[#F4E4A6] rounded-2xl p-4 mb-6">
+                <div class="flex items-center gap-4">
+                    <div class="w-16 h-16 bg-gradient-to-br from-[#D4A574] to-[#B8860B] rounded-full flex items-center justify-center text-white font-bold text-2xl">
+                        ${initial}
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-lg font-bold text-[#554840]">${user.prenom || ''} ${user.nom || ''}</h4>
+                        <p class="text-sm text-[#8B7355]">${user.email || ''}</p>
+                    </div>
+                    <a href="/admin/users/${user.id}/edit" class="bg-[#8E5442] text-white px-6 py-2 rounded-full font-bold hover:bg-[#6B4535] transition">
+                        Modifier
+                    </a>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="text-sm font-bold text-[#554840] block mb-2">Mail :</label>
+                    <a href="mailto:${user.email || ''}" class="text-[#554840] underline">${user.email || ''}</a>
+                </div>
+
+                <div>
+                    <label class="text-sm font-bold text-[#554840] block mb-2">Rôle :</label>
+                    <div class="flex gap-2 flex-wrap">
+                        <span class="px-4 py-2 rounded-full font-bold ${isOperateur ? 'bg-[#8E5442] text-white' : 'bg-[#F4E4A6] text-[#554840]'}">
+                            Opérateur
+                        </span>
+                        <span class="px-4 py-2 rounded-full font-bold ${isSuperviseur ? 'bg-[#8E5442] text-white' : 'bg-[#F4E4A6] text-[#554840]'}">
+                            Superviseur
+                        </span>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-sm font-bold text-[#554840] block mb-2">Poste :</label>
+                    <div class="flex items-center gap-2">
+                        <span class="text-[#554840]">${posteNom}</span>
+                        <svg class="w-4 h-4 text-[#554840]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         console.log('🟢 DOM chargé');
 
         renderOperators(allOperators);
+
+        @if($selectedUser ?? false)
+            // Si un utilisateur est déjà sélectionné, le charger
+            loadUserDetails({{ $selectedUser->id }});
+        @endif
 
         // Event listener pour bouton Ajouter
         const btnAdd = document.getElementById('btnAddOperator');
@@ -244,14 +373,14 @@
         }
 
         listDiv.innerHTML = operators.map(op => `
-            <a href="/admin/users/${op.id}" class="flex items-center justify-between p-4 bg-[#F5F5F5] rounded-2xl hover:bg-[#EFEFEF] transition cursor-pointer">
+            <div onclick="loadUserDetails(${op.id})" class="operator-item flex items-center justify-between p-4 bg-[#F5F5F5] rounded-2xl hover:bg-[#EFEFEF] transition cursor-pointer" data-user-id="${op.id}">
                 <div class="flex items-center gap-3 flex-1">
                     <div class="w-12 h-12 bg-gradient-to-br from-[#D4A574] to-[#B8860B] rounded-full flex items-center justify-center text-white font-bold">
-                        ${op.prenom?.charAt(0) || 'E'}
+                        ${(op.prenom?.charAt(0) || 'e').toLowerCase()}
                     </div>
                     <div>
                         <p class="font-bold text-[#554840]">${op.prenom || ''} ${op.nom || ''}</p>
-                        <p class="text-sm text-[#8B7355]">Rôle : ${op.role?.nom || 'Utilisateur'}</p>
+                        <p class="text-sm text-[#8B7355]">Rôle : ${op.role?.nom || 'operateur'}</p>
                     </div>
                 </div>
                 <div class="text-[#554840] hover:text-[#8E5442] transition">
@@ -259,7 +388,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                     </svg>
                 </div>
-            </a>
+            </div>
         `).join('');
     }
 

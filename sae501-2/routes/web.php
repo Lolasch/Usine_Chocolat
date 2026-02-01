@@ -51,6 +51,9 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/admin/users/{user}', [AdminController::class, 'destroy'])->name('admin.destroy');
     Route::get('/admin/search', [AdminController::class, 'search'])->name('admin.search');
 
+    // Route pour récupérer les détails d'un utilisateur en AJAX
+    Route::get('/admin/users/{user}/details', [AdminController::class, 'getUserDetails'])->name('admin.userDetails');
+
     // Routes opérateurs
     Route::get('/admin/available-operators', [AdminController::class, 'getAvailableOperators'])->name('admin.availableOperators');
     Route::post('/admin/operators/{user}/add', [AdminController::class, 'addOperator'])->name('admin.addOperator');
