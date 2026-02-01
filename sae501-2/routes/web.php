@@ -6,6 +6,8 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PosteController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\StatistiquesController;
+use App\Http\Controllers\AlerteController;
+
 use Illuminate\Support\Facades\Route;
 use App\Models\Poste;
 
@@ -98,3 +100,16 @@ Route::middleware('auth')->group(function () {
 
 Route::get('/statistiques', [StatistiquesController::class, 'index'])
     ->name('statistiques.index');
+
+
+Route::middleware('auth')->group(function () {
+
+    // API état panne
+    Route::get('/api/alerte-active', [AlerteController::class, 'active']);
+
+    // Superviseur
+    Route::post('/alerte/panne', [AlerteController::class, 'signaler']);
+    Route::post('/alerte/panne/resoudre', [AlerteController::class, 'resoudre']);
+});
+
+

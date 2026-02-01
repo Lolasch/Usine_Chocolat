@@ -499,9 +499,15 @@
                         Filtrer
                         </button>
 
-                        <button class="bg-[var(--caramel)] px-4 py-2 rounded-full flex items-center gap-2 text-[var(--choco-beige)]">
-                            ⚠️ Signaler une panne
+                        @auth
+                        @if(auth()->user()->role->nom === 'superviseur')
+                        <button onclick="ouvrirPopupPanne()"
+                                class="bg-[var(--caramel-dark)] px-4 py-2 rounded-full flex items-center gap-2 text-white">
+                            Signaler une panne
                         </button>
+                        @endif
+                        @endauth
+
                     </div>
 
                     {{-- STATS --}}
@@ -521,5 +527,148 @@
         </div>
     </div>
 </div>
+
+<script>
+let panneActive = false;
+let popupPanne = null;
+
+function ouvrirPopupPanne() {
+    const message = prompt('Décris la panne :');
+    if (!message) return;
+
+    fetch('/alerte/panne', {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ message })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (!data.success) {
+            alert(data.message || 'Impossible de signaler la panne');
+        } else {
+            // Forcer la synchro immédiate
+            verifierPanne();
+        }
+    });
+}
+
+// Vérifie l'état serveur
+function verifierPanne() {
+    fetch('/api/alerte-active')
+        .then(r => r.json())
+        .then(data => {
+
+            // panne détectée
+            if (data.active && !panneActive) {
+                panneActive = true;
+                afficherPopupPanne(data.alerte);
+            }
+
+            // panne levée
+            if (!data.active && panneActive) {
+                panneActive = false;
+                retirerPopupPanne();
+            }
+        });
+}
+
+
+// Affiche le popup UNE SEULE FOIS
+function afficherPopupPanne(alerte) {
+    if (popupPanne) return;
+
+    popupPanne = document.createElement('div');
+    popupPanne.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]';
+
+    popupPanne.innerHTML = `
+        <div class="bg-white rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl text-center">
+
+            <!-- ICONE -->
+            <div class="w-20 h-20 bg-red-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="w-12 h-12 text-white"
+                     fill="none"
+                     viewBox="0 0 24 24"
+                     stroke="currentColor"
+                     stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M12 9v4m0 4h.01M5.07 19h13.86c1.54 0 2.5-1.67 1.73-3L13.73 4c-.77-1.33-2.69-1.33-3.46 0L3.34 16c-.77 1.33.19 3 1.73 3z"/>
+                </svg>
+            </div>
+
+            <!-- TITRE -->
+            <h2 class="text-2xl font-kavoon text-[var(--choco-brown)] mb-3">
+                Panne en cours
+            </h2>
+
+            <!-- MESSAGE -->
+            <p class="text-[var(--choco-brown)] font-medium mb-8">
+                ${alerte.message}
+            </p>
+
+            <!-- ACTIONS -->
+            ${
+                isSuperviseur()
+                ? `
+                    <button onclick="leverPanne()"
+                            class="w-full bg-[var(--green)]
+                                   text-[var(--choco-brown)]
+                                   py-3 px-6 rounded-2xl
+                                   font-kavoon text-lg
+                                   transition-all duration-200
+                                   hover:brightness-95">
+                        Lever la panne
+                    </button>
+                `
+                : `
+                    <p class="italic text-sm text-[var(--choco-brown)] opacity-70">
+                        En attente d’un superviseur…
+                    </p>
+                `
+            }
+
+        </div>
+    `;
+
+    document.body.appendChild(popupPanne);
+    document.body.classList.add('overflow-hidden');
+}
+
+
+// Retire le popup
+function retirerPopupPanne() {
+    if (popupPanne) popupPanne.remove();
+    popupPanne = null;
+    document.body.classList.remove('overflow-hidden');
+}
+
+// Lever la panne = ACTION SERVEUR
+function leverPanne() {
+    fetch('/alerte/panne/resoudre', {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        }
+    })
+    .then(() => {
+        // 🔥 on force un refresh immédiat
+        verifierPanne();
+    });
+}
+
+// Rôle
+function isSuperviseur() {
+    return @json(auth()->check() && auth()->user()->role->nom === 'superviseur');
+}
+
+// Polling
+setInterval(verifierPanne, 2000);
+verifierPanne();
+</script>
+
+
 
 @endsection

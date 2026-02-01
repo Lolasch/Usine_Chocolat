@@ -12,6 +12,7 @@ use App\Models\Objectif;
 use App\Models\ConsommationsStock;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class CommandeController extends Controller
 {

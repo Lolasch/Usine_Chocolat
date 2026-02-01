@@ -71,6 +71,11 @@ class User extends Authenticatable
                     ->withTimestamps();
     }
 
+    public function isSuperviseur(): bool
+    {
+        return $this->role?->nom === 'superviseur';
+    }
+
     public function usersEquipe()
     {
         return $this->hasOne(UsersEquipe::class, 'user_id');

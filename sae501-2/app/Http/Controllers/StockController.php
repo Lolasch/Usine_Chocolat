@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Stock;
 use App\Models\ConsommationsStock;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
 
 class StockController extends Controller
 {
@@ -14,7 +16,7 @@ class StockController extends Controller
         $stocks = Stock::with('chocolat')->get();
         return view('stocks.index', compact('stocks'));
     }
-    
+
     public function add(Request $request)
     {
         $request->validate([
