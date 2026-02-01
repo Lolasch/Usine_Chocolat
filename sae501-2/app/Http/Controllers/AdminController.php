@@ -17,22 +17,45 @@ class AdminController extends Controller
         $this->middleware('auth');
         $this->middleware(function ($request, $next) {
             $user = auth()->user();
-            if (!$user || !$user->role) {
+            if (!$user) {
                 abort(403, 'Vous n\'avez pas accès à cette page.');
             }
 
-            $roleAllowed = ['admin', 'administrateur', 'superviseur', 'supervisor'];
-            $userRole = strtolower($user->role->nom);
-            $hasAccess = false;
+            // Vérifier si l'utilisateur a un rôle admin/superviseur global
+            $hasGlobalAccess = false;
+            if ($user->role) {
+                $roleAllowed = ['admin', 'administrateur', 'superviseur', 'supervisor'];
+                $userRole = strtolower($user->role->nom);
 
-            foreach ($roleAllowed as $role) {
-                if (stripos($userRole, $role) !== false) {
-                    $hasAccess = true;
-                    break;
+                foreach ($roleAllowed as $role) {
+                    if (stripos($userRole, $role) !== false) {
+                        $hasGlobalAccess = true;
+                        break;
+                    }
                 }
             }
 
-            if (!$hasAccess) {
+            // Si pas d'accès global, vérifier le rôle dans l'équipe
+            if (!$hasGlobalAccess) {
+                $equipe = $user->equipes()->first();
+
+                if ($equipe) {
+                    $userEquipe = DB::table('users_equipes')
+                        ->where('user_id', $user->id)
+                        ->where('equipe_id', $equipe->id)
+                        ->first();
+
+                    if ($userEquipe && $userEquipe->role_id) {
+                        $roleEquipe = Role::find($userEquipe->role_id);
+
+                        if ($roleEquipe && stripos(strtolower($roleEquipe->nom), 'superviseur') !== false) {
+                            $hasGlobalAccess = true;
+                        }
+                    }
+                }
+            }
+
+            if (!$hasGlobalAccess) {
                 abort(403, 'Vous n\'avez pas accès à cette page. Seul un administrateur ou superviseur peut accéder à cette section.');
             }
 
@@ -115,6 +138,20 @@ class AdminController extends Controller
             'postes' => $nbPostesAssignes,
         ];
 
+        // Vérifier si l'utilisateur connecté est le vrai chef (superviseur global)
+        $isGlobalSupervisor = false;
+        if ($user->role) {
+            $roleAllowed = ['admin', 'administrateur', 'superviseur', 'supervisor'];
+            $userRole = strtolower($user->role->nom);
+
+            foreach ($roleAllowed as $role) {
+                if (stripos($userRole, $role) !== false) {
+                    $isGlobalSupervisor = true;
+                    break;
+                }
+            }
+        }
+
         return view('admin', [
             'etudiants' => $etudiants,
             'roles' => $roles,
@@ -122,7 +159,8 @@ class AdminController extends Controller
             'stats' => $stats,
             'selectedUser' => null,
             'search' => $search,
-            'isAdmin' => $isAdmin
+            'isAdmin' => $isAdmin,
+            'isGlobalSupervisor' => $isGlobalSupervisor
         ]);
     }
 

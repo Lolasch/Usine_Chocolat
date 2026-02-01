@@ -228,6 +228,7 @@
     const roles = @json($roles ?? []);
     const postes = @json($postes ?? []);
     const currentUserId = {{ auth()->id() }};
+    const isGlobalSupervisor = @json($isGlobalSupervisor ?? false);
 
     // Fonction pour afficher une confirmation personnalisée
     function showConfirm(message, title = 'Confirmation') {
@@ -362,10 +363,11 @@
 
         const posteNom = posteActuel?.nom || 'Aucun poste';
 
-        // Vérifier si c'est l'utilisateur connecté (le superviseur)
-        const isCurrentUser = user.id === currentUserId;
-        const disabledClass = isCurrentUser ? 'opacity-50 cursor-not-allowed' : '';
-        const disabledAttr = isCurrentUser ? 'disabled' : '';
+        // Vérifier si c'est l'utilisateur connecté ET qu'il est le vrai chef (superviseur global)
+        const isCurrentUser = user.id === currentUserId && isGlobalSupervisor;
+
+        // Si l'utilisateur connecté est superviseur promu (pas global), il ne peut modifier que les opérateurs
+        const canModify = isGlobalSupervisor || isOperateur;
 
         container.innerHTML = `
             <h3 class="text-2xl font-bold text-[var(--choco-brown)] mb-6 font-kavoon">Détail de l'étudiant</h3>
@@ -380,7 +382,7 @@
                         <p class="text-sm text-[var(--choco-brown)]/70">QLIO 2</p>
                         ${isCurrentUser ? '<p class="text-xs text-[var(--choco)] font-bold mt-1">Vous (Superviseur)</p>' : ''}
                     </div>
-                    ${isCurrentUser ? '' : `<button onclick="deleteUser(${user.id})" class="bg-[var(--choco)] text-white px-6 py-2 rounded-full font-bold hover:bg-[var(--choco-brown)] transition">
+                    ${isCurrentUser || !canModify ? '' : `<button onclick="deleteUser(${user.id})" class="bg-[var(--choco)] text-white px-6 py-2 rounded-full font-bold hover:bg-[var(--choco-brown)] transition">
                         Supprimer
                     </button>`}
                 </div>
@@ -394,7 +396,7 @@
 
                 <div>
                     <label class="text-sm font-bold text-[var(--choco-brown)] block mb-2">Rôle (dans cette équipe) :</label>
-                    ${isCurrentUser ? `<p class="text-[var(--choco-brown)]">Superviseur (non modifiable)</p>` : `<div class="flex gap-2 flex-wrap">
+                    ${isCurrentUser || !canModify ? `<p class="text-[var(--choco-brown)]">${roleActuel?.nom || 'Superviseur'} (non modifiable)</p>` : `<div class="flex gap-2 flex-wrap">
                         <button onclick="changeUserRole(${user.id}, 2)" class="px-4 py-2 rounded-full font-bold transition hover:opacity-80 ${isOperateur ? 'bg-[var(--choco)] text-white' : 'bg-[var(--choco-gold)] text-[var(--choco-brown)]'}">
                             Opérateur
                         </button>
@@ -404,7 +406,7 @@
                     </div>`}
                 </div>
 
-                ${isCurrentUser ? '' : `<div>
+                ${isCurrentUser || !canModify ? '' : `<div>
                     <label class="text-sm font-bold text-[var(--choco-brown)] block mb-2">Poste :</label>
                     <select onchange="changeUserPoste(${user.id}, this.value)" class="w-full px-4 py-2 rounded-full bg-[var(--green)] text-[var(--choco-brown)] focus:outline-none focus:ring-2 focus:ring-[var(--green)] cursor-pointer">
                         ${postesOptions}
