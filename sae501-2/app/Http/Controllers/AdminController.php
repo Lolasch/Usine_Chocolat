@@ -86,10 +86,33 @@ class AdminController extends Controller
         $roles = Role::all();
         $postes = Poste::all();
 
+        // Calculer les statistiques pour l'équipe du superviseur
+        if ($equipe) {
+            // Nombre d'utilisateurs dans l'équipe
+            $nbUtilisateurs = $equipe->users()->count();
+
+            // Vérifier si tous les utilisateurs ont un rôle défini dans l'équipe
+            $nbUtilisateursAvecRole = DB::table('users_equipes')
+                ->where('equipe_id', $equipe->id)
+                ->whereNotNull('role_id')
+                ->count();
+
+            // Nombre de postes assignés dans l'équipe
+            $nbPostesAssignes = DB::table('users_equipes')
+                ->where('equipe_id', $equipe->id)
+                ->whereNotNull('poste_id')
+                ->distinct('poste_id')
+                ->count('poste_id');
+        } else {
+            $nbUtilisateurs = 0;
+            $nbUtilisateursAvecRole = 0;
+            $nbPostesAssignes = 0;
+        }
+
         $stats = [
-            'utilisateurs_actifs' => User::where('actif', true)->count(),
-            'roles' => Role::count(),
-            'postes' => Poste::count(),
+            'utilisateurs_actifs' => $nbUtilisateurs,
+            'roles' => $nbUtilisateursAvecRole,
+            'postes' => $nbPostesAssignes,
         ];
 
         return view('admin', [
@@ -374,6 +397,12 @@ class AdminController extends Controller
         }
 
         // Mettre à jour le poste uniquement pour cette équipe
+        // Récupérer l'ancien poste avant la modification
+        $oldPosteId = DB::table('users_equipes')
+            ->where('user_id', $user->id)
+            ->where('equipe_id', $equipe->id)
+            ->value('poste_id');
+
         $updated = DB::table('users_equipes')
             ->where('user_id', $user->id)
             ->where('equipe_id', $equipe->id)
@@ -388,10 +417,19 @@ class AdminController extends Controller
 
         $poste = Poste::find($validated['poste_id']);
 
+        // Calculer si c'est un nouveau poste distinct
+        $nbPostesAssignes = DB::table('users_equipes')
+            ->where('equipe_id', $equipe->id)
+            ->whereNotNull('poste_id')
+            ->distinct('poste_id')
+            ->count('poste_id');
+
         return response()->json([
             'success' => true,
             'message' => 'Poste modifié avec succès',
-            'poste' => $poste
+            'poste' => $poste,
+            'had_poste_before' => !is_null($oldPosteId),
+            'nb_postes' => $nbPostesAssignes
         ]);
     }
 
