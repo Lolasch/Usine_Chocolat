@@ -35,12 +35,22 @@
                     <h2 class="font-kavoon text-sm text-[var(--choco-brown)] mb-2 text-center">
                         {{ $stock->nom }}
                     </h2>
-
                     <!-- Icône -->
                     <div class="flex justify-center mb-2">
-                        <div class="w-12 h-12 rounded-full bg-[var(--choco)] flex items-center justify-center text-xl shadow-inner">
-                            <!-- icone svg -->
-                        </div>
+                        @if($stock->chocolat && $stock->chocolat->image)
+                            <img
+                                src="{{ asset('images/choco_seul/' . $stock->chocolat->image) }}"
+                                alt="{{ $stock->chocolat->nom }}"
+                                class="w-12 h-auto object-contain"
+                            >
+                        @else
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                class="w-6 h-6 text-[var(--choco-beige)]"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M12 8v8m-4-4h8"/>
+                            </svg>
+                        @endif
                     </div>
 
                     <!-- Stock -->
@@ -188,9 +198,6 @@
 
     </div>
 </div>
-
-<!-- CHART.JS -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
     const labels = @json($stocks->pluck('nom'));

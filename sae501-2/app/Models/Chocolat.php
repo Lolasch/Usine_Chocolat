@@ -13,6 +13,7 @@ class Chocolat extends Model
 
     protected $fillable = [
         'nom',
+        'image',
         'description',
         'disponible',
     ];
@@ -25,7 +26,7 @@ class Chocolat extends Model
     {
         return $this->hasMany(Commande::class, 'chocolat_id');
     }
-    
+
     public function stock()
     {
         return $this->hasOne(Stock::class);

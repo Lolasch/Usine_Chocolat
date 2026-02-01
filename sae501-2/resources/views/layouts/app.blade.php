@@ -10,6 +10,10 @@
     <!-- Tailwind CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
 
+    <!-- CHART.JS -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
     <!-- GOOGLE FONT KAVOON -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -71,15 +75,22 @@
                         text-lg hover-caramel transition-colors duration-300">
                     Admin
                 </a>
-                <button class="bg-[var(--choco-gold)] text-[var(--choco-brown)]
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+
+                    <button
+                        type="submit"
+                        class="bg-[var(--choco-gold)] text-[var(--choco-brown)]
                             p-2 rounded-t-[2.25rem] rounded-b-3xl
                             hover-caramel transition-colors duration-300"
                         aria-label="Logout">
-                    <svg class="w-7 h-7 mx-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                    </svg>
-                </button>
+
+                        <svg class="w-7 h-7 mx-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                    </button>
+                </form>
             </nav>
 
             <!-- Menu Burger Mobile -->
@@ -100,12 +111,17 @@
                 <a href="#" class="block text-lg">Statistiques</a>
                 <a href="{{ url('/admin') }}" class="block text-lg">Admin</a>
 
-                <button class="flex items-center gap-2 text-lg">
-                    <svg class="w-7 h-7 mx-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                    </svg>
-                </button>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+
+                    <button type="submit" class="flex items-center gap-2 text-lg">
+                        <svg class="w-7 h-7 mx-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                        Déconnexion
+                    </button>
+                </form>
 
             </div>
 
@@ -114,8 +130,6 @@
 
     <!-- MAIN -->
     <main>
-        @include('layouts.navigation')
-        {{ $header ?? '' }}
         @yield('content')
     </main>
 

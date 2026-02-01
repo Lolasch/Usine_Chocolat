@@ -12,7 +12,7 @@ return new class extends Migration
     {
         // D'abord, supprimer toutes les commandes existantes (pour éviter les contraintes)
         DB::table('commandes')->delete();
-        
+
         // Ensuite, supprimer tous les chocolats
         DB::table('chocolats')->delete();
 
@@ -24,6 +24,7 @@ return new class extends Migration
             [
                 'nom' => 'Chocolat noir',
                 'description' => 'Chocolat noir 70% cacao',
+                'image' => 'noir.svg',
                 'disponible' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -31,6 +32,7 @@ return new class extends Migration
             [
                 'nom' => 'Chocolat noir aux amandes',
                 'description' => 'Chocolat noir avec éclats d\'amandes',
+                'image' => 'noir_amande.svg',
                 'disponible' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -38,6 +40,7 @@ return new class extends Migration
             [
                 'nom' => 'Chocolat noir aux noisettes',
                 'description' => 'Chocolat noir avec éclats de noisettes',
+                'image' => 'noir_noisette.svg',
                 'disponible' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -45,6 +48,7 @@ return new class extends Migration
             [
                 'nom' => 'Chocolat au lait',
                 'description' => 'Chocolat au lait onctueux',
+                'image' => 'lait.svg',
                 'disponible' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -52,6 +56,7 @@ return new class extends Migration
             [
                 'nom' => 'Chocolat lait aux amandes',
                 'description' => 'Chocolat au lait avec éclats d\'amandes',
+                'image' => 'lait_amande.svg',
                 'disponible' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -59,6 +64,7 @@ return new class extends Migration
             [
                 'nom' => 'Chocolat lait aux noisettes',
                 'description' => 'Chocolat au lait avec éclats de noisettes',
+                'image' => 'lait_noisette.svg',
                 'disponible' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),

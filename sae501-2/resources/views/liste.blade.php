@@ -125,23 +125,42 @@
                             // Vérifier si c'est le dernier poste
                             const estDernierPoste = !commandesData.find(p => p.ordre > poste.ordre);
 
-                            return `
-                                <div class="bg-white rounded-3xl p-4 flex items-center justify-between border border-[var(--choco)]">
-                                    <div class="flex items-center gap-4 flex-1">
-                                        <div class="w-10 h-10 bg-[var(--choco)] rounded-full flex items-center justify-center text-[var(--choco-beige)]">
-                                        </div>
-                                        <div class="flex-1">
-                                            <div class="flex gap-2 mb-1">
-                                                <span class="bg-[var(--caramel)] text-xs font-medium px-3 py-1 rounded-full text-[var(--choco-brown)]">${cmd.numero_commande}</span>
-                                            </div>
-                                            <p class="font-medium text-lg font-kavoon text-[var(--choco-brown)]">${cmd.chocolat.nom}</p>
-                                            <p class="text-md font-medium text-[var(--choco-brown)]">
-                                                Nom de commande :
-                                                <span class="font-kavoon text-[var(--choco-brown)]">${cmd.visiteur.nom} ${cmd.visiteur.prenom}</span>
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div class="flex gap-3">
+                        return `
+                        <div class="bg-white rounded-3xl p-5 border border-[var(--choco)] shadow-sm flex justify-between items-center">
+
+                            <!-- GAUCHE -->
+                            <div class="flex gap-4 items-center flex-1">
+
+                                <!-- IMAGE -->
+                                <div class="w-14 h-14 flex items-center justify-center shrink-0">
+                                    ${
+                                        cmd.chocolat?.image
+                                            ? `<img src="/images/choco_seul/${cmd.chocolat.image}"
+                                                alt="${cmd.chocolat.nom}"
+                                                class="max-h-14 w-auto object-contain">`
+                                            : `<div class="w-14 h-14 bg-[var(--choco)] rounded-full"></div>`
+                                    }
+                                </div>
+
+                                <!-- TEXTE -->
+                                <div class="flex flex-col gap-1">
+                                    <span class="bg-[var(--caramel)] text-xs font-kavoon px-3 py-1 rounded-full w-fit text-[var(--choco-brown)]">
+                                        ${cmd.numero_commande}
+                                    </span>
+
+                                    <p class="text-lg font-kavoon text-[var(--choco-brown)] leading-tight">
+                                        ${cmd.chocolat.nom}
+                                    </p>
+
+                                    <p class="text-sm text-[var(--choco-brown)] font-medium">
+                                        Nom de commande :
+                                        <span class="font-kavoon">${cmd.visiteur.nom} ${cmd.visiteur.prenom}</span>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- DROITE : ACTIONS -->
+                            <div class="flex gap-3 ml-4 shrink-0">
                                         <!-- Bouton Finaliser ou Suivant -->
                                         <button onclick="${estDernierPoste ? 'finaliserCommande(' + cmd.id + ')' : 'prochainPoste(' + cmd.id + ')'}"
                                                 class="flex items-center justify-center ${estDernierPoste ? 'w-24 px-2' : 'w-12'} bg-[var(--green)] hover:brightness-95 rounded-tl-[2.25rem] rounded-tr-[2.25rem] rounded-bl-3xl rounded-br-3xl transition text-xs font-kavoon text-[var(--choco)]"
@@ -150,15 +169,29 @@
                                                 '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-[var(--choco-brown)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>'
                                             }
                                         </button>
+                                        
                                         <!-- Bouton Supprimer -->
                                         <button onclick="supprimerCommande(${cmd.id})" class="w-12 h-12 flex items-center justify-center bg-[var(--green)] rounded-tl-[2.25rem] rounded-tr-[2.25rem] rounded-bl-3xl rounded-br-3xl hover:brightness-95 transition" aria-label="Supprimer">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-[var(--choco-brown)] fill="none" viewBox="0 0 20 20" stroke="currentColor" stroke-width="2">
-                                                <path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 0 0 6 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 1 0 .23 1.482l.149-.022.841 10.518A2.75 2.75 0 0 0 7.596 19h4.807a2.75 2.75 0 0 0 2.742-2.53l.841-10.52.149.023a.75.75 0 0 0 .23-1.482A41.03 41.03 0 0 0 14 4.193V3.75A2.75 2.75 0 0 0 11.25 1h-2.5ZM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4ZM8.58 7.72a.75.75 0 0 0-1.5.06l.3 7.5a.75.75 0 1 0 1.5-.06l-.3-7.5Zm4.34.06a.75.75 0 1 0-1.5-.06l-.3 7.5a.75.75 0 1 0 1.5.06l.3-7.5Z" clip-rule="evenodd" />
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="w-6 h-6 text-[var(--choco-brown)]"
+                                                fill="none"
+                                                viewBox="0 0 20 20"
+                                                stroke="currentColor"
+                                                stroke-width="2">
+                                                <path fill-rule="evenodd"
+                                                    d="M8.75 1A2.75 2.75 0 0 0 6 3.75v.443
+                                                        c-.795.077-1.584.176-2.365.298a.75.75 0 1 0 .23 1.482
+                                                        l.841 10.518A2.75 2.75 0 0 0 7.596 19h4.807
+                                                        a2.75 2.75 0 0 0 2.742-2.53l.841-10.52.149.023
+                                                        a.75.75 0 0 0 .23-1.482A41.03 41.03 0 0 0 14 4.193V3.75
+                                                        A2.75 2.75 0 0 0 11.25 1h-2.5Z"
+                                                    clip-rule="evenodd"/>
                                             </svg>
                                         </button>
-                                    </div>
-                                </div>
-                            `;
+                            </div>
+                        </div>
+                        `;
+
                         }).join('');
                     }
 

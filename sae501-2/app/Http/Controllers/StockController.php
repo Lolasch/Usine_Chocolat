@@ -14,6 +14,7 @@ class StockController extends Controller
         $stocks = Stock::with('chocolat')->get();
         return view('stocks.index', compact('stocks'));
     }
+    
     public function add(Request $request)
     {
         $request->validate([
