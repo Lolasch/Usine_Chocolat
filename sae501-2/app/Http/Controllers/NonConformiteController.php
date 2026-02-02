@@ -18,12 +18,14 @@ class NonConformiteController extends Controller
         $validated = $request->validate([
             'commande_id' => 'required|exists:commandes,id',
             'poste_id' => 'nullable|exists:postes,id',
+            'type' => 'required|in:qualite,poids,quantite,emballage,casse',
             'description' => 'required|string|max:255',
         ]);
 
         NonConformite::create([
             'commande_id'   => $validated['commande_id'],
             'poste_id'      => $validated['poste_id'] ?? null,
+            'type'           => $validated['type'],
             'description'   => $validated['description'],
             'date_detection'=> now(),
         ]);

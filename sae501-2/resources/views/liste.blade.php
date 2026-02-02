@@ -111,6 +111,24 @@
 
                                 <form id="formNonConformite">
                                     <input type="hidden" id="nc_commande_id">
+                                <!-- TYPE DE NON-CONFORMITÉ -->
+                                    <label class="text-sm font-medium text-[var(--choco-brown)]">
+                                        Type de non-conformité
+                                    </label>
+
+                                    <select
+                                        id="nc_type"
+                                        class="w-full mt-2 mb-4 p-3 rounded-xl border border-[var(--choco)]
+                                            focus:outline-none text-[var(--choco-brown)] bg-white"
+                                        required
+                                    >
+                                        <option value="">— Choisir un type —</option>
+                                        <option value="qualite">Qualité</option>
+                                        <option value="poids">Poids</option>
+                                        <option value="quantite">Quantité</option>
+                                        <option value="emballage">Emballage</option>
+                                        <option value="casse">Casse</option>
+                                    </select>
 
                                     <label class="text-sm font-medium text-[var(--choco-brown)]">
                                         Description
@@ -682,6 +700,7 @@ document.getElementById('formNonConformite').addEventListener('submit', function
         },
         body: JSON.stringify({
             commande_id: document.getElementById('nc_commande_id').value,
+            type: document.getElementById('nc_type').value,
             description: document.getElementById('nc_description').value
         })
     })

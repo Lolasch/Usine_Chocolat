@@ -23,33 +23,47 @@
         </h1>
 
         <!-- KPI -->
-        <div class="bg-[var(--choco-beige)] rounded-2xl shadow-lg p-4 grid grid-cols-3 gap-4 mb-6">
+        <div class="p-4 mb-6">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
 
-            <div class="bg-[var(--green)] rounded-full px-6 py-4 shadow text-center">
-                <span class="font-kavoon text-lg text-[var(--choco-brown)]">1.</span>
-                <p class="font-semibold">Lead Time</p>
-                <p class="font-bold text-[var(--choco)]">35 minutes</p>
+                <!-- KPI 1 -->
+                <div class="flex items-center justify-center gap-4 bg-[var(--green)] rounded-full px-6 py-4 shadow-lg">
+                    <span class="font-kavoon text-2xl text-[var(--choco-brown)]">1.</span>
+                    <div class="text-center">
+                        <p class="font-bold text-md text-[var(--choco-brown)]">Lead Time</p>
+                        <p class="font-medium font-kavoon text-[var(--choco)] text-xl">35 minutes</p>
+                    </div>
+                </div>
+
+                <!-- KPI 2 -->
+                <div class="flex items-center justify-center gap-4 bg-[var(--green)] rounded-full px-6 py-4 shadow-lg">
+                    <span class="font-kavoon text-2xl text-[var(--choco-brown)]">2.</span>
+                    <div class="text-center">
+                        <p class="font-bold text-md text-[var(--choco-brown)]">Non conformités</p>
+                        <p class="font-medium font-kavoon text-[var(--choco)] text-xl">
+                            {{ $nbNonConformes }} pièce{{ $nbNonConformes > 1 ? 's' : '' }}
+                        </p>
+                    </div>
+                </div>
+
+                <!-- KPI 3 -->
+                <div class="flex items-center justify-center gap-4 bg-[var(--green)] rounded-full px-6 py-4 shadow-lg">
+                    <span class="font-kavoon text-2xl text-[var(--choco-brown)]">3.</span>
+                    <div class="text-center">
+                        <p class="font-bold text-md text-[var(--choco-brown)]">Taux rotation des stocks</p>
+                        <p class="font-medium font-kavoon text-[var(--choco)] text-xl">17,3 %</p>
+                    </div>
+                </div>
+
             </div>
-
-            <div class="bg-[var(--green)] rounded-full px-6 py-4 shadow text-center">
-                <span class="font-kavoon text-lg text-[var(--choco-brown)]">2.</span>
-                <p class="font-semibold">Non conformités</p>
-                <p class="font-bold text-[var(--choco)]">7 pièces</p>
-            </div>
-
-            <div class="bg-[var(--green)] rounded-full px-6 py-4 shadow text-center">
-                <span class="font-kavoon text-lg text-[var(--choco-brown)]">3.</span>
-                <p class="font-semibold">Taux rotation des stocks</p>
-                <p class="font-bold text-[var(--choco)]">17,3 %</p>
-            </div>
-
         </div>
+
 
         <!-- ZONE GRAPHIQUES -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
             <!-- LEAD TIME -->
-            <div class="col-span-2 bg-[var(--choco-beige)] rounded-2xl shadow-lg p-4">
+            <div class="lg:col-span-3 bg-[var(--choco-beige)] rounded-2xl shadow-lg p-4">
                 <h2 class="font-kavoon text-lg text-[var(--choco-brown)] mb-3">
                     Lead-time par étape
                 </h2>
@@ -71,52 +85,93 @@
                 </div>
             </div>
 
-            <!-- NON CONFORMITÉS -->
-            <div class="bg-[var(--choco-beige)] rounded-2xl shadow-lg p-4">
-                <h2 class="font-kavoon text-lg text-[var(--choco-brown)] mb-3">
-                    Non-conformités
+            <!-- QUALITÉ / CONFORMITÉ -->
+            <div class="lg:col-span-1 bg-[var(--choco-beige)] rounded-2xl shadow-lg p-5 flex flex-col justify-between">
+
+                <h2 class="font-kavoon text-lg text-[var(--choco-brown)] mb-4">
+                    Qualité / Conformité
                 </h2>
 
-                <div class="flex items-center gap-4">
-                    <div class="w-24 h-24 rounded-full border-8 border-[var(--green)] border-r-[var(--choco)]"></div>
-
-                    <div class="space-y-2 text-sm">
-                        <div class="flex items-center gap-2">
-                            <span class="w-3 h-3 bg-[var(--green)] rounded-full"></span> Qualité
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <span class="w-3 h-3 bg-[var(--choco)] rounded-full"></span> Poids
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <span class="w-3 h-3 bg-[var(--caramel-dark)] rounded-full"></span> Nombre
-                        </div>
-                    </div>
+                <!-- TAUX GLOBAL -->
+                <div class="text-center mb-4">
+                    <p class="text-sm text-[var(--choco-brown)]">Taux de conformité</p>
+                    <p class="font-kavoon text-4xl text-[var(--caramel-dark)]">
+                        {{ $tauxConformite }} %
+                    </p>
                 </div>
+
+                <!-- DÉTAILS -->
+                <div class="space-y-3 text-sm">
+
+                    <div class="flex justify-between items-center bg-[var(--choco)] rounded-xl px-4 py-3">
+                        <span class="font-medium text-[var(--choco-beige)]">
+                            Commandes conformes
+                        </span>
+                        <span class="font-bold text-[var(--green)] text-lg">
+                            {{ $commandesConformes }}
+                        </span>
+                    </div>
+
+                    <div class="flex justify-between items-center bg-[var(--choco)] rounded-xl px-4 py-3">
+                        <span class="font-medium text-[var(--choco-beige)]">
+                            Commandes non conformes
+                        </span>
+                        <span class="font-bold text-[var(--caramel)] text-lg">
+                            {{ $commandesNonConformes }}
+                        </span>
+                    </div>
+
+                </div>
+
             </div>
 
+
+
             <!-- STOCKS CRITIQUES -->
-            <div class="col-span-3 bg-[var(--choco-beige)] rounded-2xl shadow-lg p-4">
+            <div class="lg:col-span-2 bg-[var(--choco-beige)] rounded-2xl shadow-lg p-4">
                 <h2 class="font-kavoon text-lg text-[var(--choco-brown)] mb-3">
                     Stocks critiques
                 </h2>
 
                 <div class="space-y-3 text-sm">
-                    <div class="flex justify-between items-center">
-                        <span>Chocolat lait noisette</span>
-                        <span class="bg-red-500 text-white px-3 py-1 rounded-full text-xs">Critique</span>
-                    </div>
 
-                    <div class="flex justify-between items-center">
-                        <span>Chocolat noir nature</span>
-                        <span class="bg-[var(--caramel)] text-white px-3 py-1 rounded-full text-xs">Attention</span>
-                    </div>
+                    @forelse($stocks as $stock)
 
-                    <div class="flex justify-between items-center">
-                        <span>Chocolat noir amandes</span>
-                        <span class="bg-[var(--green)] text-[var(--choco-brown)] px-3 py-1 rounded-full text-xs">OK</span>
-                    </div>
+                        <div class="flex justify-between items-center">
+
+                            <!-- Nom du stock -->
+                            <span class="font-medium text-[var(--choco-brown)]">
+                                {{ $stock->nom }}
+                            </span>
+
+                            <!-- État -->
+                            @if($stock->quantite <= 0)
+                                <span class="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold">
+                                    Critique
+                                </span>
+
+                            @elseif($stock->quantite <= $stock->seuil_min)
+                                <span class="bg-[var(--caramel-dark)] text-white px-3 py-1 rounded-full text-xs font-bold">
+                                    Attention
+                                </span>
+
+                            @else
+                                <span class="bg-[var(--green)] text-[var(--choco-brown)] px-3 py-1 rounded-full text-xs font-bold">
+                                    OK
+                                </span>
+                            @endif
+
+                        </div>
+
+                    @empty
+                        <p class="text-center text-[var(--choco-brown)] text-sm italic">
+                            Aucun stock enregistré
+                        </p>
+                    @endforelse
+
                 </div>
             </div>
+
 
         </div>
 

@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class NonConformite
- * 
+ *
  * @property int $id
  * @property int $commande_id
  * @property int|null $poste_id
@@ -19,7 +19,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon $date_detection
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * 
+ *
  * @property Commande $commande
  * @property Poste|null $poste
  *
@@ -38,6 +38,7 @@ class NonConformite extends Model
 	protected $fillable = [
 		'commande_id',
 		'poste_id',
+        'type',
 		'description',
 		'date_detection'
 	];
