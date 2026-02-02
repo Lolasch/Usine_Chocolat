@@ -440,12 +440,10 @@
         // Afficher la popup si la commande est déjà finalisée au chargement
         @if($commande->finalisee)
             console.log('Commande finalisée détectée');
-            window.addEventListener('DOMContentLoaded', () => {
-                console.log('DOM chargé, affichage du popup dans 1 seconde');
-                setTimeout(() => {
-                    afficherPopup();
-                }, 1000);
-            });
+            setTimeout(() => {
+                console.log('Affichage du popup');
+                afficherPopup();
+            }, 1000);
         @else
             console.log('Commande non finalisée');
         @endif
