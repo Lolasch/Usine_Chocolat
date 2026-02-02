@@ -1,5 +1,8 @@
 @extends('layouts.app')
 
+@section('title', 'Statistiques | L\'Usine Chocolat 2026')
+
+
 @section('content')
 <div class="bg-[var(--caramel)] min-h-screen py-8">
 

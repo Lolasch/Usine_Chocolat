@@ -1,8 +1,10 @@
 @extends('layouts.app')
 
+@section('title', 'Liste des commandes | L\'Usine Chocolat 2026')
+
 @section('content')
 
-<div class="bg-[var(--choco-gold)]">
+<div class="bg-[var(--choco-gold)] min-h-screen">
     <div class="max-w-[1400px] mx-auto p-6">
         {{-- HEADER --}}
         <div class="bg-[var(--choco)] rounded-full px-6 py-4 text-[var(--choco-beige)] mb-6">
@@ -473,7 +475,7 @@
                 <div class="bg-[var(--choco-beige)] rounded-3xl p-6 flex-1">
 
                     {{-- SEARCH / ACTIONS --}}
-                    <div class="flex gap-4 mb-4">
+                    <div class="flex flex-col lg:flex-row gap-4 mb-4">
                         <div class="flex items-center gap-4 bg-[var(--green)] px-6 py-3 rounded-full flex-1
                                     border-2 border-[var(--choco-brown)]">
 
@@ -498,23 +500,29 @@
                                 onkeyup="mettreAJourAffichage()"
                             />
                         </div>
+                        <div class="flex gap-3 shrink-0">
+                            <button onclick="ouvrirFiltrePopup()"
+                                    class="bg-white text-[var(--choco-brown)] px-4 py-2 rounded-full
+                                        flex items-center gap-2 border-2 border-[var(--choco-brown)]">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                    fill="currentColor" class="size-5">
+                                    <path fill-rule="evenodd"
+                                        d="M2.628 1.601C5.028 1.206 7.49 1 10 1s4.973.206 7.372.601a.75.75 0 0 1 .628.74v2.288a2.25 2.25 0 0 1-.659 1.59l-4.682 4.683a2.25 2.25 0 0 0-.659 1.59v3.037c0 .684-.31 1.33-.844 1.757l-1.937 1.55A.75.75 0 0 1 8 18.25v-5.757a2.25 2.25 0 0 0-.659-1.591L2.659 6.22A2.25 2.25 0 0 1 2 4.629V2.34a.75.75 0 0 1 .628-.74Z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                                Filtrer
+                            </button>
 
-                        <button onclick="ouvrirFiltrePopup()"
-                                class="bg-white text-[var(--choco-brown)]  px-4 py-2 rounded-full flex items-center gap-2 border-2 border-[var(--choco-brown)]">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">
-                            <path fill-rule="evenodd" d="M2.628 1.601C5.028 1.206 7.49 1 10 1s4.973.206 7.372.601a.75.75 0 0 1 .628.74v2.288a2.25 2.25 0 0 1-.659 1.59l-4.682 4.683a2.25 2.25 0 0 0-.659 1.59v3.037c0 .684-.31 1.33-.844 1.757l-1.937 1.55A.75.75 0 0 1 8 18.25v-5.757a2.25 2.25 0 0 0-.659-1.591L2.659 6.22A2.25 2.25 0 0 1 2 4.629V2.34a.75.75 0 0 1 .628-.74Z" clip-rule="evenodd" />
-                        </svg>
-                        Filtrer
-                        </button>
-
-                        @auth
-                        @if(auth()->user()->role->nom === 'superviseur')
-                        <button onclick="ouvrirPopupPanne()"
-                                class="bg-[var(--caramel-dark)] px-4 py-2 rounded-full flex items-center gap-2 text-white">
-                            Signaler une panne
-                        </button>
-                        @endif
-                        @endauth
+                            @auth
+                            @if(auth()->user()->role->nom === 'superviseur')
+                                <button onclick="ouvrirPopupPanne()"
+                                        class="bg-[var(--caramel-dark)] px-4 py-2 rounded-full
+                                            flex items-center gap-2 text-white">
+                                    Signaler une panne
+                                </button>
+                            @endif
+                            @endauth
+                        </div>
 
                     </div>
 

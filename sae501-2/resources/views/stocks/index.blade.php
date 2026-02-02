@@ -1,18 +1,15 @@
 @extends('layouts.app')
 
+@section('title', 'Stocks | L\'Usine Chocolat 2026')
+
 @section('content')
 
 <div class="max-w-7xl mx-auto px-6 py-6">
 
     <!-- Header -->
-    <div class="mb-6">
-        <h1 class="font-kavoon text-4xl text-[var(--choco-brown)] mb-1">
+        <h1 class="font-kavoon text-4xl text-[var(--choco-brown)] mb-6">
             Frigo
         </h1>
-        <p class="text-base text-[var(--choco)]">
-            Gestion des stocks
-        </p>
-    </div>
 
     <!-- FRIGO + GRAPHIQUE -->
     <div class="flex flex-col lg:flex-row gap-6 items-stretch">

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', "L'Usine Chocolat") }}</title>
+    <title>@yield('title', config('app.name'))</title>
 
     <!-- Tailwind CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -19,7 +19,15 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Kavoon&display=swap" rel="stylesheet">
 
+    <!-- FAVICON -->
+    <link rel="icon" type="image/svg+xml" href="{{ asset('images/autre/seul_blanc.svg') }}">
+
+
     <!-- Styles -->
+    <title>
+        @yield('title', config('app.name'))
+    </title>
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <!-- Thème chocolat custom -->
@@ -39,13 +47,13 @@
         }
     </style>
 </head>
-<body class="font-sans antialiased bg-gradient-to-br from-[#FDF3D8] to-[#F5E8C7] min-h-screen flex flex-col">
+<body class="font-sans antialiased bg-[var(--choco-beige)] min-h-screen flex flex-col">
 
     <!-- HEADER -->
     <header class="bg-[var(--choco-brown)] text-[var(--choco-beige)]">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
             <!-- Logo -->
-            <a href="{{ url('/liste') }}" class="flex items-center gap-4">
+            <a href="{{ url('/liste') }}" class="flex items-center gap-4 pr-2">
                 <img src="{{ asset('images/logos/usine_choco_26_blanc2.svg') }}" alt="Usine Chocolat" class="h-16">
             </a>
 
@@ -53,25 +61,25 @@
             <nav class="hidden md:flex items-center gap-3 font-kavoon font-medium">
                 <a href="{{ url('/liste') }}"
                 class="bg-[var(--choco-gold)] text-[var(--choco-brown)]
-                        px-6 py-2 rounded-full
+                        px-4 py-2 rounded-full
                         text-lg hover-caramel transition-colors duration-300">
                     Commandes
                 </a>
                 <a href="{{ route('stocks.index') }}"
                 class="bg-[var(--choco-gold)] text-[var(--choco-brown)]
-                        px-6 py-2 rounded-full
+                        px-4 py-2 rounded-full
                         text-lg hover-caramel transition-colors duration-300">
                     Frigo
                 </a>
                 <a href="{{ route('statistiques.index') }}"
                 class="bg-[var(--choco-gold)] text-[var(--choco-brown)]
-                        px-6 py-2 rounded-full
+                        px-4 py-2 rounded-full
                         text-lg hover-caramel transition-colors duration-300">
                     Statistiques
                 </a>
                 <a href="{{ url('/admin') }}"
                 class="bg-[var(--choco-gold)] text-[var(--choco-brown)]
-                        px-6 py-2 rounded-full
+                        px-4 py-2 rounded-full
                         text-lg hover-caramel transition-colors duration-300">
                     Admin
                 </a>
@@ -104,7 +112,7 @@
             </div>
             <!-- MENU MOBILE -->
             <div id="mobile-menu"
-                class="md:hidden hidden bg-[var(--choco-brown)] text-[var(--choco-beige)] px-6 py-4 space-y-3 font-kavoon font-medium">
+                class="md:hidden hidden bg-[var(--choco-brown)] text-[var(--choco-beige)] px-4 py-4 space-y-3 font-kavoon font-medium">
 
                 <a href="{{ url('/liste') }}" class="block text-lg">Commandes</a>
                 <a href="{{ route('stocks.index') }}" class="block text-lg">Frigo</a>
@@ -132,33 +140,6 @@
     <main>
         @yield('content')
     </main>
-
-    <!-- Footer -->
-    <footer class="bg-[#5a463a] py-6 text-center text-xs text-[#e6d5b8]">
-        <div class="max-w-6xl mx-auto px-4">
-            <div class="flex items-center justify-center space-x-16">
-                <img src="/images/logos/usine_choco_26_blanc2.svg" alt="icône logo"
-                    class="w-auto h-10 object-contain">
-
-                <div class="text-center space-y-2 min-w-[320px]">
-                    <p class="font-semibold text-md text-[#e6d5b8]">
-                        Copyright 2026 DRINHAUSEN Lou - SCHMITT Lola
-                    </p>
-                    <div class="flex flex-wrap items-center justify-center gap-6 text-md">
-                        <a href="#" class="underline hover:text-[#e6d5b8] hover:underline-offset-2 transition-all">
-                            Mentions légales
-                        </a>
-                        <a href="#" class="underline hover:text-[#e6d5b8] hover:underline-offset-2 transition-all">
-                            Crédits
-                        </a>
-                    </div>
-                </div>
-
-                <img src="/images/logos/haguenau.png" alt="icône haguenau"
-                    class="w-auto h-10 object-contain">
-            </div>
-        </div>
-    </footer>
 
     <!-- Script Hamburger -->
     <script>
