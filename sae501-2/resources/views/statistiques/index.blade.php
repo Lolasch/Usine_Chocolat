@@ -51,7 +51,9 @@
                     <span class="font-kavoon text-2xl text-[var(--choco-brown)]">3.</span>
                     <div class="text-center">
                         <p class="font-bold text-md text-[var(--choco-brown)]">Taux rotation des stocks</p>
-                        <p class="font-medium font-kavoon text-[var(--choco)] text-xl">17,3 %</p>
+                        <p class="font-medium font-kavoon text-[var(--choco)] text-xl">
+                            {{ $tauxRotationStocks }} %
+                        </p>
                     </div>
                 </div>
 
@@ -94,8 +96,22 @@
 
                 <!-- TAUX GLOBAL -->
                 <div class="text-center mb-4">
-                    <p class="text-sm text-[var(--choco-brown)]">Taux de conformité</p>
-                    <p class="font-kavoon text-4xl text-[var(--caramel-dark)]">
+                    <p class="text-md font-bold text-[var(--choco-brown)] pb-4">Taux de conformité</p>
+                    <!-- GRAPHIQUE CIRCULAIRE -->
+                    <div class="flex justify-center mb-4">
+                        <div class="w-36 h-36 relative">
+                            <canvas id="conformiteChart"></canvas>
+
+                            <!-- TEXTE AU CENTRE -->
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <span class="font-kavoon text-xl text-[var(--choco-brown)]">
+                                    {{ $tauxConformite }}%
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="font-kavoon text-4xl text-[var(--choco-brown)]">
                         {{ $tauxConformite }} %
                     </p>
                 </div>
@@ -104,7 +120,7 @@
                 <div class="space-y-3 text-sm">
 
                     <div class="flex justify-between items-center bg-[var(--choco)] rounded-xl px-4 py-3">
-                        <span class="font-medium text-[var(--choco-beige)]">
+                        <span class="font-medium text-[var(--green)]">
                             Commandes conformes
                         </span>
                         <span class="font-bold text-[var(--green)] text-lg">
@@ -113,7 +129,7 @@
                     </div>
 
                     <div class="flex justify-between items-center bg-[var(--choco)] rounded-xl px-4 py-3">
-                        <span class="font-medium text-[var(--choco-beige)]">
+                        <span class="font-medium text-[var(--caramel)]">
                             Commandes non conformes
                         </span>
                         <span class="font-bold text-[var(--caramel)] text-lg">
@@ -127,44 +143,62 @@
 
 
 
-            <!-- STOCKS CRITIQUES -->
-            <div class="lg:col-span-2 bg-[var(--choco-beige)] rounded-2xl shadow-lg p-4">
+            <!-- STOCKS  -->
+            <div class="lg:col-span-2 bg-[var(--choco-beige)] rounded-2xl shadow p-4">
+
                 <h2 class="font-kavoon text-lg text-[var(--choco-brown)] mb-3">
-                    Stocks critiques
+                    Détail des stocks
                 </h2>
 
-                <div class="space-y-3 text-sm">
+                <div class="space-y-2 text-sm">
 
                     @forelse($stocks as $stock)
 
-                        <div class="flex justify-between items-center">
+                        @php
+                            $ratio = $stock->seuil_min > 0
+                                ? min(100, round(($stock->quantite / $stock->seuil_min) * 100))
+                                : 0;
 
-                            <!-- Nom du stock -->
-                            <span class="font-medium text-[var(--choco-brown)]">
-                                {{ $stock->nom }}
-                            </span>
+                            if ($stock->quantite <= 0) {
+                                $etat = 'Critique';
+                                $color = 'bg-red-600';
+                            } elseif ($stock->quantite <= $stock->seuil_min) {
+                                $etat = 'Attention';
+                                $color = 'bg-[var(--caramel-dark)]';
+                            } else {
+                                $etat = 'OK';
+                                $color = 'bg-[var(--green)]';
+                            }
+                        @endphp
 
-                            <!-- État -->
-                            @if($stock->quantite <= 0)
-                                <span class="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold">
-                                    Critique
+                        <div class="bg-white rounded-lg px-3 py-2 border-2 border-[var(--caramel)]">
+
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="font-medium text-[var(--choco-brown)] truncate">
+                                    {{ $stock->nom }}
                                 </span>
 
-                            @elseif($stock->quantite <= $stock->seuil_min)
-                                <span class="bg-[var(--caramel-dark)] text-white px-3 py-1 rounded-full text-xs font-bold">
-                                    Attention
+                                <span class="{{ $color }} text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                                    {{ $etat }}
                                 </span>
+                            </div>
 
-                            @else
-                                <span class="bg-[var(--green)] text-[var(--choco-brown)] px-3 py-1 rounded-full text-xs font-bold">
-                                    OK
-                                </span>
-                            @endif
+                            <div class="flex items-center gap-3">
+                                <div class="text-xs text-[var(--choco-brown)] whitespace-nowrap">
+                                    <span class="font-semibold">{{ $stock->quantite }}</span>
+                                    /
+                                    <span class="opacity-70">{{ $stock->seuil_min }}</span>
+                                </div>
+
+                                <div class="flex-1 h-1.5 bg-[var(--choco)]/20 rounded-full overflow-hidden">
+                                    <div class="h-full {{ $color }}" style="width: {{ $ratio }}%"></div>
+                                </div>
+                            </div>
 
                         </div>
 
                     @empty
-                        <p class="text-center text-[var(--choco-brown)] text-sm italic">
+                        <p class="text-center text-[var(--choco-brown)] italic text-sm">
                             Aucun stock enregistré
                         </p>
                     @endforelse
@@ -174,15 +208,51 @@
 
 
         </div>
-
-        <!-- BOUTON -->
-        <div class="flex justify-center mt-6">
-            <button class="bg-[var(--choco-brown)] text-[var(--choco-beige)] px-6 py-2 rounded-full shadow hover-caramel transition">
-                Récupérer les données sous forme de tableau
-            </button>
-        </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const ctx = document.getElementById('conformiteChart');
+
+    if (!ctx) return;
+
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Conformes', 'Non conformes'],
+            datasets: [{
+                data: [
+                    {{ $commandesConformes }},
+                    {{ $commandesNonConformes }}
+                ],
+                backgroundColor: [
+                    'rgb(110, 226, 182)',
+                    'rgb(238, 131, 23)'
+                ],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            cutout: '70%',
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: '#3b2a20',
+                    titleColor: '#f5f0e6',
+                    bodyColor: '#f5f0e6'
+                }
+            }
+        }
+    });
+
+});
+</script>
+
 
 
 @endsection

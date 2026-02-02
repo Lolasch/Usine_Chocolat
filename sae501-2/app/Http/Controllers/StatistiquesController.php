@@ -26,10 +26,28 @@ class StatistiquesController extends Controller
         $commandesConformes = $totalCommandes - $commandesNonConformes;
 
         $nbNonConformes = NonConformite::count();
-        
+
         $tauxConformite = $totalCommandes > 0
         ? round(($commandesConformes / $totalCommandes) * 100, 1)
         : 0;
+
+        // Nombre total de chocolats
+        $totalStocks = Stock::count();
+
+        $score = Stock::selectRaw("
+            SUM(
+                CASE
+                    WHEN quantite <= 0 THEN 1
+                    WHEN quantite <= seuil_min THEN 0.5
+                    ELSE 0
+                END
+            ) as score
+        ")->value('score');
+
+        $tauxRotationStocks = $totalStocks > 0
+            ? round(($score / $totalStocks) * 100, 1)
+            : 0;
+
 
 
         return view(
@@ -41,6 +59,7 @@ class StatistiquesController extends Controller
                 'commandesNonConformes',
                 'totalCommandes',
                 'tauxConformite',
+                'tauxRotationStocks',
             )
         );
     }
