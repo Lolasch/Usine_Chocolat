@@ -76,20 +76,37 @@ class AdminController extends Controller
             $etudiants = collect([]);
         } else {
             // Récupérer les utilisateurs de cette équipe avec leurs rôles d'équipe
-            $etudiants = $equipe->users()->with('role')->get();
+            $etudiantsRaw = $equipe->users()->with('role')->get();
 
-            // Ajouter le rôle d'équipe à chaque utilisateur
-            $etudiants->each(function($etudiant) use ($equipe) {
+            // Transformer en collection avec role_equipe inclus pour JSON
+            $etudiants = $etudiantsRaw->map(function($etudiant) use ($equipe) {
                 $userEquipe = DB::table('users_equipes')
                     ->where('user_id', $etudiant->id)
                     ->where('equipe_id', $equipe->id)
                     ->first();
 
+                $roleEquipe = null;
                 if ($userEquipe && $userEquipe->role_id) {
-                    $etudiant->role_equipe = Role::find($userEquipe->role_id);
+                    $roleEquipe = Role::find($userEquipe->role_id);
                 } else {
-                    $etudiant->role_equipe = $etudiant->role; // Fallback sur le rôle global
+                    $roleEquipe = $etudiant->role; // Fallback sur le rôle global
                 }
+
+                // Créer un tableau pour faciliter la sérialisation JSON
+                return [
+                    'id' => $etudiant->id,
+                    'nom' => $etudiant->nom,
+                    'prenom' => $etudiant->prenom,
+                    'email' => $etudiant->email,
+                    'role' => $etudiant->role ? [
+                        'id' => $etudiant->role->id,
+                        'nom' => $etudiant->role->nom
+                    ] : null,
+                    'role_equipe' => $roleEquipe ? [
+                        'id' => $roleEquipe->id,
+                        'nom' => $roleEquipe->nom
+                    ] : null
+                ];
             });
 
             if ($search) {
@@ -355,6 +372,11 @@ class AdminController extends Controller
             if (isset($userEquipe->role_id)) {
                 $roleActuel = Role::find($userEquipe->role_id);
             }
+        }
+
+        // Si pas de rôle dans l'équipe, utiliser le rôle global
+        if (!$roleActuel && $user->role) {
+            $roleActuel = $user->role;
         }
 
         Log::info('getUserDetails', [

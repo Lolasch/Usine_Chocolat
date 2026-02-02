@@ -68,7 +68,12 @@ class RegisteredUserController extends Controller
                 }
 
                 $equipe = Equipe::create(['nom' => $nomEquipe]);
-                $user->equipes()->attach($equipe->id);
+
+                // ✅ Attacher l'équipe AVEC le role_id dans la table pivot
+                $user->equipes()->attach($equipe->id, [
+                    'role_id' => $request->role_id, // Même rôle que celui choisi à l'inscription
+                    'poste_id' => null
+                ]);
             }
         });
 

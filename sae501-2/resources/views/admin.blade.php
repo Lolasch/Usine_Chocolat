@@ -71,14 +71,14 @@
             <ul class="space-y-3 max-h-96 overflow-y-auto" id="operatorsList" role="list" aria-label="Liste des étudiants">
                 @forelse($etudiants ?? [] as $etudiant)
                     <li>
-                        <button type="button" onclick="loadUserDetails({{ $etudiant->id }})" class="w-full flex items-center justify-between p-3 sm:p-4 bg-white rounded-2xl hover:bg-white/95 focus:outline-none transition cursor-pointer operator-item" data-user-id="{{ $etudiant->id }}" aria-label="Voir les détails de {{ $etudiant->prenom ?? 'Étudiant' }} {{ $etudiant->nom ?? '' }}">
+                        <button type="button" onclick="loadUserDetails({{ $etudiant['id'] }})" class="w-full flex items-center justify-between p-3 sm:p-4 bg-white rounded-2xl hover:bg-white/95 focus:outline-none transition cursor-pointer operator-item" data-user-id="{{ $etudiant['id'] }}" aria-label="Voir les détails de {{ $etudiant['prenom'] ?? 'Étudiant' }} {{ $etudiant['nom'] ?? '' }}">
                             <div class="flex items-center gap-2 sm:gap-3 flex-1 text-left">
                                 <div class="w-10 h-10 sm:w-12 sm:h-12 bg-[var(--green)] rounded-full flex items-center justify-center p-2" aria-hidden="true">
                                     <img src="{{ asset('images/autre/seul_blanc.svg') }}" alt="" class="w-full h-full object-contain" />
                                 </div>
                                 <div class="min-w-0 flex-1">
-                                    <p class="font-bold text-[var(--choco-brown)] text-sm sm:text-base truncate user-name">{{ $etudiant->prenom ?? 'Étudiant' }} {{ $etudiant->nom ?? '' }}</p>
-                                    <p class="text-xs sm:text-sm text-[var(--choco-brown)]/70 truncate user-role">Rôle : {{ $etudiant->role_equipe->nom ?? $etudiant->role->nom ?? 'operateur' }}</p>
+                                    <p class="font-bold text-[var(--choco-brown)] text-sm sm:text-base truncate user-name">{{ $etudiant['prenom'] ?? 'Étudiant' }} {{ $etudiant['nom'] ?? '' }}</p>
+                                    <p class="text-xs sm:text-sm text-[var(--choco-brown)]/70 truncate user-role">Rôle : {{ $etudiant['role_equipe']['nom'] ?? $etudiant['role']['nom'] ?? 'operateur' }}</p>
                                 </div>
                             </div>
                             <div class="text-[var(--choco-brown)] hover:text-[var(--choco)] transition flex-shrink-0 arrow-icon" aria-hidden="true">
