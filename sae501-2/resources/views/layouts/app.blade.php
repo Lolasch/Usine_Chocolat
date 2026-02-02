@@ -60,14 +60,12 @@
             <!-- Navigation -->
             <nav class="hidden md:flex items-center gap-3 font-kavoon font-medium">
 
-                {{-- Commandes : TOUS --}}
-                <a href="{{ url('/liste') }}"
-                class="bg-[var(--choco-gold)] text-[var(--choco-brown)] px-4 py-2 rounded-full text-lg hover-caramel transition-colors duration-300">
-                    Commandes
-                </a>
-
                 {{-- SUPERVISEUR SEULEMENT --}}
                 @if(auth()->user()->isSuperviseur())
+                    <a href="{{ url('/liste') }}"
+                        class="bg-[var(--choco-gold)] text-[var(--choco-brown)] px-4 py-2 rounded-full text-lg hover-caramel transition-colors duration-300">
+                            Commandes
+                    </a>
 
                     <a href="{{ route('stocks.index') }}"
                     class="bg-[var(--choco-gold)] text-[var(--choco-brown)] px-4 py-2 rounded-full text-lg hover-caramel transition-colors duration-300">
@@ -114,9 +112,9 @@
             <div id="mobile-menu"
                 class="md:hidden hidden bg-[var(--choco-brown)] text-[var(--choco-beige)] px-4 py-4 space-y-3 font-kavoon font-medium">
 
-                <a href="{{ url('/liste') }}" class="block text-lg">Commandes</a>
 
                 @if(auth()->user()->isSuperviseur())
+                    <a href="{{ url('/liste') }}" class="block text-lg">Commandes</a>
                     <a href="{{ route('stocks.index') }}" class="block text-lg">Stocks</a>
                     <a href="{{ route('statistiques.index') }}" class="block text-lg">Statistiques</a>
                     <a href="{{ url('/admin') }}" class="block text-lg">Admin</a>

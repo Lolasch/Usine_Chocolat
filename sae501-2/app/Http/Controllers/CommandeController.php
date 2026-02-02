@@ -138,9 +138,13 @@ class CommandeController extends Controller
 
     public function liste()
     {
-        $etapes = Poste::with(['commandes' => function($query) {
-            $query->with(['visiteur', 'chocolat']);
-        }])->orderBy('ordre')->get();
+        $etapes = Poste::with(['commandes' => function ($query) {
+        $query->with([
+            'visiteur',
+            'chocolat',
+            'nonConformites', 
+        ]);
+    }])->orderBy('ordre')->get();
 
         $commandesParPoste = $etapes;
 

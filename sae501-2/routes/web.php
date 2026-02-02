@@ -6,6 +6,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PosteController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\StatistiquesController;
+use App\Http\Controllers\NonConformiteController;
 use App\Http\Controllers\AlerteController;
 
 use Illuminate\Support\Facades\Route;
@@ -74,7 +75,7 @@ Route::middleware(['auth'])->group(function () {
 // API pour récupérer les commandes par poste (refresh automatique)
 Route::get('/api/commandes', function() {
     $etapes = Poste::with(['commandes' => function($query) {
-        $query->with(['visiteur', 'chocolat']);
+        $query->with(['visiteur', 'chocolat', 'nonConformites',]);
     }])->orderBy('ordre')->get();
 
     return response()->json($etapes);
@@ -113,3 +114,6 @@ Route::middleware('auth')->group(function () {
 });
 
 
+
+Route::post('/non-conformites', [NonConformiteController::class, 'store'])
+    ->name('nonConformites.store');

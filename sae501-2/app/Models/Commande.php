@@ -40,4 +40,10 @@ class Commande extends Model
     {
         return $this->hasMany(Email::class, 'commande_id');
     }
+    
+    public function nonConformites()
+    {
+        return $this->hasMany(NonConformite::class);
+    }
+
 }
