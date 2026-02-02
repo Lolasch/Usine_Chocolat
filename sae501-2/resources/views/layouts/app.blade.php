@@ -47,7 +47,7 @@
         }
     </style>
 </head>
-<body class="font-sans antialiased bg-[var(--choco-beige)] min-h-screen flex flex-col">
+<body class="font-sans antialiased bg-[var(--choco-gold)] min-h-screen flex flex-col">
 
     <!-- HEADER -->
     <header class="bg-[var(--choco-brown)] text-[var(--choco-beige)]">
@@ -140,9 +140,10 @@
     </header>
 
     <!-- MAIN -->
-    <main>
+    <main class="flex-1 w-full">
         @yield('content')
     </main>
+
 
     <!-- Script Hamburger -->
     <script>

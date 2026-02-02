@@ -4,7 +4,7 @@
 
 @section('content')
 
-<div class="bg-[var(--choco-gold)] min-h-screen">
+<div class="bg-[var(--choco-gold)] flex-1">
     <div class="max-w-[1400px] mx-auto p-6">
         {{-- HEADER --}}
         <div class="bg-[var(--choco)] rounded-full px-6 py-4 text-[var(--choco-beige)] mb-6">
@@ -539,7 +539,8 @@
                     </div>
 
                     {{-- COMMANDES --}}
-                    <div class="space-y-4 overflow-y-auto max-h-[420px] pr-2">
+                    <div class="space-y-4 overflow-y-auto max-h-[300px] pr-2">
+
                     </div>
 
                 </div>
