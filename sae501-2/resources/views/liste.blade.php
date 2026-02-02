@@ -1000,9 +1000,6 @@ function afficherCommandesArchivees() {
 setInterval(verifierPanne, 2000);
 verifierPanne();
 
-
 </script>
-
-
 
 @endsection

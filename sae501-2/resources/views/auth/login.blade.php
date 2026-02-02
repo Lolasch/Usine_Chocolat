@@ -4,13 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Page de connexion à l'application Usine Chocolat 2026">
-    <title>Connexion – Chocolat</title>
+    <title>Connexion – – L'Usine Chocolat 2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
 
     <!-- GOOGLE FONT KAVOON -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Kavoon&display=swap" rel="stylesheet">
+
+    <!-- FAVICON -->
+    <link rel="icon" type="image/svg+xml" href="{{ asset('images/autre/seul_blanc.svg') }}">
 
 </head>
 <body class="min-h-screen flex flex-col bg-[#FFF9EF]">
