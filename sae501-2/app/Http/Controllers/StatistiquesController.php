@@ -10,6 +10,10 @@ class StatistiquesController extends Controller
 {
     public function index()
     {
+        if (!Auth::user()->isSuperviseur()) {
+            abort(403);
+        }
+
         return view('statistiques.index');
     }
 }

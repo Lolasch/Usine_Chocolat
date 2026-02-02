@@ -8,13 +8,13 @@
 
     <!-- Header -->
         <h1 class="font-kavoon text-4xl text-[var(--choco-brown)] mb-6">
-            Frigo
+            Stocks
         </h1>
 
-    <!-- FRIGO + GRAPHIQUE -->
+    <!-- Stocks + GRAPHIQUE -->
     <div class="flex flex-col lg:flex-row gap-6 items-stretch">
 
-        <!-- FRIGO -->
+        <!-- Stocks -->
         <div class="lg:w-[65%] bg-[var(--choco-brown)] rounded-2xl p-5 shadow-xl">
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">

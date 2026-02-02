@@ -33,14 +33,11 @@
                             value="{{ $objectifValeur ?? 100 }}"
                             min="1" max="999"
                             class="px-3 py-2 rounded bg-white/20 text-white w-20 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-white/50">
-                        <button type="submit" class="w-12 h-12 flex items-center justify-center hover:brightness-110 transition-all">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
-                                class="w-12 h-12 text-[var(--caramel)]">
-                                <path fill-rule="evenodd"
-                                    d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 9a.75.75 0 00-1.5 0v2.25H9a.75.75 0 000 1.5h2.25V15a.75.75 0 001.5 0v-2.25H15a.75.75 0 000-1.5h-2.25V9Z"
-                                    clip-rule="evenodd"/>
-                            </svg>
-                        </button>
+                            <button type="submit" class="w-10 h-10 flex items-center justify-center bg-[var(--caramel-dark)] rounded-full hover:brightness-110 transition-all">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-[var(--choco-beige)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                                </svg>
+                            </button>
                     </form>
                 </div>
             </div>

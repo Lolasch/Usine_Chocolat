@@ -13,7 +13,12 @@ class StockController extends Controller
 {
     public function index()
     {
+        if (!Auth::user()->isSuperviseur()) {
+            abort(403);
+        }
+
         $stocks = Stock::with('chocolat')->get();
+
         return view('stocks.index', compact('stocks'));
     }
 
