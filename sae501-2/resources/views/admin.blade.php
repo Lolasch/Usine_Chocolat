@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Administration | L\'Usine Chocolat 2026')
+
 @section('content')
 <style>
     body {
@@ -10,7 +12,6 @@
 <div class="max-w-7xl mx-auto p-6">
     <h2 class="text-4xl font-bold text-[var(--choco-brown)] mb-8 font-kavoon">Administration</h2>
 
-    <!-- Stats Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8" role="region" aria-label="Statistiques de l'équipe">
         <article class="bg-[var(--choco-gold)] rounded-3xl p-4 sm:p-6 flex items-center gap-3 sm:gap-4 shadow-lg hover:shadow-xl transition" aria-labelledby="stat-utilisateurs">
             <div class="w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center flex-shrink-0">
@@ -46,9 +47,7 @@
         </article>
     </div>
 
-    <!-- Main Grid -->
     <div class="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
-        <!-- Liste des étudiants -->
         <section class="bg-white rounded-3xl p-4 sm:p-6 shadow-lg" aria-labelledby="students-list-title">
             <h3 id="students-list-title" class="text-xl sm:text-2xl font-bold text-[var(--choco-brown)] mb-4 sm:mb-6 font-kavoon">Liste des étudiants</h3>
 
@@ -96,7 +95,6 @@
             </ul>
         </section>
 
-        <!-- Détail de l'étudiant -->
         <section class="bg-white rounded-3xl p-4 sm:p-6 shadow-lg" id="userDetailsContainer" aria-labelledby="student-details-title" aria-live="polite">
             <div id="userDetailsContent">
                 @if($selectedUser ?? false)
@@ -159,12 +157,10 @@
                     </div>
                 @endif
             </div>
-        </div>
+        </section>
     </div>
 </div>
-@endsection
 
-{{-- Modal Ajouter Opérateur --}}
 <div id="addOperatorModal" style="display:none" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" role="dialog" aria-labelledby="modal-title" aria-modal="true">
     <div class="bg-white rounded-3xl p-4 sm:p-6 md:p-8 max-w-3xl w-full mx-4 shadow-2xl max-h-[90vh] overflow-y-auto">
         <h3 id="modal-title" class="text-xl sm:text-2xl font-bold text-[var(--choco-brown)] mb-4 sm:mb-6 font-kavoon">Ajouter un opérateur</h3>
@@ -191,7 +187,6 @@
     </div>
 </div>
 
-{{-- Modal de confirmation personnalisée --}}
 <div id="confirmModal" style="display:none" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" role="dialog" aria-labelledby="confirmTitle" aria-modal="true">
     <div class="bg-white rounded-3xl p-4 sm:p-6 md:p-8 max-w-md w-full mx-4 shadow-2xl">
         <h3 class="text-xl sm:text-2xl font-bold text-[var(--choco-brown)] mb-3 sm:mb-4 font-kavoon" id="confirmTitle">Confirmation</h3>
@@ -268,7 +263,7 @@
 
     // Fonction pour charger les détails d'un utilisateur sans recharger la page
     async function loadUserDetails(userId) {
-        console.log('🔵 Chargement des détails pour l\'utilisateur:', userId);
+        console.log('Chargement des détails pour l\'utilisateur:', userId);
 
         try {
             const response = await fetch(`/admin/users/${userId}/details`, {
@@ -285,16 +280,13 @@
             }
 
             const user = await response.json();
-            console.log('✅ Détails utilisateur reçus:', user);
+            console.log('Détails utilisateur reçus:', user);
 
-            // Mettre à jour l'affichage
             updateUserDetailsDisplay(user.user, user.postes, user.poste_actuel, user.role_actuel);
 
-            // Mettre en surbrillance l'opérateur sélectionné
             document.querySelectorAll('.operator-item').forEach(item => {
                 item.classList.remove('!bg-[#8E5442]');
                 item.classList.add('bg-white');
-                // Remettre la couleur du texte normale
                 const nameEl = item.querySelector('.user-name');
                 const roleEl = item.querySelector('.user-role');
                 const arrowEl = item.querySelector('.arrow-icon');
@@ -314,7 +306,6 @@
             if (selectedItem) {
                 selectedItem.classList.add('!bg-[#8E5442]');
                 selectedItem.classList.remove('bg-white');
-                // Changer la couleur du texte en blanc
                 const nameEl = selectedItem.querySelector('.user-name');
                 const roleEl = selectedItem.querySelector('.user-role');
                 const arrowEl = selectedItem.querySelector('.arrow-icon');
@@ -332,7 +323,7 @@
             }
 
         } catch (error) {
-            console.error('❌ Erreur loadUserDetails:', error);
+            console.error('Erreur loadUserDetails:', error);
             await showAlert('Erreur lors du chargement des détails', 'Erreur');
         }
     }
@@ -341,19 +332,17 @@
         const container = document.getElementById('userDetailsContent');
         if (!container) return;
 
-        console.log('📊 updateUserDetailsDisplay - roleActuel:', roleActuel);
-        console.log('📊 updateUserDetailsDisplay - user:', user);
+        console.log('updateUserDetailsDisplay - roleActuel:', roleActuel);
+        console.log('updateUserDetailsDisplay - user:', user);
 
         const initial = (user.prenom?.[0] || 'e').toLowerCase();
 
-        // Utiliser le rôle de l'équipe (roleActuel) au lieu du rôle global
         const isOperateur = roleActuel ? (roleActuel.nom || '').toLowerCase() === 'operateur' : false;
         const isSuperviseur = roleActuel ? (roleActuel.nom || '').toLowerCase() === 'superviseur' : false;
 
-        console.log('🔍 isOperateur:', isOperateur, 'isSuperviseur:', isSuperviseur);
+        console.log('isOperateur:', isOperateur, 'isSuperviseur:', isSuperviseur);
 
-        // Générer les options du dropdown de postes
-        let postesOptions = '<option value="">Aucun poste</option>';
+        let postesOptions = '<option value="">Sélectionner un poste</option>';
         if (postes && postes.length > 0) {
             postes.forEach(poste => {
                 const selected = posteActuel && posteActuel.id === poste.id ? 'selected' : '';
@@ -362,15 +351,11 @@
         }
 
         const posteNom = posteActuel?.nom || 'Aucun poste';
-
-        // Vérifier si c'est l'utilisateur connecté ET qu'il est le vrai chef (superviseur global)
         const isCurrentUser = user.id === currentUserId && isGlobalSupervisor;
-
-        // Si l'utilisateur connecté est superviseur promu (pas global), il ne peut modifier que les opérateurs
-        const canModify = isGlobalSupervisor || isOperateur;
+        const canModify = !isCurrentUser;
 
         container.innerHTML = `
-            <h3 class="text-2xl font-bold text-[var(--choco-brown)] mb-6 font-kavoon">Détail de l'étudiant</h3>
+            <h3 id="student-details-title" class="text-xl sm:text-2xl font-bold text-[var(--choco-brown)] mb-4 sm:mb-6 font-kavoon">Détail de l'étudiant</h3>
 
             <div class="bg-[var(--choco-gold)] rounded-2xl p-4 mb-6">
                 <div class="flex items-center gap-4">
@@ -417,33 +402,29 @@
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-        console.log('🟢 DOM chargé');
+        console.log('DOM chargé');
 
         renderOperators(allOperators);
 
         @if($selectedUser ?? false)
-            // Si un utilisateur est déjà sélectionné, le charger
             loadUserDetails({{ $selectedUser->id }});
         @endif
 
-        // Event listener pour bouton Ajouter
         const btnAdd = document.getElementById('btnAddOperator');
-        console.log('🔍 Bouton trouvé:', btnAdd);
-
         if (btnAdd) {
             btnAdd.addEventListener('click', function() {
-                console.log('🔵 Clic sur Ajouter');
+                console.log('Clic sur Ajouter');
                 const modal = document.getElementById('addOperatorModal');
                 if (modal) {
-                    modal.style.display = 'block';
+                    modal.style.display = 'flex';
                     loadAvailableOperators();
                 } else {
-                    console.error('❌ Modal non trouvé');
+                    console.error('Modal non trouvé');
                 }
             });
-            console.log('✅ Event listener attaché au bouton');
+            console.log('Event listener attaché au bouton');
         } else {
-            console.error('❌ Bouton btnAddOperator non trouvé !');
+            console.error('Bouton btnAddOperator non trouvé !');
         }
 
         // Event listener pour bouton Fermer
@@ -454,7 +435,6 @@
             });
         }
 
-        // Fermer modal en cliquant en dehors
         const modal = document.getElementById('addOperatorModal');
         if (modal) {
             modal.addEventListener('click', function(e) {
@@ -464,7 +444,6 @@
             });
         }
 
-        // Event listener pour la recherche
         const searchInput = document.getElementById('searchInput');
         if (searchInput) {
             searchInput.addEventListener('keyup', filterOperators);
@@ -519,18 +498,18 @@
     }
 
     async function loadAvailableOperators() {
-        console.log('🔵 Chargement des opérateurs disponibles...');
+        console.log('Chargement des opérateurs disponibles...');
         try {
             const response = await fetch('/admin/available-operators');
-            console.log('📡 Réponse:', response);
+            console.log('Réponse:', response);
             if (!response.ok) {
                 throw new Error('Erreur HTTP: ' + response.status);
             }
             availableOperatorsData = await response.json();
-            console.log('✅ Opérateurs chargés:', availableOperatorsData);
+            console.log('Opérateurs chargés:', availableOperatorsData);
             filterAvailableOperators();
         } catch (error) {
-            console.error('❌ Erreur loadAvailableOperators:', error);
+            console.error('Erreur loadAvailableOperators:', error);
             document.getElementById('availableOperatorsList').innerHTML =
                 '<div class="text-center py-8 text-red-500"><p>Erreur lors du chargement</p></div>';
         }
@@ -584,7 +563,7 @@
 
     async function addOperatorToTeam(userId) {
         try {
-            console.log('🔵 Ajout opérateur:', userId);
+            console.log('Ajout opérateur:', userId);
             const response = await fetch(`/admin/operators/${userId}/add`, {
                 method: 'POST',
                 headers: {
@@ -607,7 +586,7 @@
                 await showAlert(data.error || 'Erreur lors de l\'ajout', 'Erreur');
             }
         } catch (error) {
-            console.error('❌ Erreur addOperatorToTeam:', error);
+            console.error('Erreur addOperatorToTeam:', error);
             await showAlert('Erreur lors de l\'ajout de l\'opérateur', 'Erreur');
         }
     }
@@ -649,7 +628,7 @@
                 await showAlert(data.message || 'Erreur lors de la modification du rôle', 'Erreur');
             }
         } catch (error) {
-            console.error('❌ Erreur changeUserRole:', error);
+            console.error('Erreur changeUserRole:', error);
             await showAlert('Erreur lors de la modification du rôle', 'Erreur');
         }
     }
@@ -678,21 +657,21 @@
 
                 // Mettre à jour le compteur de postes
                 if (data.nb_postes !== undefined) {
-                    console.log('🔄 Mise à jour du compteur de postes:', data.nb_postes);
+                    console.log('Mise à jour du compteur de postes:', data.nb_postes);
                     const postesCountElement = document.getElementById('postesCount');
                     if (postesCountElement) {
                         postesCountElement.textContent = data.nb_postes;
                         postesCountElement.setAttribute('aria-label', `${data.nb_postes} postes de travail`);
-                        console.log('✅ Compteur mis à jour');
+                        console.log('Compteur mis à jour');
                     } else {
-                        console.error('❌ Élément postesCount non trouvé');
+                        console.error('Élément postesCount non trouvé');
                     }
                 }
             } else {
                 await showAlert(data.message || 'Erreur lors de la modification du poste', 'Erreur');
             }
         } catch (error) {
-            console.error('❌ Erreur changeUserPoste:', error);
+            console.error('Erreur changeUserPoste:', error);
             await showAlert('Erreur lors de la modification du poste', 'Erreur');
         }
     }
@@ -735,8 +714,10 @@
                 await showAlert(data.message || 'Erreur lors de la suppression', 'Erreur');
             }
         } catch (error) {
-            console.error('❌ Erreur deleteUser:', error);
+            console.error('Erreur deleteUser:', error);
             await showAlert('Erreur lors de la suppression de l\'utilisateur', 'Erreur');
         }
     }
 </script>
+
+@endsection
