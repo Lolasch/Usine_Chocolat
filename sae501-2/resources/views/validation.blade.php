@@ -25,6 +25,27 @@
         .font-kavoon {
             font-family: 'Kavoon', cursive;
         }
+
+        @keyframes bounce-in {
+            0% {
+                transform: scale(0.3);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            70% {
+                transform: scale(0.9);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .animate-bounce-in {
+            animation: bounce-in 0.6s ease-out;
+        }
     </style>
 
     <script>
@@ -216,6 +237,37 @@
             </div>
         </div>
 
+        <!-- POPUP MERCI -->
+        <div id="popup-merci" class="fixed inset-0 bg-black/70 flex items-center justify-center z-[100] hidden" role="dialog" aria-labelledby="popup-titre" aria-modal="true" onclick="event.stopPropagation()">
+            <div class="bg-[#554840] rounded-3xl p-8 max-w-md mx-4 shadow-2xl transform transition-all animate-bounce-in" onclick="event.stopPropagation()">
+                <div class="text-center">
+                    <div class="mb-6">
+                        <svg class="w-20 h-20 mx-auto text-[#A8C9C3] animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+
+                    <h2 id="popup-titre" class="text-2xl font-black text-[#A8C9C3] mb-4">
+                        Merci d'avoir commandé !
+                    </h2>
+
+                    <p class="text-[#FFF9EF] text-base mb-6 leading-relaxed">
+                        Votre commande est prête.<br>
+                        N'hésitez pas à nous donner votre avis !
+                    </p>
+
+                    <div class="flex flex-col gap-3">
+                        <button onclick="window.location.href='/avis'" class="bg-[#A8C9C3] hover:bg-[#96c9c2] text-[#554840] font-black py-3 px-6 rounded-xl transition-all duration-200 shadow-md active:scale-95">
+                            Donner mon avis
+                        </button>
+                        <button onclick="fermerPopup()" class="bg-[#6B5D52] hover:bg-[#5a4e44] text-[#FFF9EF] font-bold py-3 px-6 rounded-xl transition-all duration-200 shadow-md active:scale-95">
+                            Fermer
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- FOOTER -->
         <footer class="bg-[#554840] text-[#FFF9EF] text-center pt-[12%] pb-[8%] px-[5%] w-full box-border mt-20 relative">
             <div class="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[48%] h-[38%] bg-[#554840] rounded-full opacity-100 z-0"></div>
@@ -287,6 +339,9 @@
 
                 if (data.finalisee !== commandeFinalisee) {
                     commandeFinalisee = data.finalisee;
+                    if (data.finalisee) {
+                        afficherPopup();
+                    }
                 }
 
                 mettreAJourInterface(data);
@@ -300,8 +355,8 @@
             let html = '';
 
             data.etapes.forEach(etape => {
-                const estActuel = data.posteActuel && data.posteActuel.nom_poste === etape.nom;
-                const estPasse = data.posteActuel && etape.ordre < data.posteActuel.ordre;
+                let estActuel = data.posteActuel && data.posteActuel.nom_poste === etape.nom;
+                let estPasse = data.posteActuel && etape.ordre < data.posteActuel.ordre;
 
                 if (data.finalisee) {
                     estPasse = true;
@@ -366,6 +421,34 @@
 
             container.innerHTML = html;
         }
+
+        function afficherPopup() {
+            console.log('Affichage du popup');
+            const popup = document.getElementById('popup-merci');
+            if (popup) {
+                popup.classList.remove('hidden');
+                console.log('Popup affiché');
+            } else {
+                console.error('Element popup-merci introuvable');
+            }
+        }
+
+        function fermerPopup() {
+            document.getElementById('popup-merci').classList.add('hidden');
+        }
+
+        // Afficher la popup si la commande est déjà finalisée au chargement
+        @if($commande->finalisee)
+            console.log('Commande finalisée détectée');
+            window.addEventListener('DOMContentLoaded', () => {
+                console.log('DOM chargé, affichage du popup dans 1 seconde');
+                setTimeout(() => {
+                    afficherPopup();
+                }, 1000);
+            });
+        @else
+            console.log('Commande non finalisée');
+        @endif
 
         setInterval(rafraichirStatut, 3000);
     </script>

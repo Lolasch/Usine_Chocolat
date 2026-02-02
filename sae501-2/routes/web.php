@@ -45,6 +45,14 @@ Route::post('/commande/{commandeId}/supprimer', [CommandeController::class, 'sup
 Route::post('/commande/{commandeId}/prochainPoste', [CommandeController::class, 'prochainPoste'])->name('commande.prochainPoste');
 Route::post('/commande/{commandeId}/finaliser', [CommandeController::class, 'finaliserCommande'])->name('commande.finaliser');
 
+// Avis
+Route::get('/avis', function () {
+    return view('avis');
+})->name('avis');
+Route::post('/avis', function () {
+    return redirect('/accueil')->with('success', 'Merci pour votre avis !');
+})->name('avis.store');
+
 // ADMIN
 Route::middleware(['auth'])->group(function () {
     Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
