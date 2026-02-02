@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Usine à Chocolat</title>
+    <title>L'Usine à Chocolat 2026</title>
 
     <!-- GOOGLE FONT KAVOON -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,6 +12,10 @@
 
     <!-- TAILWIND CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- FAVICON -->
+    <link rel="icon" type="image/svg+xml" href="{{ asset('images/autre/seul_blanc.svg') }}">
+
 
     <style>
         body {
