@@ -7,7 +7,7 @@
 <div class="bg-[var(--choco-gold)] flex-1">
     <div class="max-w-[1400px] mx-auto p-6">
 
-        {{-- HEADER --}}
+        <!-- Header -->
         <div class="bg-[var(--choco)] rounded-full px-6 py-4 text-[var(--choco-beige)] mb-6">
             <div class="grid grid-cols-1 gap-4 items-center sm:grid-cols-3 sm:gap-0 sm:text-center">
 
@@ -72,16 +72,16 @@
             </div>
         </div>
 
-        {{-- TITRE --}}
+        <!-- Titre -->
         <h1 class="text-3xl text-center mb-6 text-[var(--choco-brown)] font-kavoon font-medium">
             Liste des commandes
         </h1>
 
-        {{-- CONTENT --}}
+        <!-- Content -->
         <div class="max-w-[1400px] mx-auto">
             <div class="flex gap-6 items-stretch">
 
-                {{-- COLONNE GAUCHE --}}
+                <!-- Colonne gauche -->
                 <div class="w-full sm:w-[35%] lg:w-[25%] xl:w-[20%] flex flex-col gap-3 font-kavoon">
                     <aside class="bg-[var(--choco-brown)] text-[var(--choco-beige)] rounded-3xl p-4 flex-1">
                         <h2 class="text-lg mb-4">Étapes</h2>
@@ -100,7 +100,7 @@
                             @endforeach
                         </ul>
 
-                        {{-- POPUP NON-CONFORMITÉ --}}
+                        <!-- Popup non-conformité -->
                         <div id="popupNonConformite"
                              class="fixed inset-0 bg-black/50 flex items-center justify-center hidden z-50">
 
@@ -166,11 +166,11 @@
                     </aside>
                 </div>
 
-                {{-- COLONNE DROITE --}}
+                <!-- Colonne droite -->
                 <div class="flex flex-col gap-6 items-stretch flex-1">
                     <div class="bg-[var(--choco-beige)] rounded-3xl p-6 flex-1">
 
-                        {{-- SEARCH / ACTIONS --}}
+                        <!-- Recherche et actions -->
                         <div class="flex flex-col lg:flex-row gap-4 mb-4">
                             <div
                                 class="flex items-center gap-4 bg-[var(--green)] px-6 py-3 rounded-full flex-1
@@ -225,7 +225,7 @@
                             </div>
                         </div>
 
-                        {{-- STATS --}}
+                        <!-- Statistiques -->
                         <div class="text-md text-[var(--choco-brown)] mb-4 font-medium">
                             <p id="filtreActifText" class="mb-1 italic font-kavoon">
                                 Aucun filtre actif
@@ -242,7 +242,7 @@
                             </p>
                         </div>
 
-                        {{-- COMMANDES --}}
+                        <!-- Commandes -->
                         <div class="space-y-4 overflow-y-auto max-h-[300px] pr-2">
                         </div>
 
@@ -261,6 +261,7 @@ let filtreChocolat = '';
 const commandesData = @json($commandesParPoste);
 let refreshInterval;
 const userIsSuperviseur = @json(auth()->user()->isSuperviseur());
+const posteAssigneUtilisateur = @json($posteAssigne ?? null);
 
 
 
@@ -308,6 +309,12 @@ function afficherCommandes(posteId) {
     container.innerHTML = commandesFiltrees.map(cmd => {
         // Vérifier si c'est le dernier poste
         const estDernierPoste = !commandesData.find(p => p.ordre > poste.ordre);
+
+        // Vérifier si l'utilisateur peut modifier cette commande
+        // Superviseur = peut tout modifier
+        // Opérateur = seulement son poste assigné (doit avoir un poste assigné)
+        // Si pas de poste assigné = ne peut rien modifier
+        const peutModifier = userIsSuperviseur || (posteAssigneUtilisateur !== null && posteAssigneUtilisateur == posteId);
 
     return `
     <div class="bg-white rounded-3xl p-5 border border-[var(--choco)] shadow-sm flex justify-between items-center">
@@ -366,7 +373,8 @@ function afficherCommandes(posteId) {
 
         <!-- DROITE : ACTIONS -->
         <div class="flex gap-3 ml-4 shrink-0">
-            <!-- Bouton Non-Conformité (SUPERVISEUR) -->
+            ${peutModifier ? `
+                <!-- Bouton Non-Conformité (SUPERVISEUR) -->
                 ${userIsSuperviseur ? `
                     <button onclick="ouvrirPopupNonConformite(${cmd.id})"
                         class="w-12 h-12 flex items-center justify-center bg-red-200
@@ -400,6 +408,15 @@ function afficherCommandes(posteId) {
                             <path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 0 0 6 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 1 0 .23 1.482l.149-.022.841 10.518A2.75 2.75 0 0 0 7.596 19h4.807a2.75 2.75 0 0 0 2.742-2.53l.841-10.52.149.023a.75.75 0 0 0 .23-1.482A41.03 41.03 0 0 0 14 4.193V3.75A2.75 2.75 0 0 0 11.25 1h-2.5ZM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4ZM8.58 7.72a.75.75 0 0 0-1.5.06l.3 7.5a.75.75 0 1 0 1.5-.06l-.3-7.5Zm4.34.06a.75.75 0 1 0-1.5-.06l-.3 7.5a.75.75 0 1 0 1.5.06l.3-7.5Z" clip-rule="evenodd" />
                         </svg>
                     </button>
+            ` : `
+                <!-- Message si pas autorisé à modifier -->
+                <div class="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 text-gray-400">
+                        <path fill-rule="evenodd" d="M10 1a4.5 4.5 0 0 0-4.5 4.5V9H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-.5V5.5A4.5 4.5 0 0 0 10 1Zm3 8V5.5a3 3 0 1 0-6 0V9h6Z" clip-rule="evenodd" />
+                    </svg>
+                    <span class="text-xs text-gray-500 font-medium">Pas votre poste</span>
+                </div>
+            `}
         </div>
     </div>
     `;

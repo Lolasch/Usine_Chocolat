@@ -142,7 +142,7 @@ class CommandeController extends Controller
         $query->with([
             'visiteur',
             'chocolat',
-            'nonConformites', 
+            'nonConformites',
         ]);
     }])->orderBy('ordre')->get();
 
@@ -153,7 +153,25 @@ class CommandeController extends Controller
         $objectifValeur = $objectif?->valeur ?? 100;
         $pourcentage = $objectifValeur ? min(100, ($commandesAujourdhui / $objectifValeur) * 100) : 0;
 
-        return view('liste', compact('etapes', 'commandesParPoste', 'commandesAujourdhui', 'objectifValeur', 'pourcentage'));
+        // Récupérer le poste assigné à l'utilisateur (si opérateur)
+        $user = auth()->user();
+        $posteAssigne = null;
+
+        if ($user && !$user->isSuperviseur()) {
+            $equipe = $user->equipes()->first();
+            if ($equipe) {
+                $userEquipe = DB::table('users_equipes')
+                    ->where('user_id', $user->id)
+                    ->where('equipe_id', $equipe->id)
+                    ->first();
+
+                if ($userEquipe && $userEquipe->poste_id) {
+                    $posteAssigne = $userEquipe->poste_id;
+                }
+            }
+        }
+
+        return view('liste', compact('etapes', 'commandesParPoste', 'commandesAujourdhui', 'objectifValeur', 'pourcentage', 'posteAssigne'));
     }
 
 
