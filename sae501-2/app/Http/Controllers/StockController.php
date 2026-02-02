@@ -41,32 +41,6 @@ class StockController extends Controller
 
         return back()->with('success', 'Stock ajouté');
     }
-    public function addViaQr(Request $request)
-    {
-        $request->validate([
-            'stock_id' => 'required|exists:stocks,id',
-            'quantite' => 'required|integer|min:1',
-            'qr_code' => 'required|string',
-        ]);
-
-        if (!str_contains($request->qr_code, 'STOCK_ID=' . $request->stock_id)) {
-            return back()->withErrors([
-                'error' => 'QR code invalide.'
-            ]);
-        }
-
-        $stock = Stock::findOrFail($request->stock_id);
-
-        $stock->increment('quantite', $request->quantite);
-
-        ConsommationsStock::create([
-            'stock_id' => $stock->id,
-            'quantite_utilisee' => -$request->quantite,
-            'date_consommation' => now(),
-        ]);
-
-        return back()->with('success', '📦 Stock ajouté via QR');
-    }
 
     public function updateSeuil(Request $request)
     {
