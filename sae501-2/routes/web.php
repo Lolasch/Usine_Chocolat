@@ -108,13 +108,14 @@ Route::get('/statistiques', [StatistiquesController::class, 'index'])
 
 Route::middleware('auth')->group(function () {
 
-    // API état panne
-    Route::get('/api/alerte-active', [AlerteController::class, 'active']);
-
     // Superviseur
     Route::post('/alerte/panne', [AlerteController::class, 'signaler']);
     Route::post('/alerte/panne/resoudre', [AlerteController::class, 'resoudre']);
 });
+
+
+Route::get('/api/alerte-active', [AlerteController::class, 'active']);
+
 
 
 

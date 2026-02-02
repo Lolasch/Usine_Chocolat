@@ -12,6 +12,10 @@ class AlerteController extends Controller
     // Récupérer l'alerte active
     public function active()
     {
+        if (!auth()->check()) {
+            return response()->json(['active' => false]);
+        }
+
         $alerte = Alerte::where('type', 'panne')
             ->where('resolue', false)
             ->latest()
@@ -22,6 +26,7 @@ class AlerteController extends Controller
             'alerte' => $alerte
         ]);
     }
+
 
 
     // Signaler une panne (SUPERVISEUR UNIQUEMENT)

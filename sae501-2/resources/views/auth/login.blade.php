@@ -85,7 +85,7 @@
 
                 <!-- Bouton de connexion -->
                 <div class="flex justify-center mt-8">
-                    <button type="submit" class="bg-[#FCE097] hover:bg-[#f6d97f] rounded-full p-4 transition-all transform hover:scale-110 focus:outline-none focus:ring-4 focus:ring-[#FCE097]/50" aria-label="Se connecter">
+                    <button type="submit" class="bg-[#FCE097] rounded-t-[2rem] rounded-b-3xl p-4 transition-all transform hover:scale-110 focus:outline-none focus:ring-4 focus:ring-[#FCE097]/50" aria-label="Se connecter">
                         <svg class="w-8 h-8 text-[#5a463a]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
                         </svg>
