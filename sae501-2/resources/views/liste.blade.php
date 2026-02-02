@@ -26,20 +26,28 @@
 
 
                 <div class="flex sm:justify-end justify-start">
-                    <form method="POST" action="{{ route('objectifs.store') }}" class="flex gap-2 items-center">
-                        @csrf
-                        <input type="number"
-                            name="objectif_commandes"
-                            value="{{ $objectifValeur ?? 100 }}"
-                            min="1" max="999"
-                            class="px-3 py-2 rounded bg-white/20 text-white w-20 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-white/50">
-                            <button type="submit" class="w-10 h-10 flex items-center justify-center bg-[var(--caramel-dark)] rounded-full hover:brightness-110 transition-all">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-[var(--choco-beige)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
-                                </svg>
-                            </button>
-                    </form>
+                    @auth
+                        @if(auth()->user()->isSuperviseur())
+                            <form method="POST" action="{{ route('objectifs.store') }}" class="flex gap-2 items-center">
+                                @csrf
+
+                                <input type="number"
+                                    name="objectif_commandes"
+                                    value="{{ $objectifValeur ?? 100 }}"
+                                    min="1" max="999"
+                                    class="px-3 py-2 rounded bg-white/20 text-white w-20 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-white/50">
+
+                                <button type="submit"
+                                        class="w-10 h-10 flex items-center justify-center bg-[var(--caramel-dark)] rounded-full hover:brightness-110 transition-all">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-[var(--choco-beige)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                </button>
+                            </form>
+                        @endif
+                    @endauth
                 </div>
+
             </div>
         </div>
 
@@ -511,14 +519,14 @@
                             </button>
 
                             @auth
-                            @if(auth()->user()->role->nom === 'superviseur')
-                                <button onclick="ouvrirPopupPanne()"
-                                        class="bg-[var(--caramel-dark)] px-4 py-2 rounded-full
-                                            flex items-center gap-2 text-white">
-                                    Signaler une panne
-                                </button>
-                            @endif
+                                @if(auth()->user()->isSuperviseur())
+                                    <button onclick="ouvrirPopupPanne()"
+                                            class="bg-[var(--caramel-dark)] px-4 py-2 rounded-full flex items-center gap-2 text-white">
+                                        Signaler une panne
+                                    </button>
+                                @endif
                             @endauth
+
                         </div>
 
                     </div>
