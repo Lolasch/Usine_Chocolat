@@ -43,6 +43,7 @@ class CommandesPoste extends Model
 		'poste_id',
 		'date_entree',
 		'date_sortie',
+        'temps_etape',
 		'conforme'
 	];
 

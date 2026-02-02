@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\CommandesPostes;
 
 class Commande extends Model
 {
@@ -46,10 +47,14 @@ class Commande extends Model
         return $this->hasMany(NonConformite::class);
     }
 
-    // Attribut calculé pour vérifier si la commande est finalisée
     public function getFinaliseeAttribute()
     {
         return $this->statut === 'finie_livree';
+    }
+
+    public function commandesPostes()
+    {
+        return $this->hasMany(CommandesPoste::class);
     }
 
 }

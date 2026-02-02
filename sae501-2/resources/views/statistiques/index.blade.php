@@ -64,8 +64,8 @@
         <!-- ZONE GRAPHIQUES -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-            <!-- LEAD TIME -->
-            <div class="lg:col-span-3 bg-[var(--choco-beige)] rounded-2xl shadow-lg p-4">
+            <!-- LEAD TIME (2/3) -->
+            <div class="lg:col-span-2 bg-[var(--choco-beige)] rounded-2xl shadow-lg p-4">
                 <h2 class="font-kavoon text-lg text-[var(--choco-brown)] mb-3">
                     Lead-time par étape
                 </h2>
@@ -86,6 +86,77 @@
                     <span>Étape 5</span>
                 </div>
             </div>
+
+            <div class="lg:col-span-1 bg-[var(--choco-beige)] rounded-2xl shadow-lg p-6 flex flex-col justify-between">
+
+                <!-- TITRE -->
+                <div>
+                    <h2 class="font-kavoon text-lg text-[var(--choco-brown)] text-center mb-1">
+                        Avancement des commandes
+                    </h2>
+                    <p class="text-xs text-center text-[var(--choco-brown)] opacity-70 mb-4">
+                        Suivi global de la production
+                    </p>
+                </div>
+
+                <!-- POURCENTAGE CENTRAL -->
+                <div class="text-center mb-5">
+                    <p class="font-kavoon text-4xl text-[var(--green)]">
+                        {{ round(($commandesLivrees / max($totalCommandes,1)) * 100) }}%
+                    </p>
+                    <p class="text-xs text-[var(--choco-brown)] opacity-70">
+                        commandes livrées
+                    </p>
+                </div>
+
+                <!-- BARRE PROGRESSION -->
+                <div class="w-full h-5 bg-[var(--choco)]/20 rounded-full overflow-hidden flex mb-4">
+                    <div
+                        class="bg-[var(--caramel-dark)]"
+                        style="width: {{ round((($totalCommandes - $commandesLivrees) / max($totalCommandes,1)) * 100) }}%">
+                    </div>
+
+                    <div
+                        class="bg-[var(--green)]"
+                        style="width: {{ round(($commandesLivrees / max($totalCommandes,1)) * 100) }}%">
+                    </div>
+                </div>
+
+                <!-- LÉGENDE COULEURS -->
+                <div class="flex justify-center gap-6 text-xs text-[var(--choco-brown)] mb-4">
+                    <div class="flex items-center gap-1">
+                        <span class="w-3 h-3 rounded-full bg-[var(--caramel-dark)]"></span>
+                        En cours
+                    </div>
+                    <div class="flex items-center gap-1">
+                        <span class="w-3 h-3 rounded-full bg-[var(--green)]"></span>
+                        Livrées
+                    </div>
+                </div>
+
+                <!-- CHIFFRES DÉTAILLÉS -->
+                <div class="grid grid-cols-2 gap-3 text-center text-sm font-semibold">
+                    <div class="bg-[var(--choco)]/10 rounded-xl py-3">
+                        <p class="text-[var(--caramel-dark)] text-lg">
+                            {{ $totalCommandes - $commandesLivrees }}
+                        </p>
+                        <p class="text-xs text-[var(--choco-brown)] opacity-70">
+                            En cours
+                        </p>
+                    </div>
+
+                    <div class="bg-[var(--choco)]/10 rounded-xl py-3">
+                        <p class="text-[var(--green)] text-lg">
+                            {{ $commandesLivrees }}
+                        </p>
+                        <p class="text-xs text-[var(--choco-brown)] opacity-70">
+                            Livrées
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+
 
             <!-- QUALITÉ / CONFORMITÉ -->
             <div class="lg:col-span-1 bg-[var(--choco-beige)] rounded-2xl shadow-lg p-5 flex flex-col justify-between">
@@ -251,7 +322,37 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
 });
+
+new Chart(document.getElementById('livraisonChart'), {
+    type: 'doughnut',
+    data: {
+        labels: ['Livrées', 'Non livrées'],
+        datasets: [{
+            data: [
+                {{ $commandesLivrees }},
+                {{ $totalCommandes - $commandesLivrees }}
+            ],
+            backgroundColor: [
+                '#6BCF9B', // vert
+                '#E76F51'  // rouge
+            ],
+            borderWidth: 0
+        }]
+    },
+    options: {
+        cutout: '70%',
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                callbacks: {
+                    label: ctx => `${ctx.label} : ${ctx.raw}`
+                }
+            }
+        }
+    }
+});
 </script>
+
 
 
 

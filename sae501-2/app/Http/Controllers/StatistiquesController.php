@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Stock;
+use App\Models\Poste;
 use App\Models\NonConformite;
 use App\Models\Commande;
 use Illuminate\Support\Facades\Auth;
@@ -48,6 +49,16 @@ class StatistiquesController extends Controller
             ? round(($score / $totalStocks) * 100, 1)
             : 0;
 
+        $posteLivraisonId = Poste::where('nom', 'Livraison')->value('id');
+
+        $commandesLivrees = Commande::whereHas('commandesPostes', function ($q) use ($posteLivraisonId) {
+            $q->where('poste_id', $posteLivraisonId)
+            ->whereNotNull('date_sortie');
+        })->count();
+
+        $tauxLivraison = $totalCommandes > 0
+            ? round(($commandesLivrees / $totalCommandes) * 100, 1)
+            : 0;
 
 
         return view(
@@ -60,6 +71,9 @@ class StatistiquesController extends Controller
                 'totalCommandes',
                 'tauxConformite',
                 'tauxRotationStocks',
+                'tauxLivraison',
+                'commandesLivrees',
+
             )
         );
     }
