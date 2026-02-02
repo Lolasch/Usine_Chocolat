@@ -11,6 +11,7 @@ use App\Http\Controllers\AlerteController;
 
 use Illuminate\Support\Facades\Route;
 use App\Models\Poste;
+use App\Models\Avis;
 
 Route::get('/', function () {
     if (auth()->check()) {
@@ -44,6 +45,24 @@ Route::get('/commande/{numero}/validation', [CommandeController::class, 'validat
 Route::post('/commande/{commandeId}/supprimer', [CommandeController::class, 'supprimerCommande'])->name('commande.supprimer');
 Route::post('/commande/{commandeId}/prochainPoste', [CommandeController::class, 'prochainPoste'])->name('commande.prochainPoste');
 Route::post('/commande/{commandeId}/finaliser', [CommandeController::class, 'finaliserCommande'])->name('commande.finaliser');
+
+// Avis
+Route::get('/avis', function () {
+    return view('avis');
+})->name('avis');
+Route::post('/avis', function () {
+    $validated = request()->validate([
+        'note' => 'required|integer|min:1|max:5',
+        'commentaire' => 'required|string|max:1000',
+    ]);
+
+    Avis::create([
+        'note' => $validated['note'],
+        'commentaire' => $validated['commentaire'],
+    ]);
+
+    return redirect('/accueil')->with('success', 'Merci pour votre avis !');
+})->name('avis.store');
 
 // ADMIN
 Route::middleware(['auth'])->group(function () {
