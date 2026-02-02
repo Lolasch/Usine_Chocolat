@@ -133,7 +133,18 @@ class CommandeController extends Controller
             ->with(['visiteur', 'chocolat'])
             ->firstOrFail();
 
-        return view('validation', compact('commande'));
+        // Récupérer le poste actuel de la commande
+        $posteActuel = DB::table('commandes_postes')
+            ->join('postes', 'commandes_postes.poste_id', '=', 'postes.id')
+            ->where('commandes_postes.commande_id', $commande->id)
+            ->whereNull('commandes_postes.date_sortie')
+            ->select('postes.nom as nom_poste', 'postes.ordre')
+            ->first();
+
+        // Récupérer tous les postes pour le tracker
+        $etapes = Poste::orderBy('ordre')->get();
+
+        return view('validation', compact('commande', 'posteActuel', 'etapes'));
     }
 
     public function liste()
@@ -270,6 +281,29 @@ class CommandeController extends Controller
 
         return redirect()->route('commande.liste')
             ->with('success', '🎯 Objectif mis à jour !');
+    }
+
+    public function getStatut($numero)
+    {
+        $commande = Commande::where('numero_commande', $numero)
+            ->firstOrFail();
+
+        // Récupérer le poste actuel de la commande
+        $posteActuel = DB::table('commandes_postes')
+            ->join('postes', 'commandes_postes.poste_id', '=', 'postes.id')
+            ->where('commandes_postes.commande_id', $commande->id)
+            ->whereNull('commandes_postes.date_sortie')
+            ->select('postes.nom as nom_poste', 'postes.ordre')
+            ->first();
+
+        // Récupérer tous les postes pour le tracker
+        $etapes = Poste::orderBy('ordre')->get();
+
+        return response()->json([
+            'finalisee' => $commande->finalisee,
+            'posteActuel' => $posteActuel,
+            'etapes' => $etapes
+        ]);
     }
 
 

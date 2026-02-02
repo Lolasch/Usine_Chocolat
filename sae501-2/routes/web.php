@@ -81,6 +81,9 @@ Route::get('/api/commandes', function() {
     return response()->json($etapes);
 })->middleware('auth');
 
+// API pour récupérer le statut d'une commande spécifique
+Route::get('/api/commande/{numero}/statut', [CommandeController::class, 'getStatut'])->name('commande.statut');
+
 Route::post('/objectifs', [CommandeController::class, 'storeObjectif'])->name('objectifs.store');
 
 
