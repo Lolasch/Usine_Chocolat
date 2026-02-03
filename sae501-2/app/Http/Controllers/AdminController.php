@@ -78,8 +78,18 @@ class AdminController extends Controller
             // Récupérer les utilisateurs de cette équipe avec leurs rôles d'équipe
             $etudiantsRaw = $equipe->users()->with('role')->get();
 
+            // Trouver le premier superviseur (chef d'équipe) ajouté à l'équipe
+            $firstSuperviseur = DB::table('users_equipes')
+                ->where('equipe_id', $equipe->id)
+                ->leftJoin('roles', 'users_equipes.role_id', '=', 'roles.id')
+                ->whereRaw("LOWER(COALESCE(roles.nom, '')) LIKE '%superviseur%'")
+                ->orderBy('users_equipes.created_at')
+                ->first();
+
+            $firstSuperviseurId = $firstSuperviseur ? $firstSuperviseur->user_id : null;
+
             // Transformer en collection avec role_equipe inclus pour JSON
-            $etudiants = $etudiantsRaw->map(function($etudiant) use ($equipe) {
+            $etudiants = $etudiantsRaw->map(function($etudiant) use ($equipe, $firstSuperviseurId) {
                 $userEquipe = DB::table('users_equipes')
                     ->where('user_id', $etudiant->id)
                     ->where('equipe_id', $equipe->id)
@@ -91,6 +101,10 @@ class AdminController extends Controller
                 } else {
                     $roleEquipe = $etudiant->role; // Fallback sur le rôle global
                 }
+
+                $isTeamLeader = $etudiant->id === $firstSuperviseurId &&
+                               $roleEquipe &&
+                               stripos($roleEquipe->nom, 'superviseur') !== false;
 
                 // Créer un tableau pour faciliter la sérialisation JSON
                 return [
@@ -105,7 +119,8 @@ class AdminController extends Controller
                     'role_equipe' => $roleEquipe ? [
                         'id' => $roleEquipe->id,
                         'nom' => $roleEquipe->nom
-                    ] : null
+                    ] : null,
+                    'is_team_leader' => $isTeamLeader
                 ];
             });
 

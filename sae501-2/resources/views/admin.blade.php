@@ -610,6 +610,7 @@
                 const nameEl = item.querySelector('.user-name');
                 const roleEl = item.querySelector('.user-role');
                 const arrowEl = item.querySelector('.arrow-icon');
+                const badgeEl = item.querySelector('.team-leader-badge');
                 if (nameEl) {
                     nameEl.classList.remove('!text-white');
                     nameEl.classList.add('text-[var(--choco-brown)]');
@@ -621,6 +622,10 @@
                 if (arrowEl) {
                     arrowEl.classList.remove('!text-white');
                 }
+                if (badgeEl) {
+                    badgeEl.classList.remove('!text-[var(--caramel)]');
+                    badgeEl.classList.add('text-[var(--choco-brown)]');
+                }
             });
             const selectedItem = document.querySelector(`[data-user-id="${userId}"]`);
             if (selectedItem) {
@@ -629,6 +634,7 @@
                 const nameEl = selectedItem.querySelector('.user-name');
                 const roleEl = selectedItem.querySelector('.user-role');
                 const arrowEl = selectedItem.querySelector('.arrow-icon');
+                const badgeEl = selectedItem.querySelector('.team-leader-badge');
                 if (nameEl) {
                     nameEl.classList.add('!text-white');
                     nameEl.classList.remove('text-[var(--choco-brown)]');
@@ -639,6 +645,10 @@
                 }
                 if (arrowEl) {
                     arrowEl.classList.add('!text-white');
+                }
+                if (badgeEl) {
+                    badgeEl.classList.add('!text-[var(--caramel)]');
+                    badgeEl.classList.remove('text-[var(--choco-brown)]');
                 }
             }
 
@@ -659,8 +669,9 @@
 
         const isOperateur = roleActuel ? (roleActuel.nom || '').toLowerCase() === 'operateur' : false;
         const isSuperviseur = roleActuel ? (roleActuel.nom || '').toLowerCase() === 'superviseur' : false;
+        const isTeamLeader = user.is_team_leader || false;
 
-        console.log('isOperateur:', isOperateur, 'isSuperviseur:', isSuperviseur);
+        console.log('isOperateur:', isOperateur, 'isSuperviseur:', isSuperviseur, 'isTeamLeader:', isTeamLeader);
 
         let postesOptions = '<option value="">Sélectionner un poste</option>';
         if (postes && postes.length > 0) {
@@ -701,12 +712,12 @@
 
                 <div>
                     <label class="text-sm font-bold text-[var(--choco-brown)] block mb-2">Rôle (dans cette équipe) :</label>
-                    ${isCurrentUser || !canModify ? `<p class="text-[var(--choco-brown)]">${roleActuel?.nom || 'Superviseur'} (non modifiable)</p>` : `<div class="flex gap-2 flex-wrap">
+                    ${isCurrentUser || !canModify ? `<p class="text-[var(--choco-brown)]">${roleActuel?.nom || 'Superviseur'} ${isTeamLeader ? '<span class="font-bold text-[var(--choco-brown)] hover:text-[var(--caramel)] active:text-[var(--caramel)] transition cursor-pointer">(chef)</span>' : ''}</p>` : `<div class="flex gap-2 flex-wrap">
                         <button onclick="changeUserRole(${user.id}, 2)" class="px-4 py-2 rounded-full font-bold transition hover:opacity-80 ${isOperateur ? 'bg-[var(--choco)] text-white' : 'bg-[var(--choco-gold)] text-[var(--choco-brown)]'}">
                             Opérateur
                         </button>
                         <button onclick="changeUserRole(${user.id}, 1)" class="px-4 py-2 rounded-full font-bold transition hover:opacity-80 ${isSuperviseur ? 'bg-[var(--choco)] text-white' : 'bg-[var(--choco-gold)] text-[var(--choco-brown)]'}">
-                            Superviseur
+                            Superviseur ${isTeamLeader ? '<span class="font-bold">(chef)</span>' : ''}
                         </button>
                     </div>`}
                 </div>
@@ -805,7 +816,7 @@
                     </div>
                     <div>
                         <p class="user-name font-bold text-[var(--choco-brown)]">${op.prenom || ''} ${op.nom || ''}</p>
-                        <p class="text-sm text-[var(--choco-brown)]/70 user-role">Rôle : ${op.role_equipe?.nom || op.role?.nom || 'operateur'}</p>
+                        <p class="text-sm text-[var(--choco-brown)]/70 user-role">Rôle : ${op.role_equipe?.nom || op.role?.nom || 'operateur'} ${op.is_team_leader ? '<span class="font-bold text-[var(--choco-brown)] team-leader-badge transition cursor-pointer">(chef)</span>' : ''}</p>
                     </div>
                 </div>
                 <div class="arrow-icon text-[var(--choco-brown)] hover:text-[var(--choco)] transition">
