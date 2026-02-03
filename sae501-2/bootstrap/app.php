@@ -11,7 +11,13 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // 🔒 Headers de sécurité sur TOUTES les réponses
+        $middleware->append(\App\Http\Middleware\SecureHeadersMiddleware::class);
+
+        // 🔒 Forcer HTTPS en production
+        if (env('APP_ENV') === 'production') {
+            $middleware->append(\App\Http\Middleware\ForceHttpsMiddleware::class);
+        }
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

@@ -25,6 +25,7 @@ use Illuminate\Notifications\Notifiable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $email_verified_at
+ * @property Carbon|null $deleted_at
  * @property string $password
  * @property string|null $remember_token
  *
@@ -33,14 +34,15 @@ use Illuminate\Notifications\Notifiable;
  */
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, \Illuminate\Database\Eloquent\SoftDeletes;
 
     protected $table = 'users';
 
     protected $casts = [
         'actif' => 'bool',
         'role_id' => 'int',
-        'email_verified_at' => 'datetime'
+        'email_verified_at' => 'datetime',
+        'deleted_at' => 'datetime' // 🔒 Soft deletes
     ];
 
     protected $hidden = [

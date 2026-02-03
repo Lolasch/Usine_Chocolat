@@ -26,6 +26,13 @@ class AuthenticatedSessionController extends Controller
     {
         $request->authenticate();
 
+        // 🔒 Vérifier que l'email est confirmé avant d'autoriser l'accès
+        if (!$request->user()->hasVerifiedEmail()) {
+            Auth::guard('web')->logout();
+            return redirect()->route('verification.notice')
+                ->with('status', 'Veuillez vérifier votre adresse email avant de continuer.');
+        }
+
         $request->session()->regenerate();
 
         return redirect()->intended(route('commande.liste', absolute: false));

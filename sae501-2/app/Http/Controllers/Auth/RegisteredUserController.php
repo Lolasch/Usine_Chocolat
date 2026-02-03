@@ -37,7 +37,17 @@ class RegisteredUserController extends Controller
             'nom' => ['required', 'string', 'max:100'],
             'prenom' => ['required', 'string', 'max:100'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:150', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'password' => [
+                'required',
+                'confirmed',
+                'min:12',
+                Rules\Password::min(12)
+                    ->letters()
+                    ->mixedCase()
+                    ->numbers()
+                    ->symbols()
+                    ->uncompromised(), // 🔒 Vérifier Have I Been Pwned API
+            ],
             'role_id' => ['required', 'exists:roles,id'],
         ]);
 
@@ -77,9 +87,13 @@ class RegisteredUserController extends Controller
             }
         });
 
+        // 🔒 Dispatcher l'événement Registered AVANT login (envoie email de vérification)
         event(new Registered($user));
-        Auth::login($user);
 
-        return redirect('/liste');
+        // 🔒 NE PAS auto-login jusqu'à vérification email
+        // Auth::login($user); <- COMMENTÉ pour forcer vérification
+
+        return redirect()->route('verification.notice')
+            ->with('status', 'Un email de confirmation a été envoyé. Veuillez vérifier votre boîte de réception.');
     }
 }
