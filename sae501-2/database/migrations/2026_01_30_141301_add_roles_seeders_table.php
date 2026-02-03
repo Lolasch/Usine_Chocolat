@@ -15,12 +15,12 @@ return new class extends Migration
 
         DB::table('roles')->insertOrIgnore([
             [
-                'nom' => 'operateur',
+                'nom' => 'superviseur',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'nom' => 'superviseur',
+                'nom' => 'operateur',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

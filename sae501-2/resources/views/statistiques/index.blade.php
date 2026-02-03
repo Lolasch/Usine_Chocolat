@@ -109,6 +109,7 @@
                     </p>
                 </div>
 
+                
                 <!-- BARRE PROGRESSION -->
                 <div class="w-full h-5 bg-[var(--choco)]/20 rounded-full overflow-hidden flex mb-4">
                     <div
