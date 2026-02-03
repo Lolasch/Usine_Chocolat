@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('stocks', function (Blueprint $table) {
             $table->id();
-            $table->string('nom', 100);
+            $table->string('nom', 100)->nullable();
             $table->string('type', 50)->nullable();
             $table->integer('quantite');
             $table->integer('seuil_min');

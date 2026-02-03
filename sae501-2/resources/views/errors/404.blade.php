@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Accès interdit - L'Usine Chocolat</title>
+    <title>Page non trouvée - L'Usine Chocolat</title>
 
     <!-- Tailwind CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -36,14 +36,14 @@
         <div class="bg-white rounded-3xl shadow-2xl p-8 sm:p-12 text-center">
             <!-- Code d'erreur -->
             <div class="mb-6">
-                <h1 class="text-8xl sm:text-9xl font-bold text-[var(--choco)] font-kavoon">403</h1>
+                <h1 class="text-8xl sm:text-9xl font-bold text-[var(--choco)] font-kavoon">404</h1>
             </div>
 
             <!-- Message -->
             <div class="mb-8 flex flex-col items-center">
-                <h2 class="text-2xl sm:text-3xl font-bold text-[var(--choco-brown)] mb-4 font-kavoon text-center">Accès Interdit</h2>
+                <h2 class="text-2xl sm:text-3xl font-bold text-[var(--choco-brown)] mb-4 font-kavoon text-center">Page non trouvée</h2>
                 <p class="text-base sm:text-lg text-[var(--choco-brown)]/70 max-w-md text-center">
-                    {{ $exception->getMessage() ?: "Vous n'avez pas accès à cette page. Seul un administrateur ou superviseur peut accéder à cette section." }}
+                    Oups ! La page que vous cherchez n'existe pas. Elle a peut-être été supprimée ou la route n'est pas correcte.
                 </p>
             </div>
 

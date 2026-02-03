@@ -17,7 +17,7 @@ return new class extends Migration
         $table->string('prenom', 100);
         $table->string('email', 150)->unique()->nullable();
         $table->boolean('actif')->default(true);
-        $table->foreignId('role_id')->constrained('roles');
+        $table->foreignId('role_id')->default(2)->constrained('roles');
         $table->timestamps();
 
         // Auth Laravel (obligatoire)

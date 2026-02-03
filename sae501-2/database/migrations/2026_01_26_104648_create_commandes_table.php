@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('commandes', function (Blueprint $table) {
             $table->id();
             $table->string('numero_commande', 50);
-            $table->foreignId('visiteur_id')->constrained('visiteurs');
+            $table->foreignId('visiteur_id')->nullable()->constrained('visiteurs');
             $table->foreignId('chocolat_id')->constrained('chocolats');
             $table->string('allergie', 255)->nullable();
             $table->dateTime('date_commande_debut')->useCurrent();
