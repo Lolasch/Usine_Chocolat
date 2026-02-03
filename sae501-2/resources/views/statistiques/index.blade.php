@@ -22,20 +22,27 @@
             Statistiques
         </h1>
 
-        <!-- KPI -->
+        <!-- STASTS -->
         <div class="p-4 mb-6">
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
 
-                <!-- KPI 1 -->
+                <!-- STAT : TEMPS MOYEN COMMANDE -->
                 <div class="flex items-center justify-center gap-4 bg-[var(--green)] rounded-full px-6 py-4 shadow-lg">
                     <span class="font-kavoon text-2xl text-[var(--choco-brown)]">1.</span>
+
                     <div class="text-center">
-                        <p class="font-bold text-md text-[var(--choco-brown)]">Lead Time</p>
-                        <p class="font-medium font-kavoon text-[var(--choco)] text-xl">35 minutes</p>
+                        <p class="font-bold text-md text-[var(--choco-brown)]">
+                            Temps moyen d'une commande
+                        </p>
+
+                        <p class="font-kavoon text-2xl text-[var(--choco)]">
+                            {{ $tempsMoyenCommande }} min
+                        </p>
                     </div>
                 </div>
 
-                <!-- KPI 2 -->
+
+                <!-- STAST NOMBRE NON CONFORMITEES -->
                 <div class="flex items-center justify-center gap-4 bg-[var(--green)] rounded-full px-6 py-4 shadow-lg">
                     <span class="font-kavoon text-2xl text-[var(--choco-brown)]">2.</span>
                     <div class="text-center">
@@ -46,7 +53,7 @@
                     </div>
                 </div>
 
-                <!-- KPI 3 -->
+                <!-- STAST TAUX DE ROTATION DES STOCKS -->
                 <div class="flex items-center justify-center gap-4 bg-[var(--green)] rounded-full px-6 py-4 shadow-lg">
                     <span class="font-kavoon text-2xl text-[var(--choco-brown)]">3.</span>
                     <div class="text-center">
@@ -64,37 +71,74 @@
         <!-- ZONE GRAPHIQUES -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-            <!-- LEAD TIME (2/3) -->
-            <div class="lg:col-span-2 bg-[var(--choco-beige)] rounded-2xl shadow-lg p-4">
-                <h2 class="font-kavoon text-lg text-[var(--choco-brown)] mb-3">
-                    Lead-time par étape
+            <!-- TEMPS MOYEN (2/3) -->
+            @php
+                $maxLeadTime = max($leadTimesParPoste->pluck('lead_time_moyen')->toArray() ?: [1]);
+
+                $colors = [
+                    1 => 'bg-[var(--caramel-dark)]',
+                    2 => 'bg-[var(--choco)]',
+                    3 => 'bg-[var(--green)]',
+                    4 => 'bg-[var(--caramel)]',
+                    5 => 'bg-[var(--choco-brown)]',
+                    6 => 'bg-[var(--caramel-dark)]',
+                    7 => 'bg-[var(--choco)]',
+                    8 => 'bg-[var(--green)]',
+                    9 => 'bg-[var(--caramel)]',
+                    10 => 'bg-[var(--choco-brown)]',
+                ];
+            @endphp
+
+            <div class="lg:col-span-2 bg-[var(--choco-beige)] rounded-2xl shadow-lg p-6">
+                <h2 class="font-kavoon text-lg text-[var(--choco-brown)] mb-4 text-start">
+                    Temps moyen par poste
                 </h2>
 
-                <div class="h-56 flex items-end gap-6 px-4">
-                    <div class="w-10 bg-[var(--choco)] h-1/4 rounded-t-lg"></div>
-                    <div class="w-10 bg-[var(--caramel-dark)] h-2/4 rounded-t-lg"></div>
-                    <div class="w-10 bg-[var(--choco)] h-3/4 rounded-t-lg"></div>
-                    <div class="w-10 bg-[var(--caramel-dark)] h-1/3 rounded-t-lg"></div>
-                    <div class="w-10 bg-[var(--choco)] h-2/3 rounded-t-lg"></div>
-                </div>
+                <div class="h-64 flex items-end justify-between gap-8 px-6">
+                    @foreach($leadTimesParPoste as $poste)
+                        @php
+                            $height = $maxLeadTime > 0
+                                ? ($poste->lead_time_moyen / $maxLeadTime) * 100
+                                : 0;
 
-                <div class="flex justify-between text-xs text-[var(--choco-brown)] mt-2 px-4">
-                    <span>Étape 1</span>
-                    <span>Étape 2</span>
-                    <span>Étape 3</span>
-                    <span>Étape 4</span>
-                    <span>Étape 5</span>
+                            $color = $colors[$poste->id] ?? 'bg-[var(--choco)]';
+                        @endphp
+
+                        <div class="flex flex-col items-center justify-end w-full">
+
+                            <!-- BARRE -->
+                            <div class="w-10 h-44 bg-[var(--choco)]/20 flex items-end">
+                                <div class="w-full {{ $color }} rounded-md transition-all duration-500"
+                                    style="height: {{ max($height, 3) }}%">
+                                </div>
+                            </div>
+
+                            <!-- VALEUR -->
+                            <span class="text-sm font-semibold text-[var(--choco-brown)] mt-2">
+                                {{ round($poste->lead_time_moyen) }} min
+                            </span>
+
+                            <!-- NOM POSTE -->
+                            <span class="text-xs text-center text-[var(--choco-brown)] mt-1">
+                                {{ $poste->nom }}
+                            </span>
+                        </div>
+                    @endforeach
                 </div>
             </div>
+
+
+
+
 
             <div class="lg:col-span-1 bg-[var(--choco-beige)] rounded-2xl shadow-lg p-6 flex flex-col justify-between">
 
                 <!-- TITRE -->
                 <div>
-                    <h2 class="font-kavoon text-lg text-[var(--choco-brown)] text-center mb-1">
+                    <h2 class="font-kavoon text-lg text-[var(--choco-brown)] text-start mb-1">
                         Avancement des commandes
                     </h2>
-                    <p class="text-xs text-center text-[var(--choco-brown)] opacity-70 mb-4">
+                    <p class="text-xs text-center text-[var(--choco-brown)] mb-4">
                         Suivi global de la production
                     </p>
                 </div>
@@ -104,12 +148,12 @@
                     <p class="font-kavoon text-4xl text-[var(--green)]">
                         {{ round(($commandesLivrees / max($totalCommandes,1)) * 100) }}%
                     </p>
-                    <p class="text-xs text-[var(--choco-brown)] opacity-70">
+                    <p class="text-xs text-[var(--choco-brown)]">
                         commandes livrées
                     </p>
                 </div>
 
-                
+
                 <!-- BARRE PROGRESSION -->
                 <div class="w-full h-5 bg-[var(--choco)]/20 rounded-full overflow-hidden flex mb-4">
                     <div
@@ -141,7 +185,7 @@
                         <p class="text-[var(--caramel-dark)] text-lg">
                             {{ $totalCommandes - $commandesLivrees }}
                         </p>
-                        <p class="text-xs text-[var(--choco-brown)] opacity-70">
+                        <p class="text-xs text-[var(--choco-brown)]">
                             En cours
                         </p>
                     </div>
@@ -150,7 +194,7 @@
                         <p class="text-[var(--green)] text-lg">
                             {{ $commandesLivrees }}
                         </p>
-                        <p class="text-xs text-[var(--choco-brown)] opacity-70">
+                        <p class="text-xs text-[var(--choco-brown)]">
                             Livrées
                         </p>
                     </div>

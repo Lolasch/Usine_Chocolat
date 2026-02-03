@@ -8,7 +8,9 @@ use App\Models\Stock;
 use App\Models\Poste;
 use App\Models\NonConformite;
 use App\Models\Commande;
+use App\Models\CommandesPoste;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class StatistiquesController extends Controller
 {
@@ -60,6 +62,28 @@ class StatistiquesController extends Controller
             ? round(($commandesLivrees / $totalCommandes) * 100, 1)
             : 0;
 
+        $leadTimesParPoste = Poste::leftJoin('commandes_postes', function ($join) {
+                $join->on('postes.id', '=', 'commandes_postes.poste_id')
+                    ->whereNotNull('commandes_postes.date_entree')
+                    ->whereNotNull('commandes_postes.date_sortie');
+            })
+            ->select(
+                'postes.id',
+                'postes.nom',
+                DB::raw('AVG(TIMESTAMPDIFF(MINUTE, commandes_postes.date_entree, commandes_postes.date_sortie)) as lead_time_moyen')
+            )
+            ->groupBy('postes.id', 'postes.nom')
+            ->orderBy('postes.ordre')
+            ->get()
+            ->map(function ($poste) {
+                $poste->lead_time_moyen = round($poste->lead_time_moyen ?? 0);
+                return $poste;
+            });
+
+            $tempsMoyenCommande = round(
+                $leadTimesParPoste->sum('lead_time_moyen')
+            );
+
 
         return view(
             'statistiques.index',
@@ -73,7 +97,8 @@ class StatistiquesController extends Controller
                 'tauxRotationStocks',
                 'tauxLivraison',
                 'commandesLivrees',
-
+                'leadTimesParPoste',
+                'tempsMoyenCommande',
             )
         );
     }

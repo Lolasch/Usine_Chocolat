@@ -169,6 +169,51 @@
                                     </svg>
                                 </button>
                             </form>
+                            <!-- Ajout de stock -->
+<form method="POST" action="{{ route('stocks.add') }}"
+      class="flex items-center justify-center gap-1">
+    @csrf
+
+    <input type="hidden" name="stock_id" value="{{ $stock->id }}">
+
+    <label for="quantite-{{ $stock->id }}" class="sr-only">
+        Quantité à ajouter pour {{ $stock->nom }}
+    </label>
+
+    <span class="text-xs font-bold text-[var(--choco-brown)]">
+        Ajouter du stock
+    </span>
+
+    <input
+        id="quantite-{{ $stock->id }}"
+        type="number"
+        name="quantite"
+        min="1"
+        value="1"
+        class="w-10 text-center text-xs rounded border border-[var(--choco)] bg-white"
+    >
+
+    <button
+        type="submit"
+        aria-label="Ajouter du stock pour {{ $stock->nom }}"
+        class="w-7 h-7 flex items-center justify-center bg-[var(--caramel-dark)]
+               rounded-tl-[2.25rem] rounded-tr-[2.25rem]
+               rounded-bl-3xl rounded-br-3xl transition"
+    >
+        <svg xmlns="http://www.w3.org/2000/svg"
+             class="w-4 h-4 text-[var(--choco-beige)]"
+             fill="none"
+             viewBox="0 0 24 24"
+             stroke="currentColor"
+             stroke-width="3"
+             aria-hidden="true"
+        >
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M12 5v14M5 12h14"/>
+        </svg>
+    </button>
+</form>
+
                         </div>
                     @endforeach
 
