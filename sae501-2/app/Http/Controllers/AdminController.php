@@ -124,7 +124,7 @@ class AdminController extends Controller
         }
 
         $roles = Role::all();
-        $postes = Poste::all();
+        $postes = Poste::orderBy('ordre')->get();
 
         // Calculer les statistiques pour l'équipe du superviseur
         if ($equipe) {
@@ -214,7 +214,7 @@ class AdminController extends Controller
         $users = $users->get();
 
         $roles = Role::all();
-        $postes = Poste::all();
+        $postes = Poste::orderBy('ordre')->get();
 
         $stats = [
             'utilisateurs_actifs' => User::where('actif', true)->count(),
@@ -748,6 +748,264 @@ class AdminController extends Controller
 
             return response()->json([
                 'error' => 'Erreur serveur: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    // ===== GESTION DES POSTES =====
+
+    /**
+     * Créer un nouveau poste
+     */
+    public function storePoste(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'nom' => 'required|string|max:255|unique:postes,nom',
+                'ordre' => 'required|integer|min:1',
+                'duree_cible' => 'nullable|integer|min:1'
+            ]);
+
+            $poste = Poste::create([
+                'nom' => $validated['nom'],
+                'ordre' => $validated['ordre'],
+                'duree_cible' => $validated['duree_cible'] ?? null,
+                'actif' => true
+            ]);
+
+            Log::info('Nouveau poste créé', [
+                'poste_id' => $poste->id,
+                'nom' => $poste->nom,
+                'ordre' => $poste->ordre,
+                'created_by' => auth()->id()
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Poste créé avec succès',
+                'poste' => $poste
+            ]);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur de validation: ' . implode(', ', $e->validator->errors()->all())
+            ], 422);
+        } catch (\Exception $e) {
+            Log::error('Erreur lors de la création du poste: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur serveur: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Mettre à jour un poste
+     */
+    public function updatePoste(Request $request, Poste $poste)
+    {
+        try {
+            $validated = $request->validate([
+                'nom' => 'required|string|max:255|unique:postes,nom,' . $poste->id
+            ]);
+
+            $poste->nom = $validated['nom'];
+            $poste->save();
+
+            Log::info('Poste modifié', [
+                'poste_id' => $poste->id,
+                'nouveau_nom' => $poste->nom,
+                'updated_by' => auth()->id()
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Poste modifié avec succès',
+                'poste' => $poste
+            ]);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur de validation: ' . implode(', ', $e->validator->errors()->all())
+            ], 422);
+        } catch (\Exception $e) {
+            Log::error('Erreur lors de la modification du poste: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur serveur: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Supprimer un poste
+     */
+    public function destroyPoste(Poste $poste)
+    {
+        try {
+            // Vérifier si des commandes ACTIVES sont dans ce poste (date_sortie null = commande en cours)
+            $commandesActivesCount = DB::table('commandes_postes')
+                ->where('poste_id', $poste->id)
+                ->whereNull('date_sortie')
+                ->count();
+
+            if ($commandesActivesCount > 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Impossible de supprimer ce poste car ' . $commandesActivesCount . ' commande(s) y sont actuellement en cours. Veuillez d\'abord les traiter.'
+                ], 400);
+            }
+
+            // Supprimer l'historique des commandes qui sont passées par ce poste
+            $historiqueCount = DB::table('commandes_postes')
+                ->where('poste_id', $poste->id)
+                ->count();
+
+            if ($historiqueCount > 0) {
+                DB::table('commandes_postes')
+                    ->where('poste_id', $poste->id)
+                    ->delete();
+
+                Log::info('Historique des commandes supprimé pour le poste', [
+                    'poste_id' => $poste->id,
+                    'historique_count' => $historiqueCount
+                ]);
+            }
+
+            // Vérifier si des utilisateurs sont affectés à ce poste
+            $usersCount = DB::table('users_equipes')
+                ->where('poste_id', $poste->id)
+                ->count();
+
+            if ($usersCount > 0) {
+                // Retirer l'affectation du poste pour tous les utilisateurs
+                DB::table('users_equipes')
+                    ->where('poste_id', $poste->id)
+                    ->update(['poste_id' => null]);
+
+                Log::info('Utilisateurs désaffectés du poste avant suppression', [
+                    'poste_id' => $poste->id,
+                    'users_count' => $usersCount
+                ]);
+            }
+
+            $posteNom = $poste->nom;
+            $poste->delete();
+
+            Log::info('Poste supprimé', [
+                'poste_nom' => $posteNom,
+                'deleted_by' => auth()->id()
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Poste supprimé avec succès'
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Erreur lors de la suppression du poste: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur serveur: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Déplacer un poste vers le haut (diminuer l'ordre)
+     */
+    public function movePosteUp(Poste $poste)
+    {
+        try {
+            // Trouver le poste précédent
+            $previousPoste = Poste::where('ordre', '<', $poste->ordre)
+                ->orderBy('ordre', 'desc')
+                ->first();
+
+            if (!$previousPoste) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Ce poste est déjà en première position'
+                ]);
+            }
+
+            // Échanger les ordres
+            $tempOrdre = $poste->ordre;
+            $poste->ordre = $previousPoste->ordre;
+            $previousPoste->ordre = $tempOrdre;
+
+            $poste->save();
+            $previousPoste->save();
+
+            Log::info('Poste déplacé vers le haut', [
+                'poste_id' => $poste->id,
+                'new_ordre' => $poste->ordre,
+                'moved_by' => auth()->id()
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Poste déplacé avec succès'
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Erreur lors du déplacement du poste: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur serveur: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Déplacer un poste vers le bas (augmenter l'ordre)
+     */
+    public function movePosteDown(Poste $poste)
+    {
+        try {
+            // Trouver le poste suivant
+            $nextPoste = Poste::where('ordre', '>', $poste->ordre)
+                ->orderBy('ordre', 'asc')
+                ->first();
+
+            if (!$nextPoste) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Ce poste est déjà en dernière position'
+                ]);
+            }
+
+            // Échanger les ordres
+            $tempOrdre = $poste->ordre;
+            $poste->ordre = $nextPoste->ordre;
+            $nextPoste->ordre = $tempOrdre;
+
+            $poste->save();
+            $nextPoste->save();
+
+            Log::info('Poste déplacé vers le bas', [
+                'poste_id' => $poste->id,
+                'new_ordre' => $poste->ordre,
+                'moved_by' => auth()->id()
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Poste déplacé avec succès'
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Erreur lors du déplacement du poste: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur serveur: ' . $e->getMessage()
             ], 500);
         }
     }

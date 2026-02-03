@@ -87,6 +87,13 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/admin/operators/{user}/add', [AdminController::class, 'addOperator'])->name('admin.addOperator');
     Route::post('/admin/operators/{user}/remove', [AdminController::class, 'removeOperator'])->name('admin.removeOperator');
 
+    // Routes gestion des postes
+    Route::post('/admin/postes', [AdminController::class, 'storePoste'])->name('admin.postes.store');
+    Route::patch('/admin/postes/{poste}', [AdminController::class, 'updatePoste'])->name('admin.postes.update');
+    Route::delete('/admin/postes/{poste}', [AdminController::class, 'destroyPoste'])->name('admin.postes.destroy');
+    Route::post('/admin/postes/{poste}/move-up', [AdminController::class, 'movePosteUp'])->name('admin.postes.moveUp');
+    Route::post('/admin/postes/{poste}/move-down', [AdminController::class, 'movePosteDown'])->name('admin.postes.moveDown');
+
     // Routes équipes
     Route::get('/admin/equipes', [AdminController::class, 'equipes'])->name('admin.equipes');
 });

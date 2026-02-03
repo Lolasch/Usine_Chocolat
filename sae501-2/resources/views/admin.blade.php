@@ -8,6 +8,24 @@
         background: var(--green) !important;
         background-image: none !important;
     }
+
+    /* Animation pour le déplacement des postes */
+    .poste-moving {
+        background-color: var(--choco-gold) !important;
+        transition: background-color 0.5s ease;
+    }
+
+    /* Transition fluide pour tous les postes */
+    [data-poste-id] {
+        transition: background-color 0.3s ease;
+    }
+
+    /* Focus visible pour l'accessibilité */
+    button:focus-visible,
+    input:focus-visible {
+        outline: 3px solid var(--choco);
+        outline-offset: 2px;
+    }
 </style>
 <div class="max-w-7xl mx-auto p-6">
     <h2 class="text-4xl font-bold text-[var(--choco-brown)] mb-8 font-kavoon">Administration</h2>
@@ -159,6 +177,112 @@
             </div>
         </section>
     </div>
+
+    <!-- Section Gestion des Postes -->
+    <section class="bg-white rounded-3xl p-4 sm:p-6 shadow-lg mt-6" aria-labelledby="postes-section-title">
+        <div class="flex items-center justify-between mb-4 sm:mb-6">
+            <h3 id="postes-section-title" class="text-xl sm:text-2xl font-bold text-[var(--choco-brown)] font-kavoon">Gestion des Postes</h3>
+            <button type="button" id="btnAddPoste" aria-label="Ajouter un poste" class="bg-[var(--choco-brown)] text-white px-4 sm:px-6 py-2 rounded-full font-bold hover:bg-[var(--choco)] transition flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                <span>Ajouter</span>
+            </button>
+        </div>
+
+        <div class="space-y-3" id="postesList" role="list" aria-label="Liste des postes de travail">
+            @forelse($postes ?? [] as $poste)
+                <div class="bg-[var(--green)] rounded-2xl p-4 flex items-center justify-between gap-3 hover:shadow-md transition" data-poste-id="{{ $poste->id }}" data-ordre="{{ $poste->ordre }}" role="listitem" aria-label="Poste {{ $poste->nom }}, position {{ $poste->ordre }}">
+                    <div class="flex items-center gap-3 flex-1 min-w-0">
+                        <div class="bg-[var(--choco-brown)] text-white w-10 h-10 rounded-full flex items-center justify-center font-bold flex-shrink-0" aria-label="Position {{ $poste->ordre }}">
+                            {{ $poste->ordre }}
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h4 class="text-[var(--choco-brown)] font-bold text-base truncate">{{ $poste->nom }}</h4>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2" role="group" aria-label="Actions pour le poste {{ $poste->nom }}">
+                        <button type="button" onclick="editPoste({{ $poste->id }}, '{{ addslashes($poste->nom) }}')" class="flex-shrink-0 text-[var(--choco)] hover:text-[var(--choco-brown)] transition focus:outline-none focus:ring-2 focus:ring-[var(--choco)] rounded" aria-label="Éditer le poste {{ $poste->nom }}" title="Éditer">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                        </button>
+                        <button type="button" onclick="movePosteUp({{ $poste->id }})" class="flex-shrink-0 text-[var(--choco)] hover:text-[var(--choco-brown)] transition focus:outline-none focus:ring-2 focus:ring-[var(--choco)] rounded" aria-label="Déplacer le poste {{ $poste->nom }} vers le haut" title="Monter">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+                            </svg>
+                        </button>
+                        <button type="button" onclick="movePosteDown({{ $poste->id }})" class="flex-shrink-0 text-[var(--choco)] hover:text-[var(--choco-brown)] transition focus:outline-none focus:ring-2 focus:ring-[var(--choco)] rounded" aria-label="Déplacer le poste {{ $poste->nom }} vers le bas" title="Descendre">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <button type="button" onclick="deletePoste({{ $poste->id }}, '{{ addslashes($poste->nom) }}')" class="flex-shrink-0 text-[var(--choco)] hover:text-red-600 transition focus:outline-none focus:ring-2 focus:ring-red-500 rounded" aria-label="Supprimer le poste {{ $poste->nom }}" title="Supprimer">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            @empty
+                <div class="col-span-full text-center py-8 text-[var(--choco-brown)]/70" id="noPostesMessage">
+                    <p>Aucun poste pour le moment</p>
+                </div>
+            @endforelse
+        </div>
+    </section>
+</div>
+
+<!-- Modal Éditer un Poste -->
+<div id="editPosteModal" style="display:none" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" role="dialog" aria-labelledby="edit-poste-modal-title" aria-modal="true">
+    <div class="bg-white rounded-3xl p-4 sm:p-6 md:p-8 max-w-md w-full mx-4 shadow-2xl">
+        <h3 id="edit-poste-modal-title" class="text-xl sm:text-2xl font-bold text-[var(--choco-brown)] mb-4 sm:mb-6 font-kavoon">Éditer le poste</h3>
+
+        <form id="editPosteForm" class="space-y-4">
+            <input type="hidden" id="editPosteId">
+            <div>
+                <label for="editPosteNom" class="block text-sm font-bold text-[var(--choco-brown)] mb-2">Nom du poste <span class="text-red-500">*</span></label>
+                <input type="text" id="editPosteNom" name="nom" required class="w-full px-4 py-2 rounded-full bg-[var(--green)] text-[var(--choco-brown)] placeholder-[var(--choco-brown)]/50 focus:outline-none focus:ring-2 focus:ring-[var(--choco)]" placeholder="Ex: Contrôle qualité">
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-3 pt-4">
+                <button type="submit" class="flex-1 bg-[var(--choco)] text-white px-4 sm:px-6 py-3 rounded-full font-bold hover:bg-[var(--choco-brown)] focus:outline-none focus:ring-2 focus:ring-[var(--choco)] transition">
+                    Modifier
+                </button>
+                <button type="button" id="btnCloseEditPosteModal" class="flex-1 bg-[var(--green)] text-[var(--choco-brown)] px-4 sm:px-6 py-3 rounded-full font-bold hover:bg-[var(--green)]/80 focus:outline-none focus:ring-2 focus:ring-[var(--choco)] transition">
+                    Annuler
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Ajouter un Poste -->
+<div id="addPosteModal" style="display:none" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" role="dialog" aria-labelledby="poste-modal-title" aria-modal="true">
+    <div class="bg-white rounded-3xl p-4 sm:p-6 md:p-8 max-w-md w-full mx-4 shadow-2xl">
+        <h3 id="poste-modal-title" class="text-xl sm:text-2xl font-bold text-[var(--choco-brown)] mb-4 sm:mb-6 font-kavoon">Ajouter un poste</h3>
+
+        <form id="addPosteForm" class="space-y-4">
+            <div>
+                <label for="posteNom" class="block text-sm font-bold text-[var(--choco-brown)] mb-2">Nom du poste <span class="text-red-500">*</span></label>
+                <input type="text" id="posteNom" name="nom" required class="w-full px-4 py-2 rounded-full bg-[var(--green)] text-[var(--choco-brown)] placeholder-[var(--choco-brown)]/50 focus:outline-none focus:ring-2 focus:ring-[var(--choco)]" placeholder="Ex: Contrôle qualité">
+            </div>
+
+            <div>
+                <label for="posteOrdre" class="block text-sm font-bold text-[var(--choco-brown)] mb-2">Ordre de positionnement <span class="text-red-500">*</span></label>
+                <input type="number" id="posteOrdre" name="ordre" required min="1" class="w-full px-4 py-2 rounded-full bg-[var(--green)] text-[var(--choco-brown)] placeholder-[var(--choco-brown)]/50 focus:outline-none focus:ring-2 focus:ring-[var(--choco)]" placeholder="Ex: 1">
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-3 pt-4">
+                <button type="submit" class="flex-1 bg-[var(--choco)] text-white px-4 sm:px-6 py-3 rounded-full font-bold hover:bg-[var(--choco-brown)] focus:outline-none focus:ring-2 focus:ring-[var(--choco)] transition">
+                    Créer
+                </button>
+                <button type="button" id="btnClosePosteModal" class="flex-1 bg-[var(--green)] text-[var(--choco-brown)] px-4 sm:px-6 py-3 rounded-full font-bold hover:bg-[var(--green)]/80 focus:outline-none focus:ring-2 focus:ring-[var(--choco)] transition">
+                    Annuler
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
 
 <div id="addOperatorModal" style="display:none" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" role="dialog" aria-labelledby="modal-title" aria-modal="true">
@@ -224,6 +348,202 @@
     const postes = @json($postes ?? []);
     const currentUserId = {{ auth()->id() }};
     const isGlobalSupervisor = @json($isGlobalSupervisor ?? false);
+
+    // ===== FONCTIONS GLOBALES POUR LES POSTES (déclarées en premier) =====
+
+    // Ouvrir le modal d'édition de poste
+    window.editPoste = function(posteId, posteNom) {
+        document.getElementById('editPosteModal').style.display = 'flex';
+        document.getElementById('editPosteId').value = posteId;
+        document.getElementById('editPosteNom').value = posteNom;
+        document.getElementById('editPosteNom').focus();
+    };
+
+    // Monter un poste dans l'ordre
+    window.movePosteUp = async function(posteId) {
+        try {
+            const response = await fetch(`/admin/postes/${posteId}/move-up`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json'
+                }
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                const currentElement = document.querySelector(`[data-poste-id="${posteId}"]`);
+                const previousElement = currentElement?.previousElementSibling;
+
+                if (previousElement && previousElement.hasAttribute('data-poste-id')) {
+                    const currentOrdre = parseInt(currentElement.dataset.ordre);
+                    const previousOrdre = parseInt(previousElement.dataset.ordre);
+
+                    // Ajouter l'animation
+                    currentElement.classList.add('poste-moving');
+                    previousElement.classList.add('poste-moving');
+
+                    // Déplacer l'élément
+                    currentElement.parentNode.insertBefore(currentElement, previousElement);
+
+                    // Mettre à jour les données
+                    currentElement.dataset.ordre = previousOrdre;
+                    previousElement.dataset.ordre = currentOrdre;
+
+                    // Mettre à jour les badges et labels
+                    const currentBadge = currentElement.querySelector('.rounded-full.font-bold');
+                    const previousBadge = previousElement.querySelector('.rounded-full.font-bold');
+                    if (currentBadge) {
+                        currentBadge.textContent = previousOrdre;
+                        currentBadge.setAttribute('aria-label', `Position ${previousOrdre}`);
+                    }
+                    if (previousBadge) {
+                        previousBadge.textContent = currentOrdre;
+                        previousBadge.setAttribute('aria-label', `Position ${currentOrdre}`);
+                    }
+
+                    // Mettre à jour les aria-label des conteneurs
+                    const currentNom = currentElement.querySelector('h4').textContent;
+                    const previousNom = previousElement.querySelector('h4').textContent;
+                    currentElement.setAttribute('aria-label', `Poste ${currentNom}, position ${previousOrdre}`);
+                    previousElement.setAttribute('aria-label', `Poste ${previousNom}, position ${currentOrdre}`);
+
+                    // Retirer l'animation après 600ms
+                    setTimeout(() => {
+                        currentElement.classList.remove('poste-moving');
+                        previousElement.classList.remove('poste-moving');
+                    }, 600);
+                }
+            } else {
+                await showAlert(data.message || 'Impossible de monter ce poste', 'Information');
+            }
+        } catch (error) {
+            console.error('Erreur lors du déplacement du poste:', error);
+            await showAlert('Erreur lors du déplacement du poste', 'Erreur');
+        }
+    };
+
+    // Descendre un poste dans l'ordre
+    window.movePosteDown = async function(posteId) {
+        try {
+            const response = await fetch(`/admin/postes/${posteId}/move-down`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json'
+                }
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                const currentElement = document.querySelector(`[data-poste-id="${posteId}"]`);
+                const nextElement = currentElement?.nextElementSibling;
+
+                if (nextElement && nextElement.hasAttribute('data-poste-id')) {
+                    const currentOrdre = parseInt(currentElement.dataset.ordre);
+                    const nextOrdre = parseInt(nextElement.dataset.ordre);
+
+                    // Ajouter l'animation
+                    currentElement.classList.add('poste-moving');
+                    nextElement.classList.add('poste-moving');
+
+                    // Déplacer l'élément
+                    currentElement.parentNode.insertBefore(nextElement, currentElement);
+
+                    // Mettre à jour les données
+                    currentElement.dataset.ordre = nextOrdre;
+                    nextElement.dataset.ordre = currentOrdre;
+
+                    // Mettre à jour les badges et labels
+                    const currentBadge = currentElement.querySelector('.rounded-full.font-bold');
+                    const nextBadge = nextElement.querySelector('.rounded-full.font-bold');
+                    if (currentBadge) {
+                        currentBadge.textContent = nextOrdre;
+                        currentBadge.setAttribute('aria-label', `Position ${nextOrdre}`);
+                    }
+                    if (nextBadge) {
+                        nextBadge.textContent = currentOrdre;
+                        nextBadge.setAttribute('aria-label', `Position ${currentOrdre}`);
+                    }
+
+                    // Mettre à jour les aria-label des conteneurs
+                    const currentNom = currentElement.querySelector('h4').textContent;
+                    const nextNom = nextElement.querySelector('h4').textContent;
+                    currentElement.setAttribute('aria-label', `Poste ${currentNom}, position ${nextOrdre}`);
+                    nextElement.setAttribute('aria-label', `Poste ${nextNom}, position ${currentOrdre}`);
+
+                    // Retirer l'animation après 600ms
+                    setTimeout(() => {
+                        currentElement.classList.remove('poste-moving');
+                        nextElement.classList.remove('poste-moving');
+                    }, 600);
+                }
+            } else {
+                await showAlert(data.message || 'Impossible de descendre ce poste', 'Information');
+            }
+        } catch (error) {
+            console.error('Erreur lors du déplacement du poste:', error);
+            await showAlert('Erreur lors du déplacement du poste', 'Erreur');
+        }
+    };
+
+    // Supprimer un poste
+    window.deletePoste = async function(posteId, posteNom) {
+        const confirmed = await showConfirm(
+            `Êtes-vous sûr de vouloir supprimer le poste "${posteNom}" ?\n\nAttention : si des utilisateurs sont affectés à ce poste, ils devront être réaffectés.`,
+            'Supprimer le poste'
+        );
+
+        if (!confirmed) return;
+
+        try {
+            const response = await fetch(`/admin/postes/${posteId}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json'
+                }
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                await showAlert('Poste supprimé avec succès', 'Succès');
+
+                const posteElement = document.querySelector(`[data-poste-id="${posteId}"]`);
+                if (posteElement) {
+                    posteElement.remove();
+                }
+
+                const postesList = document.getElementById('postesList');
+                if (postesList.children.length === 0) {
+                    postesList.innerHTML = `
+                        <div class="col-span-full text-center py-8 text-[var(--choco-brown)]/70" id="noPostesMessage">
+                            <p>Aucun poste pour le moment</p>
+                        </div>
+                    `;
+                }
+
+                const postesCount = document.getElementById('postesCount');
+                if (postesCount) {
+                    const currentCount = parseInt(postesCount.textContent);
+                    postesCount.textContent = Math.max(0, currentCount - 1);
+                }
+
+                const userDetailsContent = document.getElementById('userDetailsContent');
+                if (userDetailsContent && userDetailsContent.querySelector('select')) {
+                    location.reload();
+                }
+            } else {
+                await showAlert(data.message || 'Erreur lors de la suppression du poste', 'Erreur');
+            }
+        } catch (error) {
+            console.error('Erreur lors de la suppression du poste:', error);
+            await showAlert('Erreur lors de la suppression du poste', 'Erreur');
+        }
+    };
 
     // Fonction pour afficher une confirmation personnalisée
     function showConfirm(message, title = 'Confirmation') {
@@ -729,6 +1049,132 @@
             await showAlert('Erreur lors de la suppression de l\'utilisateur', 'Erreur');
         }
     }
+
+    // ===== EVENT LISTENERS POUR LES POSTES =====
+
+    // Fermer le modal d'édition de poste
+    document.getElementById('btnCloseEditPosteModal')?.addEventListener('click', function() {
+        document.getElementById('editPosteModal').style.display = 'none';
+    });
+
+    // Soumettre le formulaire d'édition de poste
+    document.getElementById('editPosteForm')?.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const posteId = document.getElementById('editPosteId').value;
+        const nom = document.getElementById('editPosteNom').value.trim();
+
+        if (!nom) {
+            await showAlert('Le nom du poste est obligatoire', 'Erreur');
+            return;
+        }
+
+        try {
+            const response = await fetch(`/admin/postes/${posteId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ nom })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                await showAlert('Poste modifié avec succès', 'Succès');
+
+                // Fermer le modal
+                document.getElementById('editPosteModal').style.display = 'none';
+
+                // Mettre à jour le nom dans la liste
+                const posteElement = document.querySelector(`[data-poste-id="${posteId}"]`);
+                if (posteElement) {
+                    const nomElement = posteElement.querySelector('h4');
+                    if (nomElement) {
+                        nomElement.textContent = nom;
+                    }
+                }
+            } else {
+                await showAlert(data.message || 'Erreur lors de la modification du poste', 'Erreur');
+            }
+        } catch (error) {
+            console.error('Erreur lors de la modification du poste:', error);
+            await showAlert('Erreur lors de la modification du poste', 'Erreur');
+        }
+    });
+
+    // Ouvrir le modal d'ajout de poste
+    document.getElementById('btnAddPoste')?.addEventListener('click', function() {
+        document.getElementById('addPosteModal').style.display = 'flex';
+        document.getElementById('posteNom').value = '';
+        document.getElementById('posteOrdre').value = '';
+
+        // Calculer l'ordre suivant automatiquement
+        const postesElements = document.querySelectorAll('[data-poste-id]');
+        const maxOrdre = Array.from(postesElements).reduce((max, el) => {
+            const ordre = parseInt(el.dataset.ordre) || 0;
+            return Math.max(max, ordre);
+        }, 0);
+        document.getElementById('posteOrdre').value = maxOrdre + 1;
+
+        document.getElementById('posteNom').focus();
+    });
+
+    // Fermer le modal d'ajout de poste
+    document.getElementById('btnClosePosteModal')?.addEventListener('click', function() {
+        document.getElementById('addPosteModal').style.display = 'none';
+    });
+
+    // Soumettre le formulaire d'ajout de poste
+    document.getElementById('addPosteForm')?.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const nom = document.getElementById('posteNom').value.trim();
+        const ordre = parseInt(document.getElementById('posteOrdre').value);
+
+        if (!nom) {
+            await showAlert('Le nom du poste est obligatoire', 'Erreur');
+            return;
+        }
+
+        if (!ordre || ordre < 1) {
+            await showAlert('L\'ordre doit être un nombre supérieur à 0', 'Erreur');
+            return;
+        }
+
+        try {
+            const body = { nom, ordre };
+
+            const response = await fetch('{{ route("admin.postes.store") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(body)
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                await showAlert('Poste créé avec succès', 'Succès');
+
+                // Fermer le modal
+                document.getElementById('addPosteModal').style.display = 'none';
+
+                // Recharger la page pour mettre à jour l'ordre
+                location.reload();
+            } else {
+                await showAlert(data.message || 'Erreur lors de la création du poste', 'Erreur');
+            }
+        } catch (error) {
+            console.error('Erreur lors de la création du poste:', error);
+            await showAlert('Erreur lors de la création du poste', 'Erreur');
+        }
+    });
 </script>
 
 @endsection
