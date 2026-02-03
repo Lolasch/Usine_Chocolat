@@ -3,22 +3,20 @@
 @section('title', 'Stocks | L\'Usine Chocolat 2026')
 
 @section('content')
-<div class="w-full bg-[var(--choco-gold)] min-h-screen">
-    <div class="max-w-7xl mx-auto px-6 py-6">
 
-        <!-- Titre -->
-        <h1 class="font-kavoon text-4xl text-[var(--choco-brown)] mb-6">
-            Stocks
-        </h1>
+    <div class="w-full bg-[var(--choco-gold)]">
+        <div class="max-w-7xl mx-auto px-6 py-6">
 
-        <!-- Zone principale : stocks + graphique -->
-        <div class="flex flex-col lg:flex-row gap-6 items-stretch">
+            <h1 class="font-kavoon text-4xl text-[var(--choco-brown)] mb-6">
+                Stocks
+            </h1>
 
-            <!-- LISTE DES STOCKS -->
-            <div class="lg:w-[65%] bg-[var(--choco-brown)] rounded-2xl p-5 shadow-xl">
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div class="flex flex-col lg:flex-row gap-6 items-stretch">
 
-                    @foreach($stocks as $stock)
+                <div class="lg:w-[65%] bg-[var(--choco-brown)] rounded-2xl p-5 shadow-xl">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+
+                        @foreach($stocks as $stock)
 
                         @php
                             $reference = max($stock->seuil_min * 2, 1);
@@ -31,7 +29,6 @@
                             aria-labelledby="stock-title-{{ $stock->id }}"
                         >
 
-                            <!-- Nom du stock -->
                             <h2
                                 id="stock-title-{{ $stock->id }}"
                                 class="font-kavoon text-sm text-[var(--choco-brown)] mb-2 text-center"
@@ -39,7 +36,6 @@
                                 {{ $stock->nom }}
                             </h2>
 
-                            <!-- Image ou icône -->
                             <div class="flex justify-center mb-2">
                                 @if($stock->chocolat && $stock->chocolat->image)
                                     <img
@@ -58,17 +54,15 @@
                                         focusable="false"
                                     >
                                         <path stroke-linecap="round" stroke-linejoin="round"
-                                              d="M12 8v8m-4-4h8"/>
+                                                d="M12 8v8m-4-4h8"/>
                                     </svg>
                                 @endif
                             </div>
 
-                            <!-- Quantité -->
                             <p class="text-center text-xs font-bold text-[var(--choco-brown)] mb-1">
                                 {{ $stock->quantite }} en stock
                             </p>
 
-                            <!-- Barre de progression -->
                             <div
                                 class="w-full h-2 bg-[var(--choco-beige)] rounded-full overflow-hidden mb-2"
                                 role="progressbar"
@@ -94,12 +88,12 @@
                             <div class="flex items-center justify-center gap-1 text-xs font-medium mb-2 h-4">
                                 @if($stock->quantite <= 0)
                                     <svg xmlns="http://www.w3.org/2000/svg"
-                                         class="w-4 h-4 text-red-600"
-                                         fill="none"
-                                         viewBox="0 0 24 24"
-                                         stroke="currentColor"
-                                         stroke-width="2.5"
-                                         aria-hidden="true"
+                                            class="w-4 h-4 text-red-600"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                            stroke-width="2.5"
+                                            aria-hidden="true"
                                     >
                                         <circle cx="12" cy="12" r="9" />
                                         <path stroke-linecap="round" d="M9 9l6 6M15 9l-6 6" />
@@ -109,17 +103,17 @@
 
                                 @elseif($stock->quantite <= $stock->seuil_min)
                                     <svg xmlns="http://www.w3.org/2000/svg"
-                                         class="w-4 h-4 text-orange-500"
-                                         fill="none"
-                                         viewBox="0 0 24 24"
-                                         stroke="currentColor"
-                                         stroke-width="2.5"
-                                         aria-hidden="true"
+                                            class="w-4 h-4 text-orange-500"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                            stroke-width="2.5"
+                                            aria-hidden="true"
                                     >
                                         <path stroke-linecap="round" stroke-linejoin="round"
-                                              d="M12 9v4m0 4h.01" />
+                                                d="M12 9v4m0 4h.01" />
                                         <path stroke-linecap="round" stroke-linejoin="round"
-                                              d="M10.29 3.86l-8.09 14a1 1 0 00.86 1.5h18a1 1 0 00.86-1.5l-8.09-14a1 1 0 00-1.72 0z" />
+                                                d="M10.29 3.86l-8.09 14a1 1 0 00.86 1.5h18a1 1 0 00.86-1.5l-8.09-14a1 1 0 00-1.72 0z" />
                                     </svg>
                                     <span class="font-bold text-orange-600">Faible</span>
                                     <span class="sr-only">Stock faible</span>
@@ -128,7 +122,7 @@
 
                             <!-- Modification du seuil -->
                             <form method="POST" action="{{ route('stocks.update.seuil') }}"
-                                  class="flex items-center justify-center gap-1 mb-2">
+                                    class="flex items-center justify-center gap-1 mb-2">
                                 @csrf
                                 <input type="hidden" name="stock_id" value="{{ $stock->id }}">
 
@@ -153,19 +147,19 @@
                                     type="submit"
                                     aria-label="Valider le nouveau seuil pour {{ $stock->nom }}"
                                     class="w-7 h-7 flex items-center justify-center bg-[var(--caramel-dark)]
-                                           rounded-tl-[2.25rem] rounded-tr-[2.25rem]
-                                           rounded-bl-3xl rounded-br-3xl transition"
+                                            rounded-tl-[2.25rem] rounded-tr-[2.25rem]
+                                            rounded-bl-3xl rounded-br-3xl transition"
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg"
-                                         class="w-4 h-4 text-[var(--choco-beige)]"
-                                         fill="none"
-                                         viewBox="0 0 24 24"
-                                         stroke="currentColor"
-                                         stroke-width="3"
-                                         aria-hidden="true"
+                                            class="w-4 h-4 text-[var(--choco-beige)]"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                            stroke-width="3"
+                                            aria-hidden="true"
                                     >
                                         <path stroke-linecap="round" stroke-linejoin="round"
-                                              d="M5 13l4 4L19 7"/>
+                                                d="M5 13l4 4L19 7"/>
                                     </svg>
                                 </button>
                             </form>

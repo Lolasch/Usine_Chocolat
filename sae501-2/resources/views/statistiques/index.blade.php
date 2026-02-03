@@ -2,76 +2,63 @@
 
 @section('title', 'Statistiques | L\'Usine Chocolat 2026')
 
-
 @section('content')
-<div class="bg-[var(--caramel)] min-h-screen py-8">
+    <!-- Conteneur principal -->
+    <div class="bg-[var(--caramel)] min-h-screen py-8">
 
-    <div
-            class="
-                mx-auto
-                px-4
-                sm:px-6
-                lg:px-[8%]
-                xl:px-[12%]
-                2xl:px-[15%]
-            "
-        >
+        <div class="mx-auto px-4 sm:px-6 lg:px-[8%] xl:px-[12%] 2xl:px-[15%]">
 
-        <!-- TITRE -->
-        <h1 class="font-kavoon text-3xl text-[var(--choco-brown)] mb-4">
-            Statistiques
-        </h1>
+            <h1 class="font-kavoon text-3xl text-[var(--choco-brown)] mb-4">
+                Statistiques
+            </h1>
 
-        <!-- STASTS -->
-        <div class="p-4 mb-6">
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="p-4 mb-6">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
 
-                <!-- STAT : TEMPS MOYEN COMMANDE -->
-                <div class="flex items-center justify-center gap-4 bg-[var(--green)] rounded-full px-6 py-4 shadow-lg">
-                    <span class="font-kavoon text-2xl text-[var(--choco-brown)]">1.</span>
+                    <!-- Temps moyen d'une commande -->
+                    <div class="flex items-center justify-center gap-4 bg-[var(--green)] rounded-full px-6 py-4 shadow-lg">
+                        <span class="font-kavoon text-2xl text-[var(--choco-brown)]">1.</span>
 
-                    <div class="text-center">
-                        <p class="font-bold text-md text-[var(--choco-brown)]">
-                            Temps moyen d'une commande
-                        </p>
+                        <div class="text-center">
+                            <p class="font-bold text-md text-[var(--choco-brown)]">
+                                Temps moyen d'une commande
+                            </p>
 
-                        <p class="font-kavoon text-2xl text-[var(--choco)]">
-                            {{ $tempsMoyenCommande }} min
-                        </p>
+                            <p class="font-kavoon text-2xl text-[var(--choco)]">
+                                {{ $tempsMoyenCommande }} min
+                            </p>
+                        </div>
                     </div>
-                </div>
 
-
-                <!-- STAST NOMBRE NON CONFORMITEES -->
-                <div class="flex items-center justify-center gap-4 bg-[var(--green)] rounded-full px-6 py-4 shadow-lg">
-                    <span class="font-kavoon text-2xl text-[var(--choco-brown)]">2.</span>
-                    <div class="text-center">
-                        <p class="font-bold text-md text-[var(--choco-brown)]">Non conformités</p>
-                        <p class="font-medium font-kavoon text-[var(--choco)] text-xl">
-                            {{ $nbNonConformes }} pièce{{ $nbNonConformes > 1 ? 's' : '' }}
-                        </p>
+                    <!-- Nombre de non-conformités -->
+                    <div class="flex items-center justify-center gap-4 bg-[var(--green)] rounded-full px-6 py-4 shadow-lg">
+                        <span class="font-kavoon text-2xl text-[var(--choco-brown)]">2.</span>
+                        <div class="text-center">
+                            <p class="font-bold text-md text-[var(--choco-brown)]">Non conformités</p>
+                            <p class="font-medium font-kavoon text-[var(--choco)] text-xl">
+                                {{ $nbNonConformes }} pièce{{ $nbNonConformes > 1 ? 's' : '' }}
+                            </p>
+                        </div>
                     </div>
-                </div>
 
-                <!-- STAST TAUX DE ROTATION DES STOCKS -->
-                <div class="flex items-center justify-center gap-4 bg-[var(--green)] rounded-full px-6 py-4 shadow-lg">
-                    <span class="font-kavoon text-2xl text-[var(--choco-brown)]">3.</span>
-                    <div class="text-center">
-                        <p class="font-bold text-md text-[var(--choco-brown)]">Taux rotation des stocks</p>
-                        <p class="font-medium font-kavoon text-[var(--choco)] text-xl">
-                            {{ $tauxRotationStocks }} %
-                        </p>
+                    <!-- Taux de rotation des stocks -->
+                    <div class="flex items-center justify-center gap-4 bg-[var(--green)] rounded-full px-6 py-4 shadow-lg">
+                        <span class="font-kavoon text-2xl text-[var(--choco-brown)]">3.</span>
+                        <div class="text-center">
+                            <p class="font-bold text-md text-[var(--choco-brown)]">Taux rotation des stocks</p>
+                            <p class="font-medium font-kavoon text-[var(--choco)] text-xl">
+                                {{ $tauxRotationStocks }} %
+                            </p>
+                        </div>
                     </div>
-                </div>
 
+                </div>
             </div>
-        </div>
 
 
-        <!-- ZONE GRAPHIQUES -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-            <!-- TEMPS MOYEN (2/3) -->
+            <!-- TEMPS MOYEN  -->
             @php
                 $maxLeadTime = max($leadTimesParPoste->pluck('lead_time_moyen')->toArray() ?: [1]);
 
@@ -106,19 +93,16 @@
 
                         <div class="flex flex-col items-center justify-end w-full">
 
-                            <!-- BARRE -->
                             <div class="w-10 h-44 bg-[var(--choco)]/20 flex items-end">
                                 <div class="w-full {{ $color }} rounded-md transition-all duration-500"
                                     style="height: {{ max($height, 3) }}%">
                                 </div>
                             </div>
 
-                            <!-- VALEUR -->
                             <span class="text-sm font-semibold text-[var(--choco-brown)] mt-2">
                                 {{ round($poste->lead_time_moyen) }} min
                             </span>
 
-                            <!-- NOM POSTE -->
                             <span class="text-xs text-center text-[var(--choco-brown)] mt-1">
                                 {{ $poste->nom }}
                             </span>
@@ -127,13 +111,8 @@
                 </div>
             </div>
 
-
-
-
-
             <div class="lg:col-span-1 bg-[var(--choco-beige)] rounded-2xl shadow-lg p-6 flex flex-col justify-between">
 
-                <!-- TITRE -->
                 <div>
                     <h2 class="font-kavoon text-lg text-[var(--choco-brown)] text-start mb-1">
                         Avancement des commandes
@@ -167,7 +146,6 @@
                     </div>
                 </div>
 
-                <!-- LÉGENDE COULEURS -->
                 <div class="flex justify-center gap-6 text-xs text-[var(--choco-brown)] mb-4">
                     <div class="flex items-center gap-1">
                         <span class="w-3 h-3 rounded-full bg-[var(--caramel-dark)]"></span>
@@ -179,7 +157,6 @@
                     </div>
                 </div>
 
-                <!-- CHIFFRES DÉTAILLÉS -->
                 <div class="grid grid-cols-2 gap-3 text-center text-sm font-semibold">
                     <div class="bg-[var(--choco)]/10 rounded-xl py-3">
                         <p class="text-[var(--caramel-dark)] text-lg">
@@ -203,7 +180,7 @@
             </div>
 
 
-            <!-- QUALITÉ / CONFORMITÉ -->
+            <!-- CONFORMITÉ -->
             <div class="lg:col-span-1 bg-[var(--choco-beige)] rounded-2xl shadow-lg p-5 flex flex-col justify-between">
 
                 <h2 class="font-kavoon text-lg text-[var(--choco-brown)] mb-4">
@@ -213,12 +190,11 @@
                 <!-- TAUX GLOBAL -->
                 <div class="text-center mb-4">
                     <p class="text-md font-bold text-[var(--choco-brown)] pb-4">Taux de conformité</p>
-                    <!-- GRAPHIQUE CIRCULAIRE -->
+
                     <div class="flex justify-center mb-4">
                         <div class="w-36 h-36 relative">
                             <canvas id="conformiteChart"></canvas>
 
-                            <!-- TEXTE AU CENTRE -->
                             <div class="absolute inset-0 flex items-center justify-center">
                                 <span class="font-kavoon text-xl text-[var(--choco-brown)]">
                                     {{ $tauxConformite }}%
@@ -232,7 +208,6 @@
                     </p>
                 </div>
 
-                <!-- DÉTAILS -->
                 <div class="space-y-3 text-sm">
 
                     <div class="flex justify-between items-center bg-[var(--choco)] rounded-xl px-4 py-3">
@@ -256,8 +231,6 @@
                 </div>
 
             </div>
-
-
 
             <!-- STOCKS  -->
             <div class="lg:col-span-2 bg-[var(--choco-beige)] rounded-2xl shadow p-4">
