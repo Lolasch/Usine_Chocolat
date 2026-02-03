@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->string('nom', 100);
             $table->integer('ordre');
-            $table->integer('duree_cible')->nullable();
             $table->boolean('actif')->default(true);
             $table->timestamps();
         });

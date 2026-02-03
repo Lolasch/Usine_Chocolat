@@ -104,7 +104,29 @@ Route::get('/api/commandes', function() {
         $query->with(['visiteur', 'chocolat', 'nonConformites',]);
     }])->orderBy('ordre')->get();
 
-    return response()->json($etapes);
+    // Calculer les temps moyens par poste
+    $leadTimesParPoste = Poste::leftJoin('commandes_postes', function ($join) {
+            $join->on('postes.id', '=', 'commandes_postes.poste_id')
+                ->whereNotNull('commandes_postes.date_entree')
+                ->whereNotNull('commandes_postes.date_sortie');
+        })
+        ->select(
+            'postes.id',
+            'postes.nom',
+            DB::raw('AVG(TIMESTAMPDIFF(MINUTE, commandes_postes.date_entree, commandes_postes.date_sortie)) as lead_time_moyen')
+        )
+        ->groupBy('postes.id', 'postes.nom')
+        ->orderBy('postes.ordre')
+        ->get()
+        ->map(function ($poste) {
+            $poste->lead_time_moyen = round($poste->lead_time_moyen ?? 0);
+            return $poste;
+        });
+
+    return response()->json([
+        'commandes' => $etapes,
+        'leadTimesParPoste' => $leadTimesParPoste,
+    ]);
 })->middleware('auth');
 
 // API pour récupérer le statut d'une commande spécifique

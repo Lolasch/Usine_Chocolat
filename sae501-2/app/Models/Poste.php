@@ -16,7 +16,6 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $id
  * @property string $nom
  * @property int $ordre
- * @property int|null $duree_cible
  * @property bool $actif
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -32,14 +31,12 @@ class Poste extends Model
 
 	protected $casts = [
 		'ordre' => 'int',
-		'duree_cible' => 'int',
 		'actif' => 'bool'
 	];
 
 	protected $fillable = [
 		'nom',
 		'ordre',
-		'duree_cible',
 		'actif'
 	];
 

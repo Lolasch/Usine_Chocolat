@@ -233,7 +233,7 @@
                             <p>
                                 Temps moyen de l'étape
                                 "<span id="etapeNameStats" class="font-kavoon">Non traitées</span>" :
-                                <span id="tempsMoyen">--</span>
+                                <span id="tempsMoyen">--</span> min
                             </p>
                             <p>
                                 Nombre de commandes pour l'étape
@@ -259,6 +259,7 @@
 let searchCommande = '';
 let filtreChocolat = '';
 const commandesData = @json($commandesParPoste);
+const leadTimesParPoste = @json($leadTimesParPoste);
 let refreshInterval;
 const userIsSuperviseur = @json(auth()->user()->isSuperviseur());
 const posteAssigneUtilisateur = @json($posteAssigne ?? null);
@@ -390,7 +391,7 @@ function afficherCommandes(posteId) {
                 ` : ''}
                     <!-- Bouton Finaliser ou Suivant -->
                     <button onclick="${estDernierPoste ? 'finaliserCommande(' + cmd.id + ')' : 'prochainPoste(' + cmd.id + ')'}"
-                            class="flex items-center justify-center ${estDernierPoste ? 'w-24 px-2' : 'w-12'} bg-[var(--green)] hover:brightness-95 rounded-tl-[2.25rem] rounded-tr-[2.25rem] rounded-bl-3xl rounded-br-3xl transition text-xs font-kavoon text-[var(--choco)]"
+                            class="flex items-center justify-center ${estDernierPoste ? 'w-24 px-2' : 'w-12'} bg-[var(--green)] hover:brightness-95 rounded-tl-[2.25rem] rounded-tr-[2.25rem] rounded-bl-3xl rounded-br-3xl transition text-xs font-kavoon text-[var(--choco-brown)]"
                             aria-label="${estDernierPoste ? 'Finaliser' : 'Suivant'}">
                         ${estDernierPoste ? 'Finaliser' :
                             '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-[var(--choco-brown)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>'
@@ -468,10 +469,10 @@ function showCustomConfirm(titre, message, onConfirm) {
             <h3 class="text-2xl font-kavoon text-center text-[var(--choco-brown)] mb-4 font-bold">${titre}</h3>
             <p class="text-center text-[var(--choco-brown)] mb-8 font-medium">${message}</p>
             <div class="flex gap-4">
-                <button id="cancelBtn" class="flex-1 bg-[var(--choco-brown)] hover:bg-[var(--choco)] text-[var(--choco-beige)] py-3 px-6 rounded-2xl font-kavoon transition-all duration-200">
+                <button id="cancelBtn" class="flex-1 bg-[var(--choco-brown)] text-[var(--choco-beige)] py-3 px-6 rounded-2xl font-kavoon transition-all duration-200">
                     Annuler
                 </button>
-                <button id="confirmBtn" class="flex-1 bg-[var(--caramel)] hover:bg-green-600 text-[var(--choco-beige)] py-3 px-6 rounded-2xl font-kavoon transition-all duration-200">
+                <button id="confirmBtn" class="flex-1 bg-[var(--caramel)] text-[var(--choco-beige)] py-3 px-6 rounded-2xl font-kavoon transition-all duration-200">
                     Confirmer
                 </button>
             </div>
@@ -558,7 +559,10 @@ function rafraichirDonnees() {
         .then(r => r.json())
         .then(data => {
             // Mettre à jour commandesData globalement
-            Object.assign(commandesData, data);
+            Object.assign(commandesData, data.commandes);
+            // Mettre à jour les leadTimesParPoste
+            leadTimesParPoste.length = 0;
+            leadTimesParPoste.push(...data.leadTimesParPoste);
             afficherCommandesArchivees();
 
 
@@ -574,12 +578,11 @@ function rafraichirDonnees() {
 }
 function mettreAJourStats(posteId) {
     const poste = commandesData.find(p => p.id == posteId);
+    const leadTime = leadTimesParPoste.find(l => l.id == posteId);
 
     if (poste) {
         const nbCmd = poste.commandes.length;
-        const tempsMoyen = poste.commandes.length > 0
-            ? (poste.commandes.reduce((acc, cmd) => acc + (cmd.temps_moyen || 0), 0) / nbCmd).toFixed(2)
-            : '0.00';
+        const tempsMoyen = leadTime ? leadTime.lead_time_moyen : 0;
 
         document.getElementById('etapeNameStats').textContent = poste.nom;
         document.getElementById('etapeNameStats2').textContent = poste.nom;

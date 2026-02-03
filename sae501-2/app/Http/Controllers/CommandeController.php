@@ -182,7 +182,26 @@ class CommandeController extends Controller
             }
         }
 
-        return view('liste', compact('etapes', 'commandesParPoste', 'commandesAujourdhui', 'objectifValeur', 'pourcentage', 'posteAssigne'));
+        // Calculer les temps moyens par poste
+        $leadTimesParPoste = Poste::leftJoin('commandes_postes', function ($join) {
+                $join->on('postes.id', '=', 'commandes_postes.poste_id')
+                    ->whereNotNull('commandes_postes.date_entree')
+                    ->whereNotNull('commandes_postes.date_sortie');
+            })
+            ->select(
+                'postes.id',
+                'postes.nom',
+                DB::raw('AVG(TIMESTAMPDIFF(MINUTE, commandes_postes.date_entree, commandes_postes.date_sortie)) as lead_time_moyen')
+            )
+            ->groupBy('postes.id', 'postes.nom')
+            ->orderBy('postes.ordre')
+            ->get()
+            ->map(function ($poste) {
+                $poste->lead_time_moyen = round($poste->lead_time_moyen ?? 0);
+                return $poste;
+            });
+
+        return view('liste', compact('etapes', 'commandesParPoste', 'commandesAujourdhui', 'objectifValeur', 'pourcentage', 'posteAssigne', 'leadTimesParPoste'));
     }
 
 

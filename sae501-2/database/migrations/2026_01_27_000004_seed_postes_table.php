@@ -13,7 +13,6 @@ return new class extends Migration
             [
                 'nom' => 'Non Traitées',
                 'ordre' => 1,
-                'duree_cible' => 15,
                 'actif' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -21,7 +20,6 @@ return new class extends Migration
             [
                 'nom' => 'Fonte',
                 'ordre' => 2,
-                'duree_cible' => 10,
                 'actif' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -29,7 +27,6 @@ return new class extends Migration
             [
                 'nom' => 'Moulage',
                 'ordre' => 3,
-                'duree_cible' => 20,
                 'actif' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -37,7 +34,6 @@ return new class extends Migration
             [
                 'nom' => 'Démoulage',
                 'ordre' => 4,
-                'duree_cible' => 5,
                 'actif' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -45,7 +41,6 @@ return new class extends Migration
             [
                 'nom' => 'Livraison',
                 'ordre' => 5,
-                'duree_cible' => 30,
                 'actif' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
