@@ -41,7 +41,7 @@
             </div>
             <div>
                 <p id="stat-postes" class="text-[var(--choco-brown)] font-bold text-base sm:text-lg">Postes</p>
-                <p class="text-[var(--choco-brown)] text-xs sm:text-sm">de travail</p>
+                <p class="text-[var(--choco-brown)] text-xs sm:text-sm">de travail affectés</p>
                 <p class="text-2xl sm:text-3xl font-bold text-[var(--choco-brown)] mt-1 sm:mt-2" id="postesCount" aria-label="{{ $stats['postes'] ?? 5 }} postes de travail">{{ $stats['postes'] ?? 5 }}</p>
             </div>
         </article>
@@ -152,7 +152,7 @@
                 @else
                     <div class="h-full flex items-center justify-center">
                         <div class="text-center">
-                            <p class="text-[var(--choco-brown)]/70 text-lg mb-4">Sélectionnez un étudiant pour voir ses détails</p>
+                            <p class="text-[var(--choco-brown)] text-lg mb-4">Sélectionnez un étudiant pour voir ses détails</p>
                         </div>
                     </div>
                 @endif
@@ -706,7 +706,7 @@
                 document.getElementById('userDetailsContent').innerHTML = `
                     <div class="h-full flex items-center justify-center">
                         <div class="text-center">
-                            <p class="text-[var(--choco-brown)]/70 text-lg mb-4">Sélectionnez un étudiant pour voir ses détails</p>
+                            <p class="text-[var(--choco-brown)] text-lg mb-4">Sélectionnez un étudiant pour voir ses détails</p>
                         </div>
                     </div>
                 `;

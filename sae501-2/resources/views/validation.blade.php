@@ -15,7 +15,7 @@
     <!-- FAVICON -->
     <link rel="icon" type="image/svg+xml" href="{{ asset('images/autre/seul_blanc.svg') }}">
 
-    <!-- Tailwind CSS -->z
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
