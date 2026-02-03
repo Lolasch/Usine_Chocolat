@@ -233,7 +233,7 @@
                             <p>
                                 Temps moyen de l'étape
                                 "<span id="etapeNameStats" class="font-kavoon">Non traitées</span>" :
-                                <span id="tempsMoyen">--</span>
+                                <span id="tempsMoyen">--</span> min
                             </p>
                             <p>
                                 Nombre de commandes pour l'étape
@@ -259,6 +259,7 @@
 let searchCommande = '';
 let filtreChocolat = '';
 const commandesData = @json($commandesParPoste);
+const leadTimesParPoste = @json($leadTimesParPoste);
 let refreshInterval;
 const userIsSuperviseur = @json(auth()->user()->isSuperviseur());
 const posteAssigneUtilisateur = @json($posteAssigne ?? null);
@@ -574,12 +575,11 @@ function rafraichirDonnees() {
 }
 function mettreAJourStats(posteId) {
     const poste = commandesData.find(p => p.id == posteId);
+    const leadTime = leadTimesParPoste.find(l => l.id == posteId);
 
     if (poste) {
         const nbCmd = poste.commandes.length;
-        const tempsMoyen = poste.commandes.length > 0
-            ? (poste.commandes.reduce((acc, cmd) => acc + (cmd.temps_moyen || 0), 0) / nbCmd).toFixed(2)
-            : '0.00';
+        const tempsMoyen = leadTime ? leadTime.lead_time_moyen : 0;
 
         document.getElementById('etapeNameStats').textContent = poste.nom;
         document.getElementById('etapeNameStats2').textContent = poste.nom;
