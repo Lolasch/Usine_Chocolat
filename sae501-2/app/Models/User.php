@@ -73,7 +73,28 @@ class User extends Authenticatable
 
     public function isSuperviseur(): bool
     {
-        return $this->role?->nom === 'superviseur';
+        // Vérifier d'abord le rôle global
+        if ($this->role?->nom === 'superviseur') {
+            return true;
+        }
+
+        // Vérifier le rôle dans l'équipe (users_equipes)
+        $equipe = $this->equipes()->first();
+        if ($equipe) {
+            $userEquipe = \DB::table('users_equipes')
+                ->where('user_id', $this->id)
+                ->where('equipe_id', $equipe->id)
+                ->first();
+
+            if ($userEquipe && $userEquipe->role_id) {
+                $roleEquipe = Role::find($userEquipe->role_id);
+                if ($roleEquipe && stripos(strtolower($roleEquipe->nom), 'superviseur') !== false) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     public function usersEquipe()

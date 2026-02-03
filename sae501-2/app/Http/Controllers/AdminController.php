@@ -412,6 +412,14 @@ class AdminController extends Controller
             ], 403);
         }
 
+        // Empêcher la modification du superviseur du groupe (rôle global superviseur)
+        if ($user->role && stripos($user->role->nom, 'superviseur') !== false) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Vous ne pouvez pas modifier le rôle du superviseur du groupe'
+            ], 403);
+        }
+
         $equipe = $authUser->equipes()->first();
 
         if (!$equipe) {
@@ -480,6 +488,14 @@ class AdminController extends Controller
             ], 403);
         }
 
+        // Empêcher la modification du poste du superviseur du groupe (rôle global superviseur)
+        if ($user->role && stripos($user->role->nom, 'superviseur') !== false) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Vous ne pouvez pas modifier le poste du superviseur du groupe'
+            ], 403);
+        }
+
         $equipe = $authUser->equipes()->first();
 
         if (!$equipe) {
@@ -538,6 +554,14 @@ class AdminController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Vous ne pouvez pas vous retirer de votre propre équipe'
+            ], 403);
+        }
+
+        // Empêcher la suppression du superviseur du groupe (rôle global superviseur)
+        if ($user->role && stripos($user->role->nom, 'superviseur') !== false) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Vous ne pouvez pas retirer le superviseur du groupe de l\'équipe'
             ], 403);
         }
 
