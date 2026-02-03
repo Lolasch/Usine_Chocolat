@@ -18,6 +18,9 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
+    <!-- QR Code Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
     <style>
         html, body {
             background-color: #FFF9EF !important;
@@ -243,28 +246,32 @@
 
         <!-- POPUP MERCI -->
         <div id="popup-merci" class="fixed inset-0 bg-black/70 flex items-center justify-center z-[100] hidden" role="dialog" aria-labelledby="popup-titre" aria-modal="true" onclick="event.stopPropagation()">
-            <div class="bg-[#554840] rounded-3xl p-8 max-w-md mx-4 shadow-2xl transform transition-all animate-bounce-in" onclick="event.stopPropagation()">
+            <div class="bg-[#554840] rounded-3xl p-5 max-w-sm mx-4 shadow-2xl transform transition-all animate-bounce-in" onclick="event.stopPropagation()">
                 <div class="text-center">
-                    <div class="mb-6">
-                        <svg class="w-20 h-20 mx-auto text-[#A8C9C3] animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <div class="mb-4">
+                        <svg class="w-16 h-16 mx-auto text-[#A8C9C3] animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
                     </div>
 
-                    <h2 id="popup-titre" class="text-2xl font-black text-[#A8C9C3] mb-4">
+                    <h2 id="popup-titre" class="text-lg font-black text-[#A8C9C3] mb-2">
                         Merci d'avoir commandé !
                     </h2>
 
-                    <p class="text-[#FFF9EF] text-base mb-6 leading-relaxed">
-                        Votre commande est prête.<br>
-                        N'hésitez pas à nous donner votre avis !
-                    </p>
+                    <!-- QR Code Section -->
+                    <div class="bg-[#6B5D52] rounded-2xl p-4 mb-4">
+                        <p class="text-[#FFF9EF] text-sm font-bold mb-2">Récupérez votre commande avec ce numéro et ce QR code :</p>
+                        <p class="text-[#A8C9C3] text-base font-black mb-3 tracking-wider" id="numero-commande-popup">{{ $commande->numero_commande }}</p>
+                        <div id="qrcode-container" class="flex justify-center bg-white rounded-lg p-2">
+                            <div id="qrcode"></div>
+                        </div>
+                    </div>
 
-                    <div class="flex flex-col gap-3">
-                        <button onclick="window.location.href='/avis'" class="bg-[#A8C9C3] hover:bg-[#96c9c2] text-[#554840] font-black py-3 px-6 rounded-xl transition-all duration-200 shadow-md active:scale-95">
+                    <div class="flex flex-col gap-2">
+                        <button onclick="window.location.href='/avis'" class="bg-[#A8C9C3] hover:bg-[#96c9c2] text-[#554840] font-black py-2 px-4 text-sm rounded-lg transition-all duration-200 shadow-md active:scale-95">
                             Donner mon avis
                         </button>
-                        <button onclick="fermerPopup()" class="bg-[#6B5D52] hover:bg-[#5a4e44] text-[#FFF9EF] font-bold py-3 px-6 rounded-xl transition-all duration-200 shadow-md active:scale-95">
+                        <button onclick="fermerPopup()" class="bg-[#6B5D52] hover:bg-[#5a4e44] text-[#FFF9EF] font-bold py-2 px-4 text-sm rounded-lg transition-all duration-200 shadow-md active:scale-95">
                             Fermer
                         </button>
                     </div>
@@ -331,6 +338,8 @@
     <script>
         const numeroCommande = '{{ $commande->numero_commande }}';
         let commandeFinalisee = {{ $commande->finalisee ? 'true' : 'false' }};
+        let popupAffiche = false;
+        let nombrePostes = 0;
 
         async function rafraichirStatut() {
             if (commandeFinalisee) {
@@ -341,11 +350,25 @@
                 const response = await fetch(`/api/commande/${numeroCommande}/statut`);
                 const data = await response.json();
 
-                if (data.finalisee !== commandeFinalisee) {
-                    commandeFinalisee = data.finalisee;
-                    if (data.finalisee) {
-                        afficherPopup();
-                    }
+                // Déterminer le nombre total de postes
+                if (nombrePostes === 0 && data.etapes.length > 0) {
+                    nombrePostes = data.etapes.length;
+                }
+
+                // Vérifier si la commande est au dernier poste
+                const estAuDernierPoste = data.posteActuel &&
+                                         data.posteActuel.ordre === nombrePostes &&
+                                         !data.finalisee;
+
+                // Afficher le popup seulement si c'est la première fois que la commande atteint le dernier poste
+                if (estAuDernierPoste && !popupAffiche) {
+                    popupAffiche = true;
+                    afficherPopup();
+                }
+
+                // Réinitialiser le flag quand la commande est finalisée
+                if (data.finalisee) {
+                    commandeFinalisee = true;
                 }
 
                 mettreAJourInterface(data);
@@ -431,25 +454,44 @@
             const popup = document.getElementById('popup-merci');
             if (popup) {
                 popup.classList.remove('hidden');
+                // Générer le QR code
+                setTimeout(() => {
+                    genererQRCode(numeroCommande);
+                }, 100);
                 console.log('Popup affiché');
             } else {
                 console.error('Element popup-merci introuvable');
             }
         }
 
+        function genererQRCode(numeroCommande) {
+            // Vider le conteneur précédent s'il existe
+            const container = document.getElementById('qrcode');
+            container.innerHTML = '';
+
+            // Créer le QR code avec le numéro de commande
+            new QRCode(container, {
+                text: numeroCommande,
+                width: 200,
+                height: 200,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+        }
+
         function fermerPopup() {
             document.getElementById('popup-merci').classList.add('hidden');
         }
 
-        // Afficher la popup si la commande est déjà finalisée au chargement
-        @if($commande->finalisee)
-            console.log('Commande finalisée détectée');
-            setTimeout(() => {
-                console.log('Affichage du popup');
-                afficherPopup();
-            }, 1000);
+        // Afficher la popup si la commande est déjà au dernier poste au chargement
+        @if(!$commande->finalisee)
+            console.log('Commande en cours');
+            // On attendra que rafraichirStatut soit appelé pour vérifier si elle est au dernier poste
+            rafraichirStatut(); // Appel initial
         @else
-            console.log('Commande non finalisée');
+            console.log('Commande finalisée');
+            // La commande est déjà finalisée, on ne montre pas le popup
         @endif
 
         setInterval(rafraichirStatut, 3000);
