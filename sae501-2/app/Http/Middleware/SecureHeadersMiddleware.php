@@ -41,11 +41,11 @@ class SecureHeadersMiddleware
 
         // ✅ Content-Security-Policy: Protection XSS avancée
         $csp = "default-src 'self'; " .
-               "script-src 'self' https://cdn.tailwindcss.com https://fonts.googleapis.com; " .
+               "script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://fonts.googleapis.com; " .
                "style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; " .
                "img-src 'self' data: https:; " .
                "font-src 'self' https://fonts.gstatic.com; " .
-               "connect-src 'self'; " .
+               "connect-src 'self' https:; " .
                "frame-ancestors 'none'; " .
                "base-uri 'self'; " .
                "form-action 'self';";
