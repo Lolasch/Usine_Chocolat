@@ -437,9 +437,24 @@ class AdminController extends Controller
         DB::table('users_equipes')
             ->where('user_id', $user->id)
             ->where('equipe_id', $equipe->id)
-            ->update(['role_id' => $validated['role_id']]);
+            ->update(['role_id' => $validated['role_id'], 'updated_at' => now()]);
 
         $role = Role::find($validated['role_id']);
+
+        // Vérifier que l'update a bien été effectué
+        $verification = DB::table('users_equipes')
+            ->where('user_id', $user->id)
+            ->where('equipe_id', $equipe->id)
+            ->first();
+
+        Log::info('Changement de rôle dans l\'équipe', [
+            'user_id' => $user->id,
+            'equipe_id' => $equipe->id,
+            'nouveau_role_id' => $validated['role_id'],
+            'nouveau_role_nom' => $role->nom,
+            'verification_role_id' => $verification->role_id ?? 'NULL',
+            'by_user_id' => $authUser->id
+        ]);
 
         return response()->json([
             'success' => true,
