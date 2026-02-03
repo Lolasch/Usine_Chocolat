@@ -60,7 +60,7 @@
                         autofocus
                         autocomplete="email" />
                     @error('email')
-                        <p class="mt-2 text-sm text-red-300" id="email-error" role="alert">{{ $message }}</p>
+                        <p class="mt-2 text-sm text-red-300 font-bold" id="email-error" role="alert">{{ $message }}</p>
                     @enderror
                 </div>
 

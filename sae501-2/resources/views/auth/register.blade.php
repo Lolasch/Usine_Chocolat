@@ -54,7 +54,7 @@
                         aria-describedby="nom-error"
                         autofocus
                         autocomplete="family-name" />
-                    <x-input-error :messages="$errors->get('nom')" class="mt-2 text-red-300" id="nom-error" role="alert" />
+                    <x-input-error :messages="$errors->get('nom')" class="mt-2" id="nom-error" role="alert" />
                 </div>
 
                 <!-- Prénom -->
@@ -70,7 +70,7 @@
                         aria-required="true"
                         aria-describedby="prenom-error"
                         autocomplete="given-name" />
-                    <x-input-error :messages="$errors->get('prenom')" class="mt-2 text-red-300" id="prenom-error" role="alert" />
+                    <x-input-error :messages="$errors->get('prenom')" class="mt-2" id="prenom-error" role="alert" />
                 </div>
 
                 <!-- Email -->
@@ -86,7 +86,7 @@
                         aria-required="true"
                         aria-describedby="email-error"
                         autocomplete="username" />
-                    <x-input-error :messages="$errors->get('email')" class="mt-2 text-red-300" id="email-error" role="alert" />
+                    <x-input-error :messages="$errors->get('email')" class="mt-2" id="email-error" role="alert" />
                 </div>
 
                 <!-- Rôle -->
@@ -105,7 +105,7 @@
                             </option>
                         @endforeach
                     </select>
-                    <x-input-error :messages="$errors->get('role_id')" class="mt-2 text-red-300" id="role-error" role="alert" />
+                    <x-input-error :messages="$errors->get('role_id')" class="mt-2" id="role-error" role="alert" />
                 </div>
 
                 <!-- Mot de passe -->
@@ -126,7 +126,7 @@
                     <p id="password-help" class="mt-1 text-xs text-[#FCE097]/80">
                         12 caractères min. : majuscule, minuscule, chiffre et caractère spécial (@$!%*?&#)
                     </p>
-                    <x-input-error :messages="$errors->get('password')" class="mt-2 text-red-300" id="password-error" role="alert" />
+                    <x-input-error :messages="$errors->get('password')" class="mt-2" id="password-error" role="alert" />
                 </div>
 
                 <!-- Confirmer le mot de passe -->
@@ -142,7 +142,7 @@
                         aria-required="true"
                         aria-describedby="password-confirmation-error"
                         autocomplete="new-password" />
-                    <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2 text-red-300" id="password-confirmation-error" role="alert" />
+                    <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" id="password-confirmation-error" role="alert" />
                 </div>
 
                 <!-- Lien connexion et bouton inscription -->

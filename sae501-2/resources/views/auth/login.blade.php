@@ -48,7 +48,7 @@
                         aria-describedby="email-error"
                         autofocus
                         autocomplete="username" />
-                    <x-input-error :messages="$errors->get('email')" class="mt-2 text-red-300" id="email-error" role="alert" />
+                    <x-input-error :messages="$errors->get('email')" class="mt-2" id="email-error" role="alert" />
                 </div>
 
                 <!-- Mot de passe (Password) -->
@@ -63,7 +63,7 @@
                         aria-required="true"
                         aria-describedby="password-error"
                         autocomplete="current-password" />
-                    <x-input-error :messages="$errors->get('password')" class="mt-2 text-red-300" id="password-error" role="alert" />
+                    <x-input-error :messages="$errors->get('password')" class="mt-2" id="password-error" role="alert" />
                     <input type="hidden" id="remember_me" name="remember" value="1">
                 </div>
 
