@@ -15,7 +15,7 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8" role="region" aria-label="Statistiques de l'équipe">
         <article class="bg-[var(--choco-gold)] rounded-3xl p-4 sm:p-6 flex items-center gap-3 sm:gap-4 shadow-lg hover:shadow-xl transition" aria-labelledby="stat-utilisateurs">
             <div class="w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center flex-shrink-0">
-                <img src="{{ asset('images/autre/seul_blanc.svg') }}" alt="" class="w-full h-full object-contain" aria-hidden="true" />
+                <img src="{{ asset('images/autre/seul_marron.svg') }}" alt="" class="w-full h-full object-contain" aria-hidden="true" />
             </div>
             <div>
                 <p id="stat-utilisateurs" class="text-[var(--choco-brown)] font-bold text-base sm:text-lg">Utilisateurs</p>
@@ -37,7 +37,7 @@
 
         <article class="bg-[var(--choco-gold)] rounded-3xl p-4 sm:p-6 flex items-center gap-3 sm:gap-4 shadow-lg hover:shadow-xl transition" aria-labelledby="stat-postes">
             <div class="w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center flex-shrink-0">
-                <img src="{{ asset('images/autre/seul_blanc.svg') }}" alt="" class="w-full h-full object-contain" aria-hidden="true" />
+                <img src="{{ asset('images/autre/seul_marron.svg') }}" alt="" class="w-full h-full object-contain" aria-hidden="true" />
             </div>
             <div>
                 <p id="stat-postes" class="text-[var(--choco-brown)] font-bold text-base sm:text-lg">Postes</p>
@@ -73,7 +73,7 @@
                         <button type="button" onclick="loadUserDetails({{ $etudiant['id'] }})" class="w-full flex items-center justify-between p-3 sm:p-4 bg-white rounded-2xl hover:bg-white/95 focus:outline-none transition cursor-pointer operator-item" data-user-id="{{ $etudiant['id'] }}" aria-label="Voir les détails de {{ $etudiant['prenom'] ?? 'Étudiant' }} {{ $etudiant['nom'] ?? '' }}">
                             <div class="flex items-center gap-2 sm:gap-3 flex-1 text-left">
                                 <div class="w-10 h-10 sm:w-12 sm:h-12 bg-[var(--green)] rounded-full flex items-center justify-center p-2" aria-hidden="true">
-                                    <img src="{{ asset('images/autre/seul_blanc.svg') }}" alt="" class="w-full h-full object-contain" />
+                                    <img src="{{ asset('images/autre/seul_marron.svg') }}" alt="" class="w-full h-full object-contain" />
                                 </div>
                                 <div class="min-w-0 flex-1">
                                     <p class="font-bold text-[var(--choco-brown)] text-sm sm:text-base truncate user-name">{{ $etudiant['prenom'] ?? 'Étudiant' }} {{ $etudiant['nom'] ?? '' }}</p>
@@ -95,15 +95,15 @@
             </ul>
         </section>
 
-        <section class="bg-white rounded-3xl p-4 sm:p-6 shadow-lg" id="userDetailsContainer" aria-labelledby="student-details-title" aria-live="polite">
-            <div id="userDetailsContent">
+        <section class="bg-white rounded-3xl p-4 sm:p-6 shadow-lg min-h-[500px] flex flex-col" id="userDetailsContainer" aria-labelledby="student-details-title" aria-live="polite">
+            <div id="userDetailsContent" class="flex-1 flex flex-col">
                 @if($selectedUser ?? false)
                     <h3 id="student-details-title" class="text-xl sm:text-2xl font-bold text-[var(--choco-brown)] mb-4 sm:mb-6 font-kavoon">Détail de l'étudiant</h3>
 
                     <div class="bg-[var(--choco-gold)] rounded-2xl p-3 sm:p-4 mb-4 sm:mb-6">
                         <div class="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4 flex-wrap">
                             <div class="w-12 h-12 sm:w-16 sm:h-16 bg-[var(--choco-brown)] rounded-full flex items-center justify-center p-2" aria-hidden="true">
-                                <img src="{{ asset('images/autre/seul_blanc.svg') }}" alt="" class="w-full h-full object-contain" />
+                                <img src="{{ asset('images/autre/seul_marron.svg') }}" alt="" class="w-full h-full object-contain" />
                             </div>
                             <div class="flex-1 min-w-0">
                                 <h4 class="text-base sm:text-lg font-bold text-[var(--choco-brown)] truncate">{{ $selectedUser->prenom ?? '' }} {{ $selectedUser->nom ?? '' }}</h4>
@@ -150,7 +150,7 @@
                         @endif
                     </div>
                 @else
-                    <div class="h-full flex items-center justify-center">
+                    <div class="flex-1 flex items-center justify-center">
                         <div class="text-center">
                             <p class="text-[var(--choco-brown)] text-lg mb-4">Sélectionnez un étudiant pour voir ses détails</p>
                         </div>
@@ -360,7 +360,7 @@
             <div class="bg-[var(--choco-gold)] rounded-2xl p-4 mb-6">
                 <div class="flex items-center gap-4">
                     <div class="w-16 h-16 bg-[var(--choco-brown)] rounded-full flex items-center justify-center p-2">
-                        <img src="{{ asset('images/autre/seul_blanc.svg') }}" alt="" class="w-full h-full object-contain" />
+                        <img src="{{ asset('images/autre/seul_marron.svg') }}" alt="" class="w-full h-full object-contain" />
                     </div>
                     <div class="flex-1">
                         <h4 class="text-lg font-bold text-[var(--choco-brown)]">${user.prenom || ''} ${user.nom || ''}</h4>
@@ -574,7 +574,7 @@
             });
 
             const data = await response.json();
-            console.log('📡 Réponse serveur:', data);
+            console.log('Réponse serveur:', data);
 
             if (response.ok && data.success) {
                 await showAlert(data.message, 'Succès');
@@ -697,14 +697,25 @@
 
             if (response.ok && data.success) {
                 await showAlert(data.message, 'Succès');
+
+                // Retirer l'utilisateur de allOperators
+                allOperators = allOperators.filter(op => op.id !== userId);
+
                 // Supprimer l'élément de la liste
                 const operatorItem = document.querySelector(`[data-user-id="${userId}"]`);
                 if (operatorItem) {
                     operatorItem.remove();
                 }
+
+                // Recharger la liste des opérateurs disponibles si la modale est ouverte
+                const modal = document.getElementById('addOperatorModal');
+                if (modal && modal.style.display === 'flex') {
+                    await loadAvailableOperators();
+                }
+
                 // Réinitialiser l'affichage des détails
                 document.getElementById('userDetailsContent').innerHTML = `
-                    <div class="h-full flex items-center justify-center">
+                    <div class="flex-1 flex items-center justify-center">
                         <div class="text-center">
                             <p class="text-[var(--choco-brown)] text-lg mb-4">Sélectionnez un étudiant pour voir ses détails</p>
                         </div>
