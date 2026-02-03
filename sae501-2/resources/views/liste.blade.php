@@ -391,7 +391,7 @@ function afficherCommandes(posteId) {
                 ` : ''}
                     <!-- Bouton Finaliser ou Suivant -->
                     <button onclick="${estDernierPoste ? 'finaliserCommande(' + cmd.id + ')' : 'prochainPoste(' + cmd.id + ')'}"
-                            class="flex items-center justify-center ${estDernierPoste ? 'w-24 px-2' : 'w-12'} bg-[var(--green)] hover:brightness-95 rounded-tl-[2.25rem] rounded-tr-[2.25rem] rounded-bl-3xl rounded-br-3xl transition text-xs font-kavoon text-[var(--choco)]"
+                            class="flex items-center justify-center ${estDernierPoste ? 'w-24 px-2' : 'w-12'} bg-[var(--green)] hover:brightness-95 rounded-tl-[2.25rem] rounded-tr-[2.25rem] rounded-bl-3xl rounded-br-3xl transition text-xs font-kavoon text-[var(--choco-brown)]"
                             aria-label="${estDernierPoste ? 'Finaliser' : 'Suivant'}">
                         ${estDernierPoste ? 'Finaliser' :
                             '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-[var(--choco-brown)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>'
