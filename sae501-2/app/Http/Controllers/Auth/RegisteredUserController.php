@@ -87,13 +87,10 @@ class RegisteredUserController extends Controller
             }
         });
 
-        // 🔒 Dispatcher l'événement Registered AVANT login (envoie email de vérification)
-        event(new Registered($user));
+        // 🔒 Marquer l'email comme vérifié automatiquement (pas de vérification par email)
+        $user->markEmailAsVerified();
 
-        // 🔒 NE PAS auto-login jusqu'à vérification email
-        // Auth::login($user); <- COMMENTÉ pour forcer vérification
-
-        return redirect()->route('verification.notice')
-            ->with('status', 'Un email de confirmation a été envoyé. Veuillez vérifier votre boîte de réception.');
+        return redirect()->route('login')
+            ->with('status', 'Inscription réussie. Veuillez vous connecter.');
     }
 }

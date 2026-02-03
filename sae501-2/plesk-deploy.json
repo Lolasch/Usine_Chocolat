@@ -1,0 +1,26 @@
+{
+  "description": "Configuration de déploiement pour Plesk avec Git",
+  "version": "1.0",
+  "deploymentInstructions": {
+    "preDeployment": [
+      "Vérifier que Node.js est installé sur le serveur",
+      "Vérifier que Composer est installé sur le serveur",
+      "Créer la base de données et l'utilisateur"
+    ],
+    "gitSetup": [
+      "Initialiser un dépôt Git vierge sur Plesk dans public_html ou un dossier parent",
+      "Configurer un webhook POST-receive pour exécuter le script de déploiement"
+    ],
+    "postDeployment": [
+      "Configurer le DocumentRoot dans Plesk vers /public",
+      "Configurer les variables d'environnement Apache",
+      "Vérifier les permissions des dossiers storage et bootstrap/cache"
+    ]
+  },
+  "requirements": {
+    "php": ">=8.2",
+    "nodejs": ">=18",
+    "composer": "latest",
+    "mysql": ">=8.0"
+  }
+}
