@@ -64,6 +64,11 @@ Route::post('/avis', function () {
     return redirect('/accueil')->with('success', 'Merci pour votre avis !');
 })->name('avis.store');
 
+// Mentions légales et crédits
+Route::get('/mentions-legales', function () {
+    return view('mentions-legales');
+})->name('mentions-legales');
+
 // ADMIN
 Route::middleware(['auth'])->group(function () {
     Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');

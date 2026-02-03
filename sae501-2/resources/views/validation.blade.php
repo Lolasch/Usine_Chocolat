@@ -328,8 +328,7 @@
                 <p class="text-lg leading-relaxed mb-2 px-2">Copyright 2026<br/>DRINNHAUSEN Lou - SCHMITT Lola</p>
 
                 <div class="flex justify-center gap-4 text-lg underline mb-24">
-                    <a href="#" class="hover:text-white/80 transition-colors duration-200" aria-label="Consulter les mentions légales">Mentions légales</a>
-                    <a href="#" class="hover:text-white/80 transition-colors duration-200" aria-label="Consulter les crédits">Crédits</a>
+                    <a href="{{ route('mentions-legales') }}" class="hover:text-white/80 transition-colors duration-200" aria-label="Consulter les mentions légales">Mentions légales</a>
                 </div>
             </div>
         </footer>

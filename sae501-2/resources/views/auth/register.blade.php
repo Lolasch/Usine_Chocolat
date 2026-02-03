@@ -180,8 +180,7 @@
                         Copyright 2025 DRINNHAUSEN Lou - SCHMITT Lola
                     </p>
                     <nav class="flex justify-center gap-6 text-md" aria-label="Liens légaux">
-                        <a href="#" class="underline hover:text-[#e6d5b8] hover:underline-offset-2 transition-all focus:outline-none focus:ring-2 focus:ring-[#e6d5b8] rounded" aria-label="Consulter les mentions légales">Mentions Légales</a>
-                        <a href="#" class="underline hover:text-[#e6d5b8] hover:underline-offset-2 transition-all focus:outline-none focus:ring-2 focus:ring-[#e6d5b8] rounded" aria-label="Consulter les crédits">Crédits</a>
+                        <a href="{{ route('mentions-legales') }}" class="underline hover:text-[#e6d5b8] hover:underline-offset-2 transition-all focus:outline-none focus:ring-2 focus:ring-[#e6d5b8] rounded" aria-label="Consulter les mentions légales">Mentions Légales</a>
                     </nav>
                 </div>
 
