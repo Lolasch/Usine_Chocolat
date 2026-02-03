@@ -7,7 +7,6 @@
 <div class="bg-[var(--choco-gold)] flex-1">
     <div class="max-w-[1400px] mx-auto p-6">
 
-        <!-- Header -->
         <div class="bg-[var(--choco)] rounded-full px-6 py-4 text-[var(--choco-beige)] mb-6">
             <div class="grid grid-cols-1 gap-4 items-center sm:grid-cols-3 sm:gap-0 sm:text-center">
 
@@ -26,13 +25,10 @@
                     </span>
 
                     <div class="w-full max-w-xs h-2 bg-[var(--choco-beige)] rounded-full overflow-hidden">
-                        <div
-                            class="h-full w-[{{ $pourcentage ?? 0 }}%] bg-[var(--green)] transition-all duration-300">
-                        </div>
+                        <div class="h-full w-[{{ $pourcentage ?? 0 }}%] bg-[var(--green)] transition-all duration-300"></div>
                     </div>
                 </div>
 
-                <div class="flex sm:justify-end justify-start">
                     @auth
                         @if(auth()->user()->isSuperviseur())
                             <form method="POST" action="{{ route('objectifs.store') }}"
@@ -72,28 +68,24 @@
             </div>
         </div>
 
-        <!-- Titre -->
         <h1 class="text-3xl text-center mb-6 text-[var(--choco-brown)] font-kavoon font-medium">
             Liste des commandes
         </h1>
 
-        <!-- Content -->
+        <!-- ====== CONTENU PRINCIPAL ====== -->
         <div class="max-w-[1400px] mx-auto">
             <div class="flex gap-6 items-stretch">
 
-                <!-- Colonne gauche -->
+                <!-- ====== COLONNE GAUCHE ====== -->
                 <div class="w-full sm:w-[35%] lg:w-[25%] xl:w-[20%] flex flex-col gap-3 font-kavoon">
                     <aside class="bg-[var(--choco-brown)] text-[var(--choco-beige)] rounded-3xl p-4 flex-1">
                         <h2 class="text-lg mb-4">Étapes</h2>
 
+                        <!-- Liste des étapes (postes) -->
                         <ul class="space-y-2" id="etapesList">
                             @foreach ($etapes as $etape)
                                 <li
-                                    class="px-4 py-2 rounded-2xl flex justify-between items-center
-                                           cursor-pointer transition etape-item
-                                           {{ $loop->first
-                                                ? 'bg-[var(--caramel-dark)] text-[var(--choco-beige)] active'
-                                                : 'opacity-80 bg-[var(--choco-brown)] text-[var(--choco-beige)]' }}"
+                                    class="px-4 py-2 rounded-2xl flex justify-between items-center cursor-pointer transition etape-item {{ $loop->first ? 'bg-[var(--caramel-dark)] text-[var(--choco-beige)] active' : 'opacity-80 bg-[var(--choco-brown)] text-[var(--choco-beige)]' }}"
                                     data-poste-id="{{ $etape->id }}">
                                     {{ $etape->nom }}
                                 </li>
@@ -166,58 +158,36 @@
                     </aside>
                 </div>
 
-                <!-- Colonne droite -->
+                <!-- ====== COLONNE DROITE ====== -->
                 <div class="flex flex-col gap-6 items-stretch flex-1">
                     <div class="bg-[var(--choco-beige)] rounded-3xl p-6 flex-1">
 
-                        <!-- Recherche et actions -->
                         <div class="flex flex-col lg:flex-row gap-4 mb-4">
-                            <div
-                                class="flex items-center gap-4 bg-[var(--green)] px-6 py-3 rounded-full flex-1
-                                       border-2 border-[var(--choco-brown)]">
+                            <div class="flex items-center gap-4 bg-[var(--green)] px-6 py-3 rounded-full flex-1 border-2 border-[var(--choco-brown)]">
 
-                                <svg xmlns="http://www.w3.org/2000/svg"
-                                     class="w-6 h-6 text-[var(--choco-brown)] flex-shrink-0"
-                                     fill="none"
-                                     viewBox="0 0 24 24"
-                                     stroke="currentColor"
-                                     stroke-width="2">
-                                    <path stroke-linecap="round"
-                                          stroke-linejoin="round"
-                                          d="M21 21l-4.35-4.35m1.85-5.4a7.25 7.25 0 11-14.5 0
-                                             7.25 7.25 0 0114.5 0z" />
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-[var(--choco-brown)] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m1.85-5.4a7.25 7.25 0 11-14.5 0 7.25 7.25 0 0114.5 0z" />
                                 </svg>
 
                                 <input
                                     type="text"
                                     id="searchCommandeInput"
                                     placeholder="Rechercher par nom, prénom ou numéro de commande"
-                                    class="bg-transparent w-full text-[15px] font-medium
-                                           text-[var(--choco-brown)]
-                                           placeholder:text-[var(--choco-brown)] placeholder:opacity-80
-                                           border-0 outline-none focus:ring-0"
+                                    class="bg-transparent w-full text-[15px] font-medium text-[var(--choco-brown)] placeholder:text-[var(--choco-brown)] placeholder:opacity-80 border-0 outline-none focus:ring-0"
                                     onkeyup="mettreAJourAffichage()">
                             </div>
 
                             <div class="flex gap-3 shrink-0">
-                                <button onclick="ouvrirFiltrePopup()"
-                                        class="bg-white text-[var(--choco-brown)] px-4 py-2 rounded-full
-                                            flex items-center gap-2 border-2 border-[var(--choco-brown)]">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
-                                        fill="currentColor" class="size-5">
-                                        <path fill-rule="evenodd"
-                                            d="M2.628 1.601C5.028 1.206 7.49 1 10 1s4.973.206 7.372.601a.75.75 0 0 1 .628.74v2.288a2.25 2.25 0 0 1-.659 1.59l-4.682 4.683a2.25 2.25 0 0 0-.659 1.59v3.037c0 .684-.31 1.33-.844 1.757l-1.937 1.55A.75.75 0 0 1 8 18.25v-5.757a2.25 2.25 0 0 0-.659-1.591L2.659 6.22A2.25 2.25 0 0 1 2 4.629V2.34a.75.75 0 0 1 .628-.74Z"
-                                            clip-rule="evenodd" />
+                                <button onclick="ouvrirFiltrePopup()" class="bg-white text-[var(--choco-brown)] px-4 py-2 rounded-full flex items-center gap-2 border-2 border-[var(--choco-brown)]">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">
+                                        <path fill-rule="evenodd" d="M2.628 1.601C5.028 1.206 7.49 1 10 1s4.973.206 7.372.601a.75.75 0 0 1 .628.74v2.288a2.25 2.25 0 0 1-.659 1.59l-4.682 4.683a2.25 2.25 0 0 0-.659 1.59v3.037c0 .684-.31 1.33-.844 1.757l-1.937 1.55A.75.75 0 0 1 8 18.25v-5.757a2.25 2.25 0 0 0-.659-1.591L2.659 6.22A2.25 2.25 0 0 1 2 4.629V2.34a.75.75 0 0 1 .628-.74Z" clip-rule="evenodd" />
                                     </svg>
                                     Filtrer
                                 </button>
 
                                 @auth
                                     @if(auth()->user()->isSuperviseur())
-                                        <button
-                                            onclick="ouvrirPopupPanne()"
-                                            class="bg-[var(--caramel-dark)] px-4 py-2 rounded-full
-                                                   flex items-center gap-2 text-white">
+                                        <button onclick="ouvrirPopupPanne()" class="bg-[var(--caramel-dark)] px-4 py-2 rounded-full flex items-center gap-2 text-white">
                                             Signaler une panne
                                         </button>
                                     @endif
@@ -225,7 +195,7 @@
                             </div>
                         </div>
 
-                        <!-- Statistiques -->
+                        <!-- ====== STATISTIQUES ====== -->
                         <div class="text-md text-[var(--choco-brown)] mb-4 font-medium">
                             <p id="filtreActifText" class="mb-1 italic font-kavoon">
                                 Aucun filtre actif
@@ -242,9 +212,7 @@
                             </p>
                         </div>
 
-                        <!-- Commandes -->
-                        <div class="space-y-4 overflow-y-auto max-h-[300px] pr-2">
-                        </div>
+                        <div class="space-y-4 overflow-y-auto max-h-[300px] pr-2"></div>
 
                     </div>
                 </div>
