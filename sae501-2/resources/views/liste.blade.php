@@ -5,7 +5,7 @@
 @section('content')
 
 <div class="bg-[var(--choco-gold)] flex-1">
-    <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-[8%] xl:px-[12%] 2xl:px-[15%] py-6">
+    <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
         <div class="bg-[var(--choco)] rounded-full px-6 py-4 text-[var(--choco-beige)] mb-6">
             <div class="grid grid-cols-1 gap-4 items-center sm:grid-cols-3 sm:gap-0 sm:text-center">
