@@ -305,69 +305,72 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const ctx = document.getElementById('conformiteChart');
 
-    if (!ctx) return;
-
-    new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: ['Conformes', 'Non conformes'],
-            datasets: [{
-                data: [
-                    {{ $commandesConformes }},
-                    {{ $commandesNonConformes }}
-                ],
-                backgroundColor: [
-                    'rgb(110, 226, 182)',
-                    'rgb(238, 131, 23)'
-                ],
-                borderWidth: 0
-            }]
-        },
-        options: {
-            responsive: true,
-            cutout: '70%',
-            plugins: {
-                legend: {
-                    display: false
-                },
-                tooltip: {
-                    backgroundColor: '#3b2a20',
-                    titleColor: '#f5f0e6',
-                    bodyColor: '#f5f0e6'
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Conformes', 'Non conformes'],
+                datasets: [{
+                    data: [
+                        {{ $commandesConformes }},
+                        {{ $commandesNonConformes }}
+                    ],
+                    backgroundColor: [
+                        'rgb(110, 226, 182)',
+                        'rgb(238, 131, 23)'
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                cutout: '70%',
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: '#3b2a20',
+                        titleColor: '#f5f0e6',
+                        bodyColor: '#f5f0e6'
+                    }
                 }
             }
-        }
-    });
-
-});
-
-new Chart(document.getElementById('livraisonChart'), {
-    type: 'doughnut',
-    data: {
-        labels: ['Livrées', 'Non livrées'],
-        datasets: [{
-            data: [
-                {{ $commandesLivrees }},
-                {{ $totalCommandes - $commandesLivrees }}
-            ],
-            backgroundColor: [
-                '#6BCF9B', // vert
-                '#E76F51'  // rouge
-            ],
-            borderWidth: 0
-        }]
-    },
-    options: {
-        cutout: '70%',
-        plugins: {
-            legend: { display: false },
-            tooltip: {
-                callbacks: {
-                    label: ctx => `${ctx.label} : ${ctx.raw}`
-                }
-            }
-        }
+        });
     }
+
+    const livraisonCtx = document.getElementById('livraisonChart');
+    if (livraisonCtx) {
+        new Chart(livraisonCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Livrées', 'Non livrées'],
+                datasets: [{
+                    data: [
+                        {{ $commandesLivrees }},
+                        {{ $totalCommandes - $commandesLivrees }}
+                    ],
+                    backgroundColor: [
+                        '#6BCF9B', // vert
+                        '#E76F51'  // rouge
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                cutout: '70%',
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: ctx => `${ctx.label} : ${ctx.raw}`
+                        }
+                    }
+                }
+            }
+        });
+    }
+
 });
 </script>
 
