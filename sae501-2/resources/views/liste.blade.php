@@ -469,10 +469,10 @@ function showCustomConfirm(titre, message, onConfirm) {
             <h3 class="text-2xl font-kavoon text-center text-[var(--choco-brown)] mb-4 font-bold">${titre}</h3>
             <p class="text-center text-[var(--choco-brown)] mb-8 font-medium">${message}</p>
             <div class="flex gap-4">
-                <button id="cancelBtn" class="flex-1 bg-[var(--choco-brown)] hover:bg-[var(--choco)] text-[var(--choco-beige)] py-3 px-6 rounded-2xl font-kavoon transition-all duration-200">
+                <button id="cancelBtn" class="flex-1 bg-[var(--choco-brown)] text-[var(--choco-beige)] py-3 px-6 rounded-2xl font-kavoon transition-all duration-200">
                     Annuler
                 </button>
-                <button id="confirmBtn" class="flex-1 bg-[var(--caramel)] hover:bg-green-600 text-[var(--choco-beige)] py-3 px-6 rounded-2xl font-kavoon transition-all duration-200">
+                <button id="confirmBtn" class="flex-1 bg-[var(--caramel)] text-[var(--choco-beige)] py-3 px-6 rounded-2xl font-kavoon transition-all duration-200">
                     Confirmer
                 </button>
             </div>
@@ -559,7 +559,10 @@ function rafraichirDonnees() {
         .then(r => r.json())
         .then(data => {
             // Mettre à jour commandesData globalement
-            Object.assign(commandesData, data);
+            Object.assign(commandesData, data.commandes);
+            // Mettre à jour les leadTimesParPoste
+            leadTimesParPoste.length = 0;
+            leadTimesParPoste.push(...data.leadTimesParPoste);
             afficherCommandesArchivees();
 
 
