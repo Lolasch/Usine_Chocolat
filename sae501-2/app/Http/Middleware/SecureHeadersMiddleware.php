@@ -41,7 +41,7 @@ class SecureHeadersMiddleware
 
         // ✅ Content-Security-Policy: Protection XSS avancée
         $csp = "default-src 'self'; " .
-               "script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://fonts.googleapis.com; " .
+               "script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://fonts.googleapis.com https://cdnjs.cloudflare.com; " .
                "style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; " .
                "img-src 'self' data: https:; " .
                "font-src 'self' https://fonts.gstatic.com; " .
