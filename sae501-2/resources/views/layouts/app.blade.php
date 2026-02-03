@@ -138,7 +138,7 @@
     </header>
 
     <!-- MAIN -->
-    <main class="flex-1 w-full">
+    <main class="flex-1 w-full px-4 sm:px-6 lg:px-8">
         @yield('content')
     </main>
 
